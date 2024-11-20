@@ -175,6 +175,7 @@ class KategoriController extends Controller
     // Ajax untuk Create
     public function create_ajax()
     {
+        $kategori = KategoriModel::select('id_kategori', 'kategori_nama')->get();
         return view('kategori.create_ajax');
     }
 

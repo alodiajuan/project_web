@@ -29,7 +29,7 @@ class MahasiswaModel extends Authenticatable
     }
     public function kompetensi(): HasMany
     {
-        return $this->hasMany(KompetensiModel::class, 'kompetensi_id', 'kompetensi_id');
+        return $this->hasMany(KompetensiModel::class, 'mahasiswa_id', 'mahasiswa_id');
     }
     protected function foto(): Attribute{
         return Attribute::make(

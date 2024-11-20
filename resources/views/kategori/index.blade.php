@@ -39,15 +39,14 @@
             });
         }
 
-        var datakategori;
         $(document).ready(function() {
-            var dataUser = $('#table_user').DataTable({
+             dataKategori = $('#table_user').DataTable({
                 // serverSide: true, jika ingin menggunakan server side processing
                 serverSide: true,
                 ajax: {
                     "url": "{{ url('kategori/list') }}",
                     "dataType": "json",
-                    "type": "POST",
+                    "type": "GET",
                     "data": function(d) {
                         d.kategori_id = $('#kategori_id').val();
                     }

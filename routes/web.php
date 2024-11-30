@@ -5,9 +5,10 @@ use App\Http\Controllers\WelcomeController;
 use App\Http\Controllers\KategoriController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TugasController;
-use App\Http\Controllers\AdminController;
+use App\Http\Controllers\SdmController;
 use App\Http\Controllers\KompetensiController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\MahasiswaController;
 
 Route::get('/', [WelcomeController::class,'index']);         // menampilkan halaman awal level
 Route::get('login', [AuthController::class, 'login'])->name('login');
@@ -52,7 +53,7 @@ Route::group(['prefix' => 'kategori'], function () {
 });
 Route::group(['prefix' => 'tugas'], function () {
     Route::get('/', [TugasController::class, 'index']);  // Menampilkan halaman awal kategori
-    Route::get('/list', [TugasController::class, 'list']);  // Menampilkan data kategori dalam bentuk JSON untuk datatables
+    Route::post('/list', [TugasController::class, 'list']);  // Menampilkan data kategori dalam bentuk JSON untuk datatables
     Route::get('/create', [TugasController::class, 'create']);  // Menampilkan halaman form tambah kategori
     Route::get('/create_ajax', [TugasController::class, 'create_ajax']);
     Route::post('/', [TugasController::class, 'store']);  // Menyimpan data kategori baru
@@ -66,18 +67,33 @@ Route::group(['prefix' => 'tugas'], function () {
     Route::put('/{id}', [TugasController::class, 'update']);  // Menyimpan perubahan data kategori
     Route::delete('/{id}', [TugasController::class, 'destroy']);  // Menghapus data kategori
 });
-Route::prefix('admin')->group(function () {
-    Route::get('/', [AdminController::class, 'index'])->name('admin.index');
-    Route::post('/list', [AdminController::class, 'list'])->name('admin.list');
-    Route::get('/create', [AdminController::class, 'create'])->name('admin.create');
-    Route::post('/', [AdminController::class, 'store'])->name('admin.store');
-    Route::post('/store-ajax', [AdminController::class, 'store_ajax'])->name('admin.store_ajax');
-    Route::get('/{id}', [AdminController::class, 'show'])->name('admin.show');
-    Route::get('/{id}/edit', [AdminController::class, 'edit'])->name('admin.edit');
-    Route::put('/{id}', [AdminController::class, 'update'])->name('admin.update');
-    Route::put('/{id}/update-ajax', [AdminController::class, 'update_ajax'])->name('admin.update_ajax');
-    Route::delete('/{id}', [AdminController::class, 'destroy'])->name('admin.destroy');
-    Route::get('/{id}/confirm', [AdminController::class, 'confirm_ajax'])->name('admin.confirm');
+Route::prefix('mahasiswa')->group(function () {
+    Route::get('/', [MahasiswaController::class, 'index'])->name('mahasiswa.index');
+    Route::post('/list', [MahasiswaController::class, 'list'])->name('mahasiswa.list');
+    Route::get('/create', [MahasiswaController::class, 'create'])->name('mahasiswa.create');
+    Route::post('/', [MahasiswaController::class, 'store'])->name('mahasiswa.store');
+    Route::post('/store-ajax', [MahasiswaController::class, 'store_ajax'])->name('mahasiswa.store_ajax');
+    Route::get('/{id}', [MahasiswaController::class, 'show'])->name('mahasiswa.show');
+    Route::get('/{id}/edit', [MahasiswaController::class, 'edit'])->name('mahasiswa.edit');
+    Route::put('/{id}', [MahasiswaController::class, 'update'])->name('mahasiswa.update');
+    Route::put('/{id}/update-ajax', [MahasiswaController::class, 'update_ajax'])->name('mahasiswa.update_ajax');
+    Route::delete('/{id}', [MahasiswaController::class, 'destroy'])->name('mahasiswa.destroy');
+    Route::get('/{id}/confirm', [MahasiswaController::class, 'confirm_ajax'])->name('mahasiswa.confirm');
+});
+Route::group(['prefix' => 'sdm'], function () {
+    Route::get('/', [SdmController::class, 'index']);  // Menampilkan halaman awal sdm
+    Route::post('/list', [SdmController::class, 'list']);  // Menampilkan data sdm dalam bentuk JSON untuk datatables
+    Route::get('/create', [SdmController::class, 'create']);  // Menampilkan halaman form tambah sdm
+    Route::get('/create_ajax', [SdmController::class, 'create_ajax']);
+    Route::post('/', [SdmController::class, 'store']);  // Menyimpan data sdm baru
+    Route::post('/ajax', [SdmController::class, 'store_ajax']);
+    Route::get('/{id}/edit_ajax', [SdmController::class, 'edit_ajax']);
+    Route::put('/{id}/update_ajax', [SdmController::class, 'update_ajax']);
+    Route::get('/{id}/delete_ajax', [SdmController::class, 'confirm_ajax']);  // Menampilkan halaman konfirmasi hapus
+    Route::delete('/{id}', [SdmController::class, 'destroy']);  // Menghapus data sdm
+    Route::get('/{id}', [SdmController::class, 'show']);  // Menampilkan detail sdm
+    Route::get('/{id}/edit', [SdmController::class, 'edit']);  // Menampilkan halaman form edit sdm
+    Route::put('/{id}', [SdmController::class, 'update']);  // Menyimpan perubahan data sdm
 });
 
 Route::prefix('kompetensi')->group(function () {

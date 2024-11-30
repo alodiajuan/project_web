@@ -25,26 +25,29 @@ class TugasController extends Controller
         $page = (object) [
             'title' => 'Daftar tugas yang telah dipublikasi',
         ];
-        $activeMenu = 'tugas'; // Set menu yang sedang aktif
-        $tugas = tugasModel::all(); // Ambil data tugas untuk filter tugas
+
+        $activeMenu = 'tugas'; // Set menu yanxg sedang aktif
+        $tugas = TugasModel::all(); // Ambil data tugas untuk filter tugas
         return view('tugas.index', [
             'breadcrumb' => $breadcrumb,
             'page' => $page,
             'tugas' => $tugas,
-            'activeMenu' => $activeMenu
-        ]);
+            'activeMenu' => $activeMenu]);
     }
+
+    
 
     // Menampilkan detail tugas
     public function show(string $id)
     {
         $tugas = TugasModel::with('tugas')->find($id);
+        
         if (!$tugas) {
             return redirect('/tugas')->with('error', 'Data tugas tidak ditemukan');
         }
         $breadcrumb = (object) [
-            'title' => 'Detail tugas',
-            'list' => ['Home', 'tugas', 'Detail']
+            'title' => 'Detail Tugas',
+            'list' => ['Home', 'Tugas', 'Detail']
         ];
         $page = (object) [
             'title' => 'Detail tugas',
@@ -61,31 +64,27 @@ class TugasController extends Controller
     // Menampilkan form create tugas dengan tugas
     public function create_ajax()
     {
-        $tugas = tugasModel::select('tugas_id', 'tugas_nama')->get();
-        return view('tugas.create_ajax')->with('tugas', $tugas);
+        $tugas = TugasModel::select('tugas_id', 'tugas_nama', 'deskripsi', 'jam_kompen', 'status_dibuka', 'tanggal_mulai', 'tanggal_akhir', 'kategori_id', 'sdm_id', 'admin_id')->with('kategori', 'sdm', 'admin');
+        return view('tugas.create_ajax', ['tugas' => $tugas]);
     }
 
     // Ambil data tugas dalam bentuk JSON untuk DataTables
     public function list(Request $request)
     {
-        $tugas = TugasModel::select('tugas_id', 'tugas_kode', 'tugas_nama', 'deskripsi', 'jam_kompen', 'status_dibuka', 'tanggal_mulai', 'tanggal_akhir', 'tugas_id', 'sdm_id', 'admin_id')
-            ->with('tugas');
-
-        // Filter berdasarkan tugas jika ada
-        if ($request->tugas_id) {
-            $tugas->where('tugas_id', $request->tugas_id);
-        }
+        $tugas = TugasModel::select('tugas_id', 'tugas_kode', 'tugas_nama', 'deskripsi', 'jam_kompen', 'status_dibuka', 'tanggal_mulai', 'tanggal_akhir', 'kategori_id', 'sdm_id')
+        ->with('kategori', 'admin', 'sdm')
+        ->get();
 
         return DataTables::of($tugas)
-            ->addIndexColumn()
-            ->addColumn('aksi', function ($tugas) {
-                $btn = '<a href="' . url('/tugas/' . $tugas->tugas_id) . '" class="btn btn-info btn-sm">Detail</a> ';
-                $btn .= '<button onclick="modalAction(\'' . url('/tugas/' . $tugas->tugas_id . '/edit_ajax') . '\')" class="btn btn-warning btn-sm">Edit</button> ';
-                $btn .= '<button onclick="modalAction(\'' . url('/tugas/' . $tugas->tugas_id . '/delete_ajax') . '\')" class="btn btn-danger btn-sm">Hapus</button> ';
-                return $btn;
-            })
-            ->rawColumns(['aksi'])
-            ->make(true);
+        ->addIndexColumn()
+        ->addColumn('aksi', function ($tugas) {
+            $btn = '<a href="' . url('/level/' . $tugas->tugas_id) . '" class="btn btn-info btn-sm">Detail</a> ';
+            $btn .= '<button onclick="modalAction(\'' . url('/tugas/' . $tugas->tugas_id . '/edit_ajax') . '\')" class="btn btn-warning btn-sm">Edit</button> ';
+            $btn .= '<button onclick="modalAction(\'' . url('/tugas/' . $tugas->tugas_id . '/delete_ajax') . '\')" class="btn btn-danger btn-sm">Hapus</button> ';
+            return $btn;
+        })
+        ->rawColumns(['aksi'])
+        ->make(true);
     }
 
     public function update_ajax(Request $request, $id)
@@ -100,7 +99,7 @@ class TugasController extends Controller
                 'status_dibuka' => 'required|boolean', // status_dibuka wajib diisi dengan nilai boolean
                 'tanggal_mulai' => 'required|date', // tanggal_mulai wajib diisi dengan format tanggal
                 'tanggal_akhir' => 'required|date|after:tanggal_mulai', // tanggal_akhir wajib diisi dan harus setelah tanggal_mulai
-                'tugas_id' => 'required|integer|exists:m_tugas,tugas_id', // tugas_id wajib dan harus ada di tabel m_tugas
+                'kategori_id' => 'required', 
                 'sdm_id' => 'nullable|integer|exists:m_sdm,sdm_id', // sdm_id opsional, harus berupa angka, dan harus ada di tabel m_sdm
                 'admin_id' => 'nullable|integer|exists:m_admin,admin_id', // admin_id opsional, harus berupa angka, dan harus ada di tabel m_admin
             ];
@@ -162,7 +161,7 @@ class TugasController extends Controller
     public function edit_ajax(string $id)
     {
         $tugas = TugasModel::find($id);
-        $tugas = tugasModel::select('tugas_id', 'tugas_nama')->get();
+        $tugas = TugasModel::select('tugas_id', 'tugas_nama')->get();
         return view('tugas.edit_ajax', ['tugas' => $tugas, 'tugas' => $tugas]);
     }
 
@@ -178,7 +177,7 @@ class TugasController extends Controller
                 'status_dibuka' => 'required|boolean', // status_dibuka wajib diisi dengan nilai boolean
                 'tanggal_mulai' => 'required|date', // tanggal_mulai wajib diisi dengan format tanggal
                 'tanggal_akhir' => 'required|date|after:tanggal_mulai', // tanggal_akhir wajib diisi dan harus setelah tanggal_mulai
-                'tugas_id' => 'required|integer|exists:m_tugas,tugas_id', // tugas_id wajib dan harus ada di tabel m_tugas
+                'kategori_id' => 'required', // tugas_id wajib dan harus ada di tabel m_tugas
                 'sdm_id' => 'nullable|integer|exists:m_sdm,sdm_id', // sdm_id opsional, harus berupa angka, dan harus ada di tabel m_sdm
                 'admin_id' => 'nullable|integer|exists:m_admin,admin_id', // admin_id opsional, harus berupa angka, dan harus ada di tabel m_admin
             ];

@@ -24,7 +24,6 @@ class TugasModel extends Model
         'tanggal_akhir',
         'kategori_id',
         'sdm_id',
-        'admin_id',
     ];
 
     /**

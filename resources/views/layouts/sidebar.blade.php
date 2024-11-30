@@ -31,9 +31,9 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a href="{{ url('/admin') }}" class="nav-link {{ $activeMenu == 'admin' ? 'active' : '' }}">
+                <a href="{{ url('/sdm') }}" class="nav-link {{ $activeMenu == 'sdm' ? 'active' : '' }}">
                     <i class="nav-icon fas fa-user-shield"></i>
-                    <span class="text-truncate">Data Admin</span>
+                    <span class="text-truncate">Data SDM</span>
                 </a>
             </li>
             <li class="nav-item">
@@ -42,11 +42,6 @@
                     <span class="text-truncate">Data Mahasiswa</span>
                 </a>
             </li>
-            <li class="nav-item">
-                <a href="{{ url('/sdm') }}" class="nav-link {{ $activeMenu == 'sdm' ? 'active' : '' }}">
-                    <i class="nav-icon fas fa-users"></i>
-                    <span class="text-truncate">Data SDM</span>
-                </a>
             </li>
             <li class="nav-item">
                 <a href="{{ url('/kompetensi') }}" class="nav-link {{ $activeMenu == 'kompetensi' ? 'active' : '' }}">
@@ -82,6 +77,12 @@
                 <a href="{{ url('/presensi') }}" class="nav-link {{ $activeMenu == 'presensi' ? 'active' : '' }}">
                     <i class="nav-icon fas fa-check-circle"></i>
                     <span class="text-truncate">Presensi</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{{ url('/prodi') }}" class="nav-link {{ $activeMenu == 'prodi' ? 'active' : '' }}">
+                    <i class="nav-icon fas fa-check-circle"></i>
+                    <span class="text-truncate">Prodi</span>
                 </a>
             </li>
         </ul>

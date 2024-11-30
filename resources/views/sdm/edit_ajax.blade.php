@@ -1,4 +1,4 @@
-@empty($admin)
+@empty($sdm)
    <div id="modal-master" class="modal-dialog modal-lg" role="document">
        <div class="modal-content">
            <div class="modal-header">
@@ -9,39 +9,39 @@
                        <h5><i class="icon fas fa-ban"></i> Kesalahan!!!</h5>
                        Data yang anda cari tidak ditemukan
                    </div>
-                   <a href="{{ url('/admin') }}" class="btn btn-warning">Kembali</a>
+                   <a href="{{ url('/sdm') }}" class="btn btn-warning">Kembali</a>
                </div>
            </div>
        </div>
    @else
-       <form action="{{ url('/admin/' . $admin->admin_id . '/update_ajax') }}" method="POST" id="form-edit">
+       <form action="{{ url('/sdm/' . $sdm->sdm_id . '/update_ajax') }}" method="POST" id="form-edit">
            @csrf
            @method('PUT')
            <div id="modal-master" class="modal-dialog modal-lg" role="document">
                <div class="modal-content">
                    <div class="modal-header">
-                       <h5 class="modal-title">Edit Data Admin</h5>
+                       <h5 class="modal-title">Edit Data sdm</h5>
                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                    </div>
                    <div class="modal-body">
                        <div class="form-group">
-                           <label>Nama Admin</label>
-                           <input value="{{ $admin->admin_nama }}" type="text" name="admin_nama" id="admin_nama" class="form-control" required>
-                           <small id="error-admin_nama" class="error-text form-text text-danger"></small>
+                           <label>Nama sdm</label>
+                           <input value="{{ $sdm->sdm_nama }}" type="text" name="sdm_nama" id="sdm_nama" class="form-control" required>
+                           <small id="error-sdm_nama" class="error-text form-text text-danger"></small>
                        </div>
                        <div class="form-group">
                            <label>NIP</label>
-                           <input value="{{ $admin->nip }}" type="text" name="nip" id="nip" class="form-control" required>
+                           <input value="{{ $sdm->nip }}" type="text" name="nip" id="nip" class="form-control" required>
                            <small id="error-nip" class="error-text form-text text-danger"></small>
                        </div>
                        <div class="form-group">
                            <label>Username</label>
-                           <input value="{{ $admin->username }}" type="text" name="username" id="username" class="form-control" required>
+                           <input value="{{ $sdm->username }}" type="text" name="username" id="username" class="form-control" required>
                            <small id="error-username" class="error-text form-text text-danger"></small>
                        </div>
                        <div class="form-group">
                            <label>No Telepon</label>
-                           <input value="{{ $admin->no_telepon }}" type="text" name="no_telepon" id="no_telepon" class="form-control" required>
+                           <input value="{{ $sdm->no_telepon }}" type="text" name="no_telepon" id="no_telepon" class="form-control" required>
                            <small id="error-no_telepon" class="error-text form-text text-danger"></small>
                        </div>
                        <div class="form-group">
@@ -70,7 +70,7 @@
            $(document).ready(function() {
                $("#form-edit").validate({
                    rules: {
-                       admin_nama: {
+                       sdm_nama: {
                            required: true,
                            minlength: 3
                        },
@@ -103,7 +103,7 @@
                                        title: 'Berhasil',
                                        text: response.message
                                    });
-                                   dataAdmin.ajax.reload();
+                                   datasdm.ajax.reload();
                                } else {
                                    $('.error-text').text('');
                                    $.each(response.msgField, function(prefix, val) {

@@ -15,7 +15,6 @@ class MahasiswaSeeder extends Seeder
     {
         $data = [
             [
-                'mahasiswa_id' => 1,
                 'mahasiswa_nama' => 'John Doe',
                 'nim' => '12345',
                 'username' => 'johndoe',
@@ -23,9 +22,13 @@ class MahasiswaSeeder extends Seeder
                 'semester' => 1,
                 'password' => Hash::make('12345'),
                 'level_id' => 2,
+                'prodi_id' => 1, // Assuming prodi_id is required, adjust accordingly
+                'kompetensi_id' => 1, // Assuming kompetensi_id is required, adjust accordingly
+                'foto' => null, // Assuming no photo for seeder
+                'created_at' => now(),
+                'updated_at' => now(),
             ],
             [
-                'mahasiswa_id' => 2,
                 'mahasiswa_nama' => 'Alodia Juan',
                 'nim' => '123456',
                 'username' => 'alodiajuan',
@@ -33,6 +36,11 @@ class MahasiswaSeeder extends Seeder
                 'semester' => 4,
                 'password' => Hash::make('1234567'),
                 'level_id' => 2,
+                'prodi_id' => 1, // Assuming prodi_id is required, adjust accordingly
+                'kompetensi_id' => 1, // Assuming kompetensi_id is required, adjust accordingly
+                'foto' => null, // Assuming no photo for seeder
+                'created_at' => now(),
+                'updated_at' => now(),
             ],
         ];
 

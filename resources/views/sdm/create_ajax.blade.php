@@ -1,16 +1,16 @@
-<form action="{{ url('/admin/ajax') }}" method="POST" id="form-tambah">
+<form action="{{ url('/sdm/ajax') }}" method="POST" id="form-tambah">
     @csrf
     <div id="modal-master" class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Tambah Data Admin</h5>
+                <h5 class="modal-title">Tambah Data sdm</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
             </div>
             <div class="modal-body">
                 <div class="form-group">
-                    <label>Nama Admin</label>
-                    <input type="text" name="admin_nama" id="admin_nama" class="form-control" required>
-                    <small id="error-admin_nama" class="error-text form-text text-danger"></small>
+                    <label>Nama sdm</label>
+                    <input type="text" name="sdm_nama" id="sdm_nama" class="form-control" required>
+                    <small id="error-sdm_nama" class="error-text form-text text-danger"></small>
                 </div>
                 <div class="form-group">
                     <label>NIP</label>
@@ -55,7 +55,7 @@
     $(document).ready(function() {
         $("#form-tambah").validate({
             rules: {
-                admin_nama: {
+                sdm_nama: {
                     required: true,
                     minlength: 3,
                 },
@@ -88,7 +88,7 @@
                                 title: 'Berhasil',
                                 text: response.message
                             });
-                            dataAdmin.ajax.reload();
+                            datasdm.ajax.reload();
                         } else {
                             $('.error-text').text('');
                             $.each(response.msgField, function(prefix, val) {

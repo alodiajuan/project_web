@@ -20,7 +20,7 @@ class ProdiModel extends Model
 
     public function admin(): HasMany
     {
-        return $this->hasMany(AdminModel::class, 'prodi_id');
+        return $this->hasMany(SdmModel::class, 'prodi_id');
     }
 
 }

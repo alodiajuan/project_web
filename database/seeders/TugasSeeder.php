@@ -22,9 +22,8 @@ class TugasSeeder extends Seeder
                 'status_dibuka' => true,
                 'tanggal_mulai' => Carbon::now()->subDays(10)->toDateString(),
                 'tanggal_akhir' => Carbon::now()->addDays(10)->toDateString(),
-                'kategori_id' => 1, // Pastikan kategori_id ada di tabel m_kategori
-                'sdm_id' => null, // Pastikan sdm_id ada di tabel m_sdm
-                'admin_id' => 1,
+                'tugas_id' => 1, // Sesuaikan dengan ID tugas yang ada jika menggunakan ID tugas
+                'sdm_id' => 1, // Sesuaikan dengan ID sdm yang ada
             ],
             [
                 'tugas_kode' => 'T002',
@@ -34,12 +33,12 @@ class TugasSeeder extends Seeder
                 'status_dibuka' => false,
                 'tanggal_mulai' => Carbon::now()->subDays(5)->toDateString(),
                 'tanggal_akhir' => Carbon::now()->addDays(5)->toDateString(),
-                'kategori_id' => 2,
-                'sdm_id' => null,
-                'admin_id' => 2, // Pastikan admin_id ada di tabel m_admin
+                'tugas_id' => 2, // Sesuaikan dengan ID tugas yang ada
+                'sdm_id' => 2, // Sesuaikan dengan ID sdm yang ada
             ],
+            // Tambahkan data tugas lain sesuai kebutuhan
         ];
 
-        DB::table('m_tugas')->insert($data);
+        DB::table('m_tugas')->insert($data); // Pastikan nama tabelnya 'm_tugas' sesuai dengan tabel yang Anda gunakan
     }
 }

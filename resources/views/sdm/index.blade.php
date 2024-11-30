@@ -3,12 +3,12 @@
 @section('content')
     <div class="card card-outline card-primary">
         <div class="card-header">
-            <h3 class="card-title">Daftar mahasiswa yang terdapat dalam sistem</h3>
+            <h3 class="card-title">Daftar SDM yang terdapat dalam sistem</h3>
             <div class="card-tools">
-                <button onclick="modalAction('{{ url('/mahasiswa/import') }}')" class="btn btn-sm btn-info mt-1">Import mahasiswa</button>
-                <a href="{{ url('/mahasiswa/export_excel') }}" class="btn btn-sm btn-primary mt-1"><i class="fa fa-file-excel"></i> Export mahasiswa (Excel)</a>
-                <a href="{{ url('/mahasiswa/export_pdf') }}" class="btn btn-sm btn-warning mt-1"><i class="fa fa-file-pdf"></i> Export mahasiswa (PDF)</a>
-                <button onclick="modalAction('{{ url('mahasiswa/create_ajax') }}')" class="btn btn-sm btn-success mt-1">Tambah Data</button>
+                <button onclick="modalAction('{{ url('/sdm/import') }}')" class="btn btn-sm btn-info mt-1">Import</button>
+                <a href="{{ url('/sdm/export_excel') }}" class="btn btn-sm btn-primary mt-1"><i class="fa fa-file-excel"></i> Export (Excel)</a>
+                <a href="{{ url('/sdm/export_pdf') }}" class="btn btn-sm btn-warning mt-1"><i class="fa fa-file-pdf"></i> Export (PDF)</a>
+                <button onclick="modalAction('{{ url('sdm/create_ajax') }}')" class="btn btn-sm btn-success mt-1">Tambah Data</button>
             </div>
         </div>
         <div class="card-body">
@@ -27,27 +27,27 @@
                     <div class="form-group row">
                         <label class="col-1 control-label col-form-label">Filter:</label>
                         <div class="col-3">
-                            <select class="form-control" id="level_id" name="level_id" required>
+                            {{-- <select class="form-control" id="level_id" name="level_id" required>
                                 <option value="">- Semua -</option>
                                 @foreach ($level as $item)
                                     <option value="{{ $item->level_id }}">{{ $item->level_nama }}</option>
                                 @endforeach
-                            </select>
+                            </select> --}}
                         </div>
                         <small class="form-text text-muted">Level Pengguna</small>
                     </div>
                 </div>
             </div>
-            <table class="table table-bordered table-striped table-hover table-sm" id="table_mahasiswa">
+            <table class="table table-bordered table-striped table-hover table-sm" id="table_sdm">
                 <thead>
                     <tr>
-                        <th>No</th>
-                        <th>Nama Mahasiswa</th>
-                        <th>NIM</th>
-                        <th>Username</th>
-                        <th>Kompetensi</th>
-                        <th>Semester</th>
-                        <th>Level Pengguna</th>
+                        <th>No</th> 
+                        <th>Nama</th> 
+                        <th>NIP</th> 
+                        <th>No Telepon</th> 
+                        <th>Foto</th> 
+                        <th>Program Studi</th> 
+                        <th>Level</th> 
                         <th>Aksi</th>
                     </tr>
                 </thead>
@@ -69,10 +69,10 @@
         }
 
         $(document).ready(function() {
-            var datamahasiswa = $('#table_mahasiswa').DataTable({
+            var datasdm = $('#table_sdm').DataTable({
                 serverSide: true,
                 ajax: {
-                    url: "{{ url('mahasiswa/list') }}",
+                    url: "{{ url('sdm/list') }}",
                     type: "POST",
                     data: function(d) {
                         d.level_id = $('#level_id').val();
@@ -86,43 +86,46 @@
                         searchable: false
                     },
                     {
-                        data: "mahasiswa_nama", // Ensure this matches your model
+                        data: "sdm_nama",
                         className: "",
                         orderable: true,
                         searchable: true
                     },
                     {
-                        data: "nim", // Ensure this matches your model
+                        data: "nip",
                         className: "",
                         orderable: true,
                         searchable: true
                     },
                     {
-                        data: "username", // Ensure this matches your model
+                        data: "no_telepon",
                         className: "",
                         orderable: true,
                         searchable: true
                     },
                     {
-                        data: "kompetensi", // Ensure this matches your model
-                        className: "",
-                        orderable: true,
-                        searchable: true
-                    },
-                    {
- data: "semester", // Ensure this matches your model
-                        className: "",
-                        orderable: true,
-                        searchable: true
-                    },
-                    {
-                        data: "level.level_nama", // Ensure this matches your model
+                        data: "foto",
                         className: "",
                         orderable: false,
-                        searchable: false
+                        searchable: false,
+                        render: function(data, type, row) {
+                            return '<img src="' + data + '" alt="Foto of ' + row.sdm_nama + '" width="50" height="50">';
+                        }
                     },
                     {
-                        data: "aksi", // Ensure this matches your model
+                        data: "prodi.prodi_nama", // Menampilkan nama program studi
+                        className: "",
+                        orderable: true,
+                        searchable: true
+                    },
+                    {
+                        data: "level.level_nama,
+                        className: "",
+                        orderable: true,
+                        searchable: true
+                    },
+                    {
+                        data: "aksi",
                         className: "",
                         orderable: false,
                         searchable: false
@@ -131,7 +134,7 @@
             });
 
             $('#level_id').on('change', function() {
-                datamahasiswa.ajax.reload();
+                datasdm.ajax.reload();
             });
         });
     </script>

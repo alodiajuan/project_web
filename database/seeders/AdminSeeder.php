@@ -5,7 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
-class AdminSeeder extends Seeder
+class sdmSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -14,8 +14,8 @@ class AdminSeeder extends Seeder
     {
         $data = [
             [
-            'admin_id' => 1,
-            'admin_nama' => 'Laila',
+            'sdm_id' => 1,
+            'sdm_nama' => 'Laila',
             'nip' => '12345',
             'username' => '12345',
             'password' => '12345',
@@ -25,8 +25,8 @@ class AdminSeeder extends Seeder
             'level_id' => 1,
             ],
             [
-            'admin_id' => 2,
-            'admin_nama' => 'Ana',
+            'sdm_id' => 2,
+            'sdm_nama' => 'Ana',
             'nip' => '2345',
             'username' => '2345',
             'password' => '2345',
@@ -36,8 +36,8 @@ class AdminSeeder extends Seeder
             'level_id' => 1,
             ],
             [
-            'admin_id' => 3,
-            'admin_nama' => 'Aliyah',
+            'sdm_id' => 3,
+            'sdm_nama' => 'Aliyah',
             'nip' => '9909',
             'username' => '9909',
             'password' => '9909',
@@ -48,6 +48,6 @@ class AdminSeeder extends Seeder
             ],
         ];
 
-        DB::table('m_admin')->insert($data); // Sesuaikan nama tabel dengan tabel di database Anda
+        DB::table('m_sdm')->insert($data); // Sesuaikan nama tabel dengan tabel di database Anda
     }
 }

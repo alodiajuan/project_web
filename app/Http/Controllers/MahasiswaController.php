@@ -2,366 +2,203 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\MahasiswaModel;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\DB;
+use App\Models\LevelModel;
+use App\Models\MahasiswaModel;
+use App\Models\KompetensiModel;
+use App\Models\ProdiModel;
+use Illuminate\Support\Facades\Hash;
 use Yajra\DataTables\Facades\DataTables;
-use PhpOffice\PhpSpreadsheet\IOFactory;
-use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use Barryvdh\DomPDF\Facade\Pdf;
-use Illuminate\Foundation\Auth\User as Authenticatable; // implementasi class authenticatable
+use Illuminate\Support\Facades\Validator;
 
-class MahasiswaController extends Authenticatable
+class MahasiswaController extends Controller
 {
+    // Menampilkan halaman awal mahasiswa
     public function index()
     {
         $breadcrumb = (object)[
-            'title' => 'Daftar mahasiswa',
-            'list' => ['Home', 'mahsiswa']
+            'title' => 'Daftar Mahasiswa',
+            'list' => ['Home', 'Mahasiswa']
         ];
+
         $page = (object) [
             'title' => 'Daftar mahasiswa yang terdaftar dalam sistem'
         ];
 
-        $activeMenu = 'mahasiswa';
-        return view('mahasiswa.index', compact('breadcrumb', 'page', 'activeMenu'));
+        $activeMenu = 'mahasiswa'; // set menu sedang active
+
+        $level = LevelModel::all(); // ambil data level untuk filter level
+
+        return view('mahasiswa.index', ['breadcrumb' => $breadcrumb, 'page' => $page, 'level' => $level, 'activeMenu' => $activeMenu]);
     }
 
-    public function list()
+    public function create_ajax()
     {
-        // Sesuaikan nama kolom yang ada pada database
-        $mahasiswa = MahasiswaModel::with(['prodi'])->select('mahasiswa_id', 'mahasiswa_nama', 'nim', 'semester', 'kompetensi', 'foto', 'prodi_id', 'kompetensi_id');  // Sesuaikan nama kolom dengan yang ada di database
-    
-        // Tidak ada filter pada mahasiswa, karena sudah dihapus komentar
+        $level = LevelModel::all();
+        $kompetensi = KompetensiModel::all();
+        $prodi = ProdiModel::all();
+        return view('mahasiswa.create_ajax', ['level' => $level, 'kompetensi' => $kompetensi, 'prodi' => $prodi]);
+    }
+
+    // Menyimpan data mahasiswa baru menggunakan AJAX
+    public function store_ajax(Request $request)
+    {
+        if ($request->ajax() || $request->wantsJson()) {
+            $rules = [
+                'mahasiswa_nama' => 'required|string|max:255', // sesuai dengan varchar(255) di SQL
+                'nim' => 'required|string|unique:m_mahasiswa,nim', // sesuai dengan varchar(20) dan perlu UNIQUE constraint di SQL
+                'username' => 'nullable|string|max:50', // sesuai dengan varchar(50) di SQL, nullable karena tidak wajib
+                'kompetensi' => 'nullable|string|max:255', // sesuai dengan varchar(255) di SQL, nullable karena tidak wajib
+                'semester' => 'nullable|integer|min:1|max:14', // sesuai dengan int di SQL, nullable karena tidak wajib
+                'password' => 'required|string|min:5', // sesuai dengan varchar(255) di SQL, perlu NOT NULL di SQL
+                'foto' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', // sesuai dengan varchar(255) di SQL, nullable karena tidak wajib
+                'prodi_id' => 'required|integer', // sesuai dengan int dan NOT NULL di SQL
+                'kompetensi_id' => 'nullable|integer', // sesuai dengan int di SQL, nullable karena tidak wajib
+                'level_id' => 'nullable|integer', // sesuai dengan int di SQL, nullable karena tidak wajib
+            ];            
+
+            $validator = Validator::make($request->all(), $rules);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Validasi Gagal',
+                    'errors' => $validator->errors(),
+                ]);
+            }
+
+            $data = $request->except('foto', 'password');
+            $data['password'] = bcrypt($request->password);
+
+            if ($request->hasFile('foto')) {
+                $data['foto'] = $request->file('foto')->store('mahasiswa_foto', 'public');
+            }
+
+            MahasiswaModel::create($data);
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Data mahasiswa berhasil disimpan',
+            ]);
+        }
+
+        return redirect('/mahasiswa')->with('error', 'Hanya menerima request AJAX.');
+    }
+
+    // Mengambil data mahasiswa untuk DataTables
+    public function list(Request $request)
+    {
+        $mahasiswa = MahasiswaModel::select('mahasiswa_id', 'mahasiswa_nama', 'nim', 'username', 'kompetensi', 'semester', 'foto', 'level_id', 'kompetensi_id', 'prodi_id')
+            ->with('level');
+
+        // Filter data mahasiswa berdasarkan level_id
+        if ($request->level_id) {
+            $mahasiswa->where('level_id', $request->level_id);
+        }
+
         return DataTables::of($mahasiswa)
-            ->addIndexColumn() // menambahkan kolom index / no urut (default nama kolom: DT_RowIndex)
-            ->addColumn('prodi', function($row) {
-                return $row->prodi ? $row->prodi->prodi_nama : '-';
-            })
+            ->addIndexColumn() // menambahkan kolom index / no urut (default nama kolom:DT_RowIndex) 
             ->addColumn('aksi', function ($mahasiswa) { // menambahkan kolom aksi
-                // Sesuaikan URL dengan ID yang sesuai
                 $btn = '<a href="' . url('/mahasiswa/' . $mahasiswa->mahasiswa_id) . '" class="btn btn-info btn-sm">Detail</a> ';
                 $btn .= '<button onclick="modalAction(\'' . url('/mahasiswa/' . $mahasiswa->mahasiswa_id . '/edit_ajax') . '\')" class="btn btn-warning btn-sm">Edit</button> ';
                 $btn .= '<button onclick="modalAction(\'' . url('/mahasiswa/' . $mahasiswa->mahasiswa_id . '/delete_ajax') . '\')" class="btn btn-danger btn-sm">Hapus</button> ';
                 return $btn;
             })
-            ->rawColumns(['aksi']) // memberitahu bahwa kolom aksi adalah HTML
+            ->rawColumns(['aksi']) // memberitahu bahwa kolom aksi adalah html 
             ->make(true);
     }
-    
 
-    public function create()
+    // Menampilkan form edit mahasiswa dengan AJAX
+    public function edit_ajax($id)
     {
-        $breadcrummb = (object)[
-            'title' => 'Tambah Mahasiswa',
-            'list' => ['Home', 'Mahasiswa', 'Tambah']
-        ];
-
-        $page = (object)[
-            'title' => 'Tambah Mahasiswa Baru'
-        ];
-        $activeMenu = 'mahasiswa';
-
-        $prodis = ProdiModel::all();
-        $levels = LevelModel::all();
-
-        return view('mahasiswa.create', ['breadcrumb' => $breadcrummb, 'page' => $page, 'activeMenu' => $activeMenu, 'mahasiswa' => $mahasiswa]);
-    }
-
-    public function store(Request $request)
-    {
-        $request->validate([
-            'mahasiswa_kode' => 'required|string|min:3|unique:m_mahasiswa,mahasiswa_kode',
-            'mahasiswa_nama' => 'required|string|max:100'
-        ]);
-        MahasiswaModel::create([
-            'mahasiswa_kode' => $request->mahasiswa_kode,
-            'mahasiswa_nama' => $request->mahasiswa_nama,
-        ]);
-        return redirect('/mahasiswa')->with('success', 'Data mahasiswa berhasil disimpan');
-    }
-
-    // Menampilkan halaman form tambah_ajax mahasiswa
-    public function create_ajax()
-    {
-        $mahasiswa = MahasiswaModel::select('mahasiswa_id', 'mahasiswa_nama')->get();
-        return view('mahasiswa.create_ajax')->with('mahasiswa', $mahasiswa);
-    }
-
-    public function store_ajax(Request $request)
-    {
-        // cek apakah request berupa ajax
-        if ($request->ajax() || $request->wantsJson()) {
-            $rules = [
-                'mahasiswa_kode' => 'required|string|min:3|unique:m_mahasiswa,mahasiswa_kode',
-                'mahasiswa_nama' => 'required|string|max:100'
-            ];
-
-            // use Illuminate\Support\Facades\Validation;
-            $validator = Validator::make($request->all(), $rules);
-
-            if ($validator->fails()) {
-                return response()->json([
-                    'status' => false, // response status, false: error/gagal, true: berhasil
-                    'message' => 'Validasi Gagal',
-                    'msgField' => $validator->errors(), // pesan error validasi
-                ]);
-            }
-
-            MahasiswaModel::create($request->all());
+        $mahasiswa = MahasiswaModel::find($id);
+        if ($mahasiswa) {
             return response()->json([
                 'status' => true,
-                'message' => 'Data mahasiswa berhasil disimpan'
+                'data' => $mahasiswa,
             ]);
         }
-        redirect('/');
-    }
-
-    public function show(string $mahasiswa_id)
-    {
-        $mahasiswa = MahasiswaModel::find($mahasiswa_id);
-
-        $breadcrumb = (object)[
-            'title' => 'Detail mahasiswa',
-            'list' => ['Home', 'mahasiswa', 'detail']
-        ];
-        $page = (object)[
-            'title' => 'Detail mahasiswa'
-        ];
-        $activeMenu = 'mahasiswa';
-        return view('mahasiswa.show', ['breadcrumb' => $breadcrumb, 'page' => $page, 'mahasiswa' => $mahasiswa, 'activeMenu' => $activeMenu]);
-    }
-
-    public function show_ajax(string $id)
-    {
-        $mahasiswa = MahasiswaModel::find($id);
-        return view('mahasiswa.show_ajax', ['mahasiswa' => $mahasiswa]);
-    }
-
-    public function edit(string $mahasiswa_id)
-    {
-        $mahasiswa = MahasiswaModel::find($mahasiswa_id);
-
-        $breadcrumb = (object)[
-            'title' => 'Edit mahasiswa',
-            'list' => ['Home', 'mahasiswa', 'edit']
-        ];
-        $page = (object)[
-            'title' => 'Edit mahasiswa'
-        ];
-        $activeMenu = 'mahasiswa';
-        return view('mahasiswa.edit', ['breadcrumb' => $breadcrumb, 'page' => $page, 'activeMenu' => $activeMenu, 'mahasiswa' => $mahasiswa]);
-    }
-
-    public function update(Request $request, string $mahasiswa_id)
-    {
-        $request->validate([
-            'mahasiswa_kode' => 'required|string|max:5|unique:m_mahasiswa,mahasiswa_kode',
-            'mahasiswa_nama' => 'required|string|max:100'
+        return response()->json([
+            'status' => false,
+            'message' => 'Data mahasiswa tidak ditemukan.',
         ]);
-
-        $mahasiswa = MahasiswaModel::find($mahasiswa_id);
-        $mahasiswa->update([
-            'mahasiswa_kode' => $request->mahasiswa_kode,
-            'mahasiswa_nama' => $request->mahasiswa_nama
-        ]);
-        return redirect('/mahasiswa')->with('success', 'Data mahasiswa berhasil diubah');
     }
 
-    // Menampilkan halaman form edit mahasiswa Ajax
-    public function edit_ajax(string $id)
-    {
-        $mahasiswa = MahasiswaModel::find($id);
-        return view('mahasiswa.edit_ajax', ['mahasiswa' => $mahasiswa]);
-    }
-
-    // Menyimpan perubahan data user Ajax
+    // Memperbarui data mahasiswa menggunakan AJAX
     public function update_ajax(Request $request, $id)
     {
-        //cek apakah request dari ajax
         if ($request->ajax() || $request->wantsJson()) {
             $rules = [
-                'mahasiswa_kode' => 'required|string|min:3|unique:m_mahasiswa,mahasiswa_kode,' . $id . ',mahasiswa_id',
-                'mahasiswa_nama' => 'required|string|max:100'
+                'nim' => 'required|string|unique:m_mahasiswa,nim,' . $id . ',mahasiswa_id',
+                'mahasiswa_nama' => 'required|string|max:255',
+                'kompetensi' => 'nullable|string|max:255',
+                'semester' => 'nullable|integer|min:1|max:14',
+                'password' => 'nullable|string|min:5',
+                'foto' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+                'prodi_id' => 'required|integer',
+                'kompetensi_id' => 'nullable|integer',
+                'level_id' => 'nullable|integer',
             ];
 
-            // use Illuminate\Support\Facades\Validation;
             $validator = Validator::make($request->all(), $rules);
 
             if ($validator->fails()) {
                 return response()->json([
-                    'status' => false, // response status, false: error/gagal, true: berhasil
+                    'status' => false,
                     'message' => 'Validasi Gagal',
-                    'msgField' => $validator->errors(), // pesan error validasi
+                    'errors' => $validator->errors(),
                 ]);
             }
-            $check = MahasiswaModel::find($id);
-            if ($check) {
-                $check->update($request->all());
-                return response()->json([
-                    'status' => true,
-                    'message' => 'Data berhasil diupdate'
-                ]);
-            } else {
+
+            $mahasiswa = MahasiswaModel::find($id);
+
+            if (!$mahasiswa) {
                 return response()->json([
                     'status' => false,
-                    'message' => 'Data tidak ditemukan'
+                    'message' => 'Data mahasiswa tidak ditemukan.',
                 ]);
             }
+
+            $data = $request->except('foto', 'password');
+            if ($request->filled('password')) {
+                $data['password'] = bcrypt($request->password);
+            }
+            if ($request->hasFile('foto')) {
+                $data['foto'] = $request->file('foto')->store('mahasiswa_foto', 'public');
+            }
+
+            $mahasiswa->update($data);
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Data mahasiswa berhasil diperbarui.',
+            ]);
         }
-        return redirect('/');
+
+        return redirect('/mahasiswa')->with('error', 'Hanya menerima request AJAX.');
     }
 
-    public function destroy(string $mahasiswa_id)
-    {
-        $check = MahasiswaModel::find($mahasiswa_id);
-        if (!$check) {
-            return redirect('/mahasiswa')->with('error', 'Data mahasiswa tidak ditemukan');
-        }
-        try {
-            MahasiswaModel::destroy($mahasiswa_id);
-            return redirect('/mahasiswa')->with('success', 'Data mahasiswa berhasil dihapus');
-        } catch (\Illuminate\Database\QueryException $e) {
-            return redirect('/mahasiswa')->with('error', 'Data mahasiswa gagal dhapus karena masih terdapat tabel lain yang terkait dengan data ini');
-        }
-    }
-
-    // Menampilkan halaman confirm hapus
-    public function confirm_ajax(string $id)
-    {
-        $mahasiswa = MahasiswaModel::find($id);
-        return view('mahasiswa.confirm_ajax', ['mahasiswa' => $mahasiswa]);
-    }
-
-    // Menghapus data mahasiswa dengan AJAX
+    // Menghapus data mahasiswa menggunakan AJAX
     public function delete_ajax(Request $request, $id)
     {
-        //cek apakah request dari ajax
         if ($request->ajax() || $request->wantsJson()) {
             $mahasiswa = MahasiswaModel::find($id);
-            if ($mahasiswa) {
-                $mahasiswa->delete();
-                return response()->json([
-                    'status' => true,
-                    'message' => 'Data berhasil dihapus'
-                ]);
-            } else {
+
+            if (!$mahasiswa) {
                 return response()->json([
                     'status' => false,
-                    'message' => 'Data tidak ditemukan'
+                    'message' => 'Data mahasiswa tidak ditemukan.',
                 ]);
             }
-        }
-        return redirect('/');
-    }
 
-    public function import()
-    {
-        return view('mahasiswa.import');
-    }
+            $mahasiswa->delete();
 
-    public function import_ajax(Request $request)
-    {
-        if ($request->ajax() || $request->wantsJson()) {
-            $rules = [
-                // validasi file harus xls atau xlsx, max 1MB
-                'file_mahasiswa' => ['required', 'mimes:xlsx', 'max:1024']
-            ];
-            $validator = Validator::make($request->all(), $rules);
-            if ($validator->fails()) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Validasi Gagal',
-                    'msgField' => $validator->errors()
-                ]);
-            }
-            $file = $request->file('file_mahasiswa'); // ambil file dari request
-            $reader = IOFactory::createReader('Xlsx'); // load reader file excel
-            $reader->setReadDataOnly(true); // hanya membaca data
-            $spreadsheet = $reader->load($file->getRealPath()); // load file excel
-            $sheet = $spreadsheet->getActiveSheet(); // ambil sheet yang aktif
-            $data = $sheet->toArray(null, false, true, true); // ambil data excel
-            $insert = [];
-            if (count($data) > 1) { // jika data lebih dari 1 baris
-                foreach ($data as $baris => $value) {
-                    if ($baris > 1) { // baris ke 1 adalah header, maka lewati
-                        $insert[] = [
-                            'mahasiswa_kode' => $value['A'],
-                            'mahasiswa_nama' => $value['B'],
-                            'created_at' => now(),
-                        ];
-                    }
-                }
-                if (count($insert) > 0) {
-                    // insert data ke database, jika data sudah ada, maka diabaikan
-                    MahasiswaModel::insertOrIgnore($insert);
-                }
-                return response()->json([
-                    'status' => true,
-                    'message' => 'Data berhasil diimport'
-                ]);
-            } else {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Tidak ada data yang diimport'
-                ]);
-            }
+            return response()->json([
+                'status' => true,
+                'message' => 'Data mahasiswa berhasil dihapus.',
+            ]);
         }
-        return redirect('/');
-    }
-    public function export_excel()
-    {
-        $mahasiswa = MahasiswaModel::select('mahasiswa_kode', 'mahasiswa_nama')
-            ->get();
-        $spreadsheet = new Spreadsheet();
-        $sheet = $spreadsheet->getActiveSheet(); //ambil sheet yang aktif
-        // Set Header Kolom
-        $sheet->setCellValue('A1', 'No');
-        $sheet->setCellValue('B1', 'Kode mahasiswa');
-        $sheet->setCellValue('C1', 'Nama mahasiswa');
-        // Buat header menjadi bold
-        $sheet->getStyle('A1:F1')->getFont()->setBold(true);
-        $no = 1; // Nomor data dimulai dari 1
-        $baris = 2; // Baris data dimulai dari baris ke-2
-        foreach ($mahasiswa as $key => $value) {
-            $sheet->setCellValue('A' . $baris, $no);
-            $sheet->setCellValue('B' . $baris, $value->mahasiswa_kode);
-            $sheet->setCellValue('C' . $baris, $value->mahasiswa_nama);
-            $baris++;
-            $no++;
-        }
-        // Set ukuran kolom otomatis untuk semua kolom
-        foreach (range('A', 'F') as $columnID) {
-            $sheet->getColumnDimension($columnID)->setAutoSize(true);
-        }
-        // Set judul sheet
-        $sheet->setTitle('Data mahasiswa');
-        // Buat writer
-        $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
-        $filename = 'Data mahasiswa ' . date('Y-m-d H:i:s') . '.xlsx';
-        // Atur Header untuk Download File Excel
-        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header('Content-Disposition: attachment;filename="' . $filename . '"');
-        header('Cache-Control: max-age=0');
-        header('Cache-Control: max-age=1');
-        header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
-        header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
-        header('Cache-Control: cache, must-revalidate');
-        header('Pragma: public');
-        // Simpan file dan kirim ke output
-        $writer->save('php://output');
-        exit;
-    }
 
-    public function export_pdf()
-    {
-        $mahasiswa = MahasiswaModel::select('mahasiswa_kode', 'mahasiswa_nama')
-            ->get();
-        $pdf = Pdf::loadView('mahasiswa.export_pdf', ['mahasiswa' => $mahasiswa]);
-        $pdf->setPaper('a4', 'portrait'); //set ukuran kertas dan orientasi
-        $pdf->setOption("isRemoteEnabled", true); //set true jika ada gambar
-        $pdf->render();
-        return $pdf->stream('Data mahasiswa ' . date('Y-m-d H:i:s') . '.pdf');
+        return redirect('/mahasiswa')->with('error', 'Hanya menerima request AJAX.');
     }
 }

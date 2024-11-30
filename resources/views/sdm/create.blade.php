@@ -6,13 +6,13 @@
            <div class="card-tools"></div>
        </div>
        <div class="card-body">
-           <form method="POST" action="{{ url('admin') }}" class="form-horizontal">
+           <form method="POST" action="{{ url('sdm') }}" class="form-horizontal">
                @csrf
                <div class="form-group row">
-                   <label class="col-1 control-label col-form-label">Nama Admin</label>
+                   <label class="col-1 control-label col-form-label">Nama sdm</label>
                    <div class="col-11">
-                       <input type="text" class="form-control" id="admin_nama" name="admin_nama" value="{{ old('admin_nama') }}" required>
-                       @error('admin_nama')
+                       <input type="text" class="form-control" id="sdm_nama" name="sdm_nama" value="{{ old('sdm_nama') }}" required>
+                       @error('sdm_nama')
                            <small class="form-text text-danger">{{ $message }}</small>
                        @enderror
                    </div>
@@ -72,7 +72,7 @@
                    <label class="col-1 control-label col-form-label"></label>
                    <div class="col-11">
                        <button type="submit" class="btn btn-primary btn-sm">Simpan</button>
-                       <a class="btn btn-sm btn-default ml-1" href="{{ url('admin') }}">Kembali</a>
+                       <a class="btn btn-sm btn-default ml-1" href="{{ url('sdm') }}">Kembali</a>
                    </div>
                </div>
            </form>

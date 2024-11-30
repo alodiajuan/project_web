@@ -18,7 +18,7 @@ class ProdiModel extends Model
         return $this->hasMany(MahasiswaModel::class, 'prodi_id');
     }
 
-    public function admin(): HasMany
+    public function sdm(): HasMany
     {
         return $this->hasMany(SdmModel::class, 'prodi_id');
     }

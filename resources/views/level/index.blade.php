@@ -16,6 +16,7 @@
                     <tr>
                         <th>ID</th>
                         <th>Nama</th>
+                        <th>Kode</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
@@ -59,6 +60,11 @@
                     orderable: true,
                     searchable: true
                 }, {
+                    data: "level_kode",
+                    className: "",
+                    orderable: true,
+                    searchable: true
+                },{
                     data: "aksi",
                     className: "",
                     orderable: false,

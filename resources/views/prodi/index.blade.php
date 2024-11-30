@@ -20,6 +20,7 @@
                     <tr>
                         <th>ID</th>
                         <th>Nama</th>
+                        <th>Kode</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
@@ -46,7 +47,7 @@
                 ajax: {
                     "url": "{{ url('prodi/list') }}",
                     "dataType": "json",
-                    "type": "GET",
+                    "type": "POST",
                     "data": function(d) {
                         d.prodi_id = $('#prodi_id').val();
                     }
@@ -59,6 +60,11 @@
                     searchable: false
                 }, {
                     data: "prodi_nama",
+                    className: "",
+                    orderable: true,
+                    searchable: true
+                }, {
+                    data: "prodi_kode",
                     className: "",
                     orderable: true,
                     searchable: true

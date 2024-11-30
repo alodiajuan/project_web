@@ -6,7 +6,7 @@ use App\Http\Controllers\KategoriController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TugasController;
 use App\Http\Controllers\SdmController;
-use App\Http\Controllers\KompetensiController;
+use App\Http\Controllers\ProdiController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\MahasiswaController;
 
@@ -96,17 +96,9 @@ Route::group(['prefix' => 'sdm'], function () {
     Route::put('/{id}', [SdmController::class, 'update']);  // Menyimpan perubahan data sdm
 });
 
-Route::prefix('kompetensi')->group(function () {
-    Route::get('/', [KompetensiController::class, 'index'])->name('kompetensi.index');
-    Route::get('/create', [KompetensiController::class, 'create'])->name('kompetensi.create');
-    Route::post('/', [KompetensiController::class, 'store'])->name('kompetensi.store');
-    Route::post('/ajax', [KompetensiController::class, 'store_ajax'])->name('kompetensi.store_ajax');
-    Route::get('/{id}', [KompetensiController::class, 'show'])->name('kompetensi.show');
-    Route::get('/{id}/edit', [KompetensiController::class, 'edit'])->name('kompetensi.edit');
-    Route::put('/{id}', [KompetensiController::class, 'update'])->name('kompetensi.update');
-    Route::put('/{id}/edit_ajax', [KompetensiController::class, 'update_ajax'])->name('kompetensi.update_ajax');
-    Route::delete('/{id}', [KompetensiController::class, 'destroy'])->name('kompetensi.destroy');
-    Route::get('/{id}/delete_ajax', [KompetensiController::class, 'confirm_ajax'])->name('kompetensi.confirm_ajax');
-    Route::post('/import_ajax', [KompetensiController::class, 'import_ajax'])->name('kompetensi.import_ajax');
- });
+Route::group(['prefix' => 'prodi'], function () {
+    Route::get('/', [ProdiController::class, 'index']);  // Menampilkan halaman awal prodi
+    Route::post('/list', [ProdiController::class, 'list']);  // Menampilkan data prodi dalam bentuk JSON untuk datatables
+    Route::get('/{id}', [ProdiController::class, 'show']);  // Menampilkan detail prodi
+});
 

@@ -31,16 +31,15 @@ class LevelController extends Controller
     public function list(Request $request)
     {
         $level = LevelModel::select('level_id', 'level_kode', 'level_nama');
-        // ftidak perlu ada filter pada level
-        // if ($request->level_id) {
-        //     $level->where('level_id', $request->level_id);
-        // }
 
         return DataTables::of($level)
             // menambahkan kolom index / no urut (default nama kolom: DT_RowIndex)
-            ->addIndexColumn()
-            ->addColumn('aksi', function ($level) { // menambahkan kolom aksi
-                $btn = '<a href="' . url('/level/' . $level->level_id) . '" class="btn btn-info btn-sm">Detail</a> ';
+            ->addIndexColumn() // menambahkan kolom index / no urut (default nama kolom: DT_RowIndex) 
+            ->addColumn('aksi', function ($level) { // menambahkan kolom aksi 
+                $btn = '<a href="' . url('/level/' . $level->level_id) . '" class="btn btn-info btn-sm"> Detail </a> ';
+            
+                $btn .= '<button onclick="modalAction(\'' . url('/level/' . $level->level_id . '/edit_ajax') . '\')" class="btn btn-warning btn-sm">Edit</button> ';
+                $btn .= '<button onclick="modalAction(\'' . url('/level/' . $level->level_id . '/delete_ajax') . '\')" class="btn btn-danger btn-sm">Hapus</button> ';
                 return $btn;
             })
             ->rawColumns(['aksi']) // memberitahu bahwa kolom aksi adalah html

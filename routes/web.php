@@ -89,6 +89,10 @@ Route::group(['prefix' => 'sdm'], function () {
     Route::post('/ajax', [SdmController::class, 'store_ajax']);
     Route::get('/{id}/edit_ajax', [SdmController::class, 'edit_ajax']);
     Route::put('/{id}/update_ajax', [SdmController::class, 'update_ajax']);
+    Route::get('/import', [SdmController::class, 'import']);  // Menampilkan form import
+    Route::post('/import_ajax', [SdmController::class, 'import_ajax']);  // Proses import data
+    Route::get('/export_pdf', [SdmController::class, 'export_pdf']);  // Export ke PDF
+    Route::get('/export_excel', [SdmController::class, 'export_excel']);  // Export ke Excel
     Route::get('/{id}/delete_ajax', [SdmController::class, 'confirm_ajax']);  // Menampilkan halaman konfirmasi hapus
     Route::delete('/{id}', [SdmController::class, 'destroy']);  // Menghapus data sdm
     Route::get('/{id}', [SdmController::class, 'show']);  // Menampilkan detail sdm

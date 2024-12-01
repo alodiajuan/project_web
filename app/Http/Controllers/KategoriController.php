@@ -11,7 +11,7 @@ use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use Barryvdh\DomPDF\Facade\Pdf;
 
-class kategoriController extends Controller
+class KategoriController extends Controller
 {
     public function index()
     {

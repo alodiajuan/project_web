@@ -33,7 +33,7 @@ class SdmModel extends Authenticatable
     // Menggunakan getFotoAttribute untuk menghindari konflik
     protected function getFotoAttribute($foto)
     {
-        return $foto ? url('/storage/images/' . $foto) : null;
+        return $foto ? url('/uploads/' . $foto) : null;
     }
 
     public function getRoleName(): string

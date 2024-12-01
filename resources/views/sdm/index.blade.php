@@ -27,17 +27,17 @@
                     <div class="form-group row">
                         <label class="col-1 control-label col-form-label">Filter:</label>
                         <div class="col-3">
-                            {{-- <select class="form-control" id="level_id" name="level_id" required>
+                            <select class="form-control" id="level_id" name="level_id">
                                 <option value="">- Semua -</option>
-                                @foreach ($level as $item)
-                                    <option value="{{ $item->level_id }}">{{ $item->level_nama }}</option>
+                                @foreach ($levels as $level)
+                                    <option value="{{ $level->level_id }}">{{ $level->level_nama }}</option>
                                 @endforeach
-                            </select> --}}
+                            </select>
                         </div>
-                        <small class="form-text text-muted">Level Pengguna</small>
+                        <small class="form-text text-muted"> SDM </small>
                     </div>
                 </div>
-            </div>
+            </div>            
             <table class="table table-bordered table-striped table-hover table-sm" id="table_sdm">
                 <thead>
                     <tr>
@@ -69,7 +69,7 @@
         }
 
         $(document).ready(function() {
-            var datasdm = $('#table_sdm').DataTable({
+            datasdm = $('#table_sdm').DataTable({
                 serverSide: true,
                 ajax: {
                     url: "{{ url('sdm/list') }}",
@@ -119,7 +119,7 @@
                         searchable: true
                     },
                     {
-                        data: "level.level_nama,
+                        data: "level.level_nama",
                         className: "",
                         orderable: true,
                         searchable: true

@@ -34,7 +34,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        <small class="form-text text-muted"> SDM </small>
+                        <small class="form-text text-muted">Level SDM </small>
                     </div>
                 </div>
             </div>            
@@ -43,11 +43,12 @@
                     <tr>
                         <th>No</th> 
                         <th>Nama</th> 
-                        <th>NIP</th> 
+                        <th>NIP</th>
+                        <th>Username</th>
                         <th>No Telepon</th> 
                         <th>Foto</th> 
                         <th>Program Studi</th> 
-                        <th>Level</th> 
+                        <th>Jabatan</th> 
                         <th>Aksi</th>
                     </tr>
                 </thead>
@@ -93,6 +94,12 @@
                     },
                     {
                         data: "nip",
+                        className: "",
+                        orderable: true,
+                        searchable: true
+                    },
+                    {
+                        data: "username",
                         className: "",
                         orderable: true,
                         searchable: true

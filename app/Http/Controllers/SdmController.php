@@ -18,12 +18,12 @@ class SdmController extends Controller
         $levels = LevelModel::all(); // Mengambil semua data level
 
         $breadcrumb = (object) [
-            'title' => 'Daftar sdm',
+            'title' => 'Daftar SDM',
             'list' => ['Home', 'sdm']
         ];
 
         $page = (object) [
-            'title' => 'Daftar sdm yang terdaftar dalam sistem'
+            'title' => 'Daftar SDM yang terdaftar dalam sistem'
         ];
 
         $activeMenu = 'sdm';
@@ -52,23 +52,6 @@ class SdmController extends Controller
             })
             ->rawColumns(['aksi'])
             ->make(true);
-    }
-
-    public function create()
-    {
-        $breadcrumb = (object) [
-            'title' => 'Tambah sdm',
-            'list' => ['Home', 'sdm', 'Tambah']
-        ];
-        $page = (object) [
-            'title' => 'Tambah sdm Baru'
-        ];
-        $activeMenu = 'sdm';
-
-        $prodis = ProdiModel::all();
-        $levels = LevelModel::all();
-
-        return view('sdm.create', compact('breadcrumb', 'page', 'activeMenu', 'prodis', 'levels'));
     }
 
     public function create_ajax()
@@ -143,7 +126,7 @@ class SdmController extends Controller
     public function show($id)
     {
         $breadcrumb = (object) [
-            'title' => 'Detail sdm',
+            'title' => 'Detail SDM',
             'list' => ['Home', 'sdm', 'Detail']
         ];
         $page = (object) [

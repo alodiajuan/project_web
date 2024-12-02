@@ -18,4 +18,8 @@ class LevelModel extends Model
     {
         return $this->hasMany(SdmModel::class, 'level_id', 'level_id');
     }
+    public function mahasiswa(): HasMany
+    {
+        return $this->hasMany(MahasiswaModel::class, 'level_id', 'level_id');
+    }
 }

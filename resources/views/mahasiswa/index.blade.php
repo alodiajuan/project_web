@@ -27,14 +27,14 @@
                     <div class="form-group row">
                         <label class="col-1 control-label col-form-label">Filter:</label>
                         <div class="col-3">
-                            <select class="form-control" id="level_id" name="level_id" required>
+                            <select class="form-control" id="prodi_id" name="prodi_id" required>
                                 <option value="">- Semua -</option>
-                                @foreach ($level as $item)
-                                    <option value="{{ $item->level_id }}">{{ $item->level_nama }}</option>
+                                @foreach ($prodi as $prodi)
+                                    <option value="{{ $prodi->prodi_id }}">{{ $prodi->prodi_nama }}</option>
                                 @endforeach
                             </select>
                         </div>
-                        <small class="form-text text-muted">Level Pengguna</small>
+                        <small class="form-text text-muted">Prodi Mahasiswa</small>
                     </div>
                 </div>
             </div>
@@ -42,12 +42,13 @@
                 <thead>
                     <tr>
                         <th>No</th>
-                        <th>Nama Mahasiswa</th>
+                        <th>Nama</th>
                         <th>NIM</th>
                         <th>Username</th>
+                        <th>Foto</th>
                         <th>Kompetensi</th>
                         <th>Semester</th>
-                        <th>Level Pengguna</th>
+                        <th>Prodi</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
@@ -75,7 +76,7 @@
                     url: "{{ url('mahasiswa/list') }}",
                     type: "POST",
                     data: function(d) {
-                        d.level_id = $('#level_id').val();
+                        d.prodi_id = $('#prodi_id').val();
                     }
                 },
                 columns: [
@@ -104,22 +105,31 @@
                         searchable: true
                     },
                     {
-                        data: "kompetensi", // Ensure this matches your model
-                        className: "",
-                        orderable: true,
-                        searchable: true
-                    },
-                    {
- data: "semester", // Ensure this matches your model
-                        className: "",
-                        orderable: true,
-                        searchable: true
-                    },
-                    {
-                        data: "level.level_nama", // Ensure this matches your model
+                        data: "foto",
                         className: "",
                         orderable: false,
-                        searchable: false
+                        searchable: false,
+                        render: function(data, type, row) {
+                            return '<img src="' + data + '" alt="Foto of ' + row.sdm_nama + '" width="50" height="50">';
+                        }
+                    },
+                    {
+                        data: "kompetensi.kompetensi_nama", // Ensure this matches your model
+                        className: "",
+                        orderable: true,
+                        searchable: true
+                    },
+                    {
+                        data: "semester", // Ensure this matches your model
+                        className: "",
+                        orderable: true,
+                        searchable: true
+                    },
+                    {
+                        data: "prodi.prodi_nama", // Ensure this matches your model
+                        className: "",
+                        orderable: true,
+                        searchable: true
                     },
                     {
                         data: "aksi", // Ensure this matches your model
@@ -130,7 +140,7 @@
                 ]
             });
 
-            $('#level_id').on('change', function() {
+            $('#prodi_id').on('change', function() {
                 datamahasiswa.ajax.reload();
             });
         });

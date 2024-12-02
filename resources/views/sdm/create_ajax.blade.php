@@ -4,12 +4,12 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Tambah Data SDM</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                        aria-hidden="true">&times;</span></button>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span></button>
             </div>
             <div class="modal-body">
                 <div class="form-group">
-                    <label>Nama Pengguna (SDM)</label>
+                    <label>Nama SDM</label>
                     <input type="text" name="sdm_nama" id="sdm_nama" class="form-control" required>
                     <small id="error-sdm_nama" class="error-text form-text text-danger"></small>
                 </div>
@@ -38,7 +38,6 @@
                     <input type="file" name="foto" id="foto" class="form-control" accept="image/*">
                     <small id="error-foto" class="error-text form-text text-danger"></small>
                 </div>
-
                 <div class="form-group">
                     <label>Program Studi</label>
                     <select name="prodi_id" id="prodi_id" class="form-control" required>

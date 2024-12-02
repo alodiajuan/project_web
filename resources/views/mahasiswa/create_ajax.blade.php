@@ -1,10 +1,11 @@
-<form action="{{ url('/mahasiswa/ajax') }}" method="POST" id="form-tambah-mahasiswa">
+<form action="{{ url('/mahasiswa/create_ajax') }}" method="POST" id="form-tambah-mahasiswa" enctype="multipart/form-data">
     @csrf
     <div id="modal-master" class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Tambah Data Mahasiswa</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h5 class="modal-title">Tambah Data Mahasiswa</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span></button>
             </div>
             <div class="modal-body">
                 <div class="form-group">
@@ -23,9 +24,14 @@
                     <small id="error-username" class="error-text form-text text-danger"></small>
                 </div>
                 <div class="form-group">
-                    <label>Kompetensi</label>
-                    <input type="text" name="kompetensi" id="kompetensi" class="form-control" required>
-                    <small id="error-kompetensi" class="error-text form-text text-danger"></small>
+                    <label>Password</label>
+                    <input type="password" name="password" id="password" class="form-control" required>
+                    <small id="error-password" class="error-text form-text text-danger"></small>
+                </div>
+                <div class="form-group">
+                    <label>Foto</label>
+                    <input type="file" name="foto" id="foto" class="form-control" accept="image/*">
+                    <small id="error-foto" class="error-text form-text text-danger"></small>
                 </div>
                 <div class="form-group">
                     <label>Semester</label>
@@ -33,16 +39,31 @@
                     <small id="error-semester" class="error-text form-text text-danger"></small>
                 </div>
                 <div class="form-group">
-                    <label>Password</label>
-                    <input type="password" name="password" id="password" class="form-control" required>
-                    <small id="error-password" class="error-text form-text text-danger"></small>
+                    <label>Program Studi</label>
+                    <select name="prodi_id" id="prodi_id" class="form-control" required>
+                        <option value="">- Pilih Prodi -</option>
+                        @foreach ($prodis as $prodi)
+                            <option value="{{ $prodi->prodi_id }}">{{ $prodi->prodi_nama }}</option>
+                        @endforeach
+                    </select>
+                    <small id="error-prodi_id" class="error-text form-text text-danger"></small>
                 </div>
                 <div class="form-group">
-                    <label>Level Pengguna</label>
+                    <label>Kompetensi</label>
+                    <select name="kompetensi_id" id="kompetensi_id" class="form-control" required>
+                        <option value="">- Pilih Kompetensi -</option>
+                        @foreach ($kompetensi as $kompetensi)
+                            <option value="{{ $kompetensi->kompetensi_id }}">{{ $kompetensi->kompetensi_nama }}</option>
+                        @endforeach
+                    </select>
+                    <small id="error-kompetensi_id" class="error-text form-text text-danger"></small>
+                </div>
+                <div class="form-group">
+                    <label>Level</label>
                     <select name="level_id" id="level_id" class="form-control" required>
                         <option value="">- Pilih Level -</option>
-                        @foreach ($level as $item)
-                            <option value="{{ $item->level_id }}">{{ $item->level_nama }}</option>
+                        @foreach ($levels as $level)
+                            <option value="{{ $level->level_id }}">{{ $level->level_nama }}</option>
                         @endforeach
                     </select>
                     <small id="error-level_id" class="error-text form-text text-danger"></small>
@@ -55,7 +76,6 @@
         </div>
     </div>
 </form>
-
 <script>
     $(document).ready(function() {
         $("#form-tambah-mahasiswa").validate({
@@ -63,41 +83,66 @@
                 mahasiswa_nama: {
                     required: true,
                     minlength: 3,
-                    maxlength: 100
                 },
                 nim: {
                     required: true,
-                    minlength: 5,
-                    maxlength: 20
                 },
                 username: {
                     required: true,
-                    minlength: 3,
-                    maxlength: 20
-                },
-                kompetensi: {
-                    required: true,
-                    minlength: 3,
-                    maxlength: 50
-                },
-                semester: {
-                    required: true,
-                    min: 1,
-                    max: 8 // Assuming semester ranges from 1 to 8
                 },
                 password: {
                     required: true,
                     minlength: 6
                 },
+                semester: {
+                    required: true,
+                },
+                prodi_id: {
+                    required: true,
+                },
+                kompetensi_id: {
+                    required: true,
+                },
                 level_id: {
                     required: true
                 }
             },
+            messages: {
+                mahasiswa_nama: {
+                    required: "Nama Mahasiswa tidak boleh kosong",
+                    minlength: "Nama Mahasiswa minimal 3 karakter",
+                },
+                nim: {
+                    required: "NIM tidak boleh kosong",
+                },
+                username: {
+                    required: "Username tidak boleh kosong",
+                },
+                password: {
+                    required: "Password tidak boleh kosong",
+                    minlength: "Password minimal 6 karakter",
+                },
+                semester: {
+                    required: "Semester tidak boleh kosong",
+                },
+                prodi_id: {
+                    required: "Prodi tidak boleh kosong",
+                },
+                kompetensi_id: {
+                    required: "Kompetensi tidak boleh kosong",
+                },
+                level_id: {
+                    required: "Level tidak boleh kosong",
+                }
+            },
             submitHandler: function(form) {
+                var formData = new FormData(form);
                 $.ajax({
                     url: form.action,
                     type: form.method,
-                    data: $(form).serialize(),
+                    data: formData,
+                    processData: false,
+                    contentType: false,
                     success: function(response) {
                         if (response.status) {
                             $('#myModal').modal('hide');
@@ -106,7 +151,7 @@
                                 title: 'Berhasil',
                                 text: response.message
                             });
-                            dat amahasiswa.ajax.reload();
+                            datamahasiswa.ajax.reload();
                         } else {
                             $('.error-text').text('');
                             $.each(response.msgField, function(prefix, val) {

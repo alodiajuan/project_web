@@ -10,10 +10,9 @@ class TugasModel extends Model
 {
     use HasFactory;
 
-    protected $table = 'm_tugas'; 
-    protected $primaryKey = 'tugas_id'; 
+    protected $table = 'm_tugas';
+    protected $primaryKey = 'tugas_id';
 
-    // Menentukan kolom mana yang dapat diisi (mass assignable)
     protected $fillable = [
         'tugas_kode',
         'tugas_nama',
@@ -26,22 +25,19 @@ class TugasModel extends Model
         'sdm_id',
     ];
 
+    protected $casts = [
+        'jam_kompen' => 'integer',
+        'tanggal_mulai' => 'date',
+        'tanggal_akhir' => 'date'
+    ];
+
     /**
      * Relasi dengan tabel SDM
      */
     public function sdm(): BelongsTo
     {
         return $this->belongsTo(SdmModel::class, 'sdm_id', 'sdm_id')
-            ->withDefault(); // Mengembalikan nilai default jika null
-    }
-
-    /**
-     * Relasi dengan tabel Admin
-     */
-    public function admin(): BelongsTo
-    {
-        return $this->belongsTo(AdminModel::class, 'admin_id', 'admin_id')
-            ->withDefault(); // Mengembalikan nilai default jika null
+            ->withDefault();
     }
 
     /**
@@ -53,26 +49,11 @@ class TugasModel extends Model
     }
 
     /**
-     * Boot method untuk menambahkan event saving
-     */
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::saving(function ($tugas) {
-            // Pastikan hanya salah satu antara sdm_id atau admin_id yang diisi
-            if ($tugas->sdm_id && $tugas->admin_id) {
-                throw new \Exception('Hanya salah satu antara SDM atau Admin yang boleh diisi.');
-            }
-        });
-    }
-
-    /**
      * Format status dibuka ke dalam bentuk deskripsi
      */
     public function getStatusDibukaAttribute($value)
     {
-        return $value ? 'Dibuka' : 'Ditutup';
+        return ucfirst($value); // Return 'Dibuka' atau 'Ditutup'
     }
 
     /**
@@ -88,7 +69,7 @@ class TugasModel extends Model
      */
     public function scopeActive($query)
     {
-        return $query->where('status_dibuka', true)
+        return $query->where('status_dibuka', 'dibuka')
             ->whereDate('tanggal_mulai', '<=', now())
             ->whereDate('tanggal_akhir', '>=', now());
     }

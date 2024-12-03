@@ -22,7 +22,7 @@ class MahasiswaModel extends Authenticatable
         'mahasiswa_nama', 
         'foto', 
         'nim', 
-        'kompetensi', 
+        // 'kompetensi', 
         'semester', 
         'level_id', 
         'prodi_id', 

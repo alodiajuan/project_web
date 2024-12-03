@@ -58,11 +58,20 @@ Route::group(['prefix' => 'tugas'], function () {
 });
 Route::group(['prefix' => 'mahasiswa'], function () {
     Route::get('/', [MahasiswaController::class, 'index']);  // Menampilkan halaman awal mahasiswa
-    Route::post('/list', [MahasiswaController::class, 'list']);  // Menampilkan data mahasiswa dalam bentuk JSON untuk datatables
-    Route::get('/{id}', [MahasiswaController::class, 'show']);  // Menampilkan detail mahasiswa
-    Route::get('/create_ajax', [MahasiswaController::class, 'create_ajax']); // Rute untuk menampilkan form create
+    Route::post('/list', [MahasiswaController::class, 'list'])->name('mahasiswa.list');  
+    Route::get('/create_ajax', [MahasiswaController::class, 'create_ajax']); // Pindahkan sebelum /{id}
+    Route::post('/store_ajax', [MahasiswaController::class, 'store_ajax']);
+    Route::get('/{id}/edit_ajax', [MahasiswaController::class, 'edit_ajax']);
+    Route::put('/{id}/update_ajax', [MahasiswaController::class, 'update_ajax']);
+    Route::get('/{id}/confirm_ajax', [MahasiswaController::class, 'confirm_ajax']); // Ubah ini
+    Route::get('/export_excel', [MahasiswaController::class, 'export_excel']); // Pindah ke sini
+    Route::get('/export_pdf', [MahasiswaController::class, 'export_pdf']); // Pindah ke sini
+    Route::post('/store_ajax', [MahasiswaController::class, 'store_ajax']);
+    Route::get('/import', [MahasiswaController::class, 'import']);
+    Route::post('/import_ajax', [MahasiswaController::class, 'import_ajax']);
+    Route::delete('/{id}', [MahasiswaController::class, 'destroy']);
     Route::post('/', [MahasiswaController::class, 'store']);
-    Route::post('/ajax', [MahasiswaController::class, 'store_ajax']);  // Rute untuk menerima POST request dari form
+    Route::get('/{id}', [MahasiswaController::class, 'show']);  // Parameter {id} di akhir
 });
 Route::group(['prefix' => 'sdm'], function () {
     Route::get('/', [SdmController::class, 'index']);  // Menampilkan halaman awal sdm

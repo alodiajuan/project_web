@@ -1,5 +1,4 @@
 @extends('layouts.template')
-
 @section('content')
     <div class="card card-outline card-primary">
         <div class="card-header">
@@ -8,7 +7,8 @@
                 <button onclick="modalAction('{{ url('/mahasiswa/import') }}')" class="btn btn-sm btn-info mt-1">Import mahasiswa</button>
                 <a href="{{ url('/mahasiswa/export_excel') }}" class="btn btn-sm btn-primary mt-1"><i class="fa fa-file-excel"></i> Export mahasiswa (Excel)</a>
                 <a href="{{ url('/mahasiswa/export_pdf') }}" class="btn btn-sm btn-warning mt-1"><i class="fa fa-file-pdf"></i> Export mahasiswa (PDF)</a>
-                <button onclick="modalAction('{{ url('mahasiswa/create_ajax') }}')" class="btn btn-sm btn-success mt-1">Tambah Data</button>
+                <button onclick="modalAction('{{ url('/mahasiswa/create_ajax') }}')" class="btn btn-sm btn-success mt-1">Tambah Data</button>
+
             </div>
         </div>
         <div class="card-body">
@@ -73,7 +73,7 @@
             var datamahasiswa = $('#table_mahasiswa').DataTable({
                 serverSide: true,
                 ajax: {
-                    url: "{{ url('mahasiswa/list') }}",
+                    url: "{{ url('/mahasiswa/list') }}",
                     type: "POST",
                     data: function(d) {
                         d.prodi_id = $('#prodi_id').val();
@@ -110,7 +110,7 @@
                         orderable: false,
                         searchable: false,
                         render: function(data, type, row) {
-                            return '<img src="' + data + '" alt="Foto of ' + row.sdm_nama + '" width="50" height="50">';
+                            return '<img src="' + data + '" alt="Foto of ' + row.mahasiswa_nama + '" width="50" height="50">';
                         }
                     },
                     {

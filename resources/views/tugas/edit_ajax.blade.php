@@ -42,10 +42,16 @@
                        <small id="error-tugas_nama" class="error-text form-text text-danger"></small>
                    </div>
                    <div class="form-group">
-                       <label>Deskripsi</label>
-                       <textarea name="deskripsi" id="deskripsi" class="form-control" required>{{ $tugas->deskripsi }}</textarea>
-                       <small id="error-deskripsi" class="error-text form-text text-danger"></small>
-                   </div>
+                    <label>Deskripsi</label>
+                    <textarea name="deskripsi" id="deskripsi" class="form-control" required>{{ $tugas->deskripsi }}</textarea>
+                    <small id="error-deskripsi" class="error-text form-text text-danger"></small>
+                </div>
+                   <div class="form-group">
+                    <label>Jam Kompen</label>
+                    <input value="{{ $tugas->jam_kompen }}" type="number" name="jam_kompen" id="jam_kompen"
+                        class="form-control" required>
+                    <small id="error-jam_kompen" class="error-text form-text text-danger"></small>
+                </div>
                    <div class="form-group">
                        <label>Kategori</label>
                        <select name="kategori_id" id="kategori_id" class="form-control" required>
@@ -59,17 +65,24 @@
                        <small id="error-kategori_id" class="error-text form-text text-danger"></small>
                    </div>
                    <div class="form-group">
-                       <label>Jam Kompen</label>
-                       <input value="{{ $tugas->jam_kompen }}" type="number" name="jam_kompen" id="jam_kompen"
-                           class="form-control" required>
-                       <small id="error-jam_kompen" class="error-text form-text text-danger"></small>
-                   </div>
+                    <label>SDM</label>
+                    <select name="sdm_id" id="sdm_id" class="form-control" required>
+                        <option value="">- Pilih SDM -</option>
+                        @foreach($sdm as $s)
+                            <option value="{{ $s->sdm_id }}" {{ $tugas->sdm_id == $s->sdm_id ? 'selected' : '' }}>
+                                {{ $s->sdm_nama }}
+                            </option>
+                        @endforeach
+                    </select>
+                    <small id="error-sdm_id" class="error-text form-text text-danger"></small>
+                </div>
                    <div class="form-group">
                        <label>Status</label>
                        <select name="status_dibuka" id="status_dibuka" class="form-control" required>
-                           <option value="dibuka" {{ $tugas->status_dibuka == 'dibuka' ? 'selected' : '' }}>Dibuka</option>
-                           <option value="ditutup" {{ $tugas->status_dibuka == 'ditutup' ? 'selected' : '' }}>Ditutup</option>
-                       </select>
+                        <option value="dibuka" {{ $tugas->status_dibuka == 'dibuka' ? 'selected' : '' }}>Dibuka</option>
+                        <option value="ditutup" {{ $tugas->status_dibuka == 'ditutup' ? 'selected' : '' }}>Ditutup</option>
+                    </select>
+                                      
                        <small id="error-status_dibuka" class="error-text form-text text-danger"></small>
                    </div>
                    <div class="form-group">
@@ -112,6 +125,9 @@
                        number: true
                    },
                    kategori_id: {
+                       required: true
+                   },
+                   sdm_id: {
                        required: true
                    },
                    status_dibuka: {

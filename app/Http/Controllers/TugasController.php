@@ -16,22 +16,25 @@ class TugasController extends Controller
 {
     public function index()
     {
+        $kategoris = KategoriModel::all(); // Mengambil semua data level
+
         $breadcrumb = (object) [
             'title' => 'Daftar Tugas',
-            'list' => ['Home', 'Tugas']
+            'list' => ['Home', 'tugas']
         ];
+
         $page = (object) [
-            'title' => 'Daftar tugas yang telah dipublikasi'
+            'title' => 'Daftar tugas yang terdaftar dalam sistem'
         ];
 
         $activeMenu = 'tugas';
-        $tugas = TugasModel::all();
-        return view('tugas.index', compact('breadcrumb', 'page', 'activeMenu', 'tugas'));
+
+        return view('tugas.index', compact('kategoris', 'breadcrumb', 'page', 'activeMenu'));
     }
 
     public function list(Request $request)
     {
-        $tugas = TugasModel::with(['kategori', 'sdm'])->select(
+        $tugas = TugasModel::select(
             'tugas_id',
             'tugas_kode',
             'tugas_nama',
@@ -41,13 +44,20 @@ class TugasController extends Controller
             'tanggal_mulai',
             'tanggal_akhir',
             'kategori_id',
-            'sdm_id'
-        );
+            'sdm_id')
+            ->with('kategori', 'sdm');
+
+        if ($request->kategori_id) {
+            $tugas->where('kategori_id', $request->kategori_id);
+        } elseif ($request->sdm_id) {
+            $tugas->where('sdm_id', $request->sdm_id);
+        }
 
         return DataTables::of($tugas)
             ->addIndexColumn()
             ->addColumn('aksi', function ($tugas) {
-                $btn = '<a href="' . url('tugas/' . $tugas->tugas_id) . '" class="btn btn-info btn-sm">Detail</a> ';
+                // $btn = '<a href="' . url('tugas/' . $tugas->tugas_id) . '" class="btn btn-info btn-sm">Detail</a> ';
+                $btn = '<a href="' . url('tugas/' . $tugas->tugas_id . '/ajax') . '" class="btn btn-info btn-sm">Detail</a>';
                 $btn .= '<button onclick="modalAction(\'' . url('/tugas/' . $tugas->tugas_id . '/edit_ajax') . '\')" class="btn btn-warning btn-sm">Edit</button> ';
                 $btn .= '<button onclick="modalAction(\'' . url('/tugas/' . $tugas->tugas_id . '/delete_ajax') . '\')" class="btn btn-danger btn-sm">Hapus</button> ';
                 return $btn;
@@ -67,11 +77,23 @@ class TugasController extends Controller
 
     public function create_ajax()
     {
-        $kategori = KategoriModel::all();
-        $sdm = SdmModel::all();
-        return view('tugas.create_ajax', compact('kategori', 'sdm'));
+        // Ambil data kategori dari model
+        $categories = KategoriModel::select('kategori_id', 'kategori_nama')->get();
+        $sdm = SdmModel::select('sdm_id', 'sdm_nama')->get();
+        
+        // Kirim data ke view
+        return view('tugas.create_ajax', [
+            'categories' => $categories,
+            'sdm' => $sdm
+        ]);
     }
-
+    
+    // public function create_ajax()
+    // {
+    //     $prodis = KategoriModel::all();
+    //     $levels = SdmModel::all();
+    //     return view('tugas.create_ajax', compact('categories', 'sdm'));
+    // }
     public function store_ajax(Request $request)
     {
         if ($request->ajax() || $request->wantsJson()) {
@@ -87,11 +109,7 @@ class TugasController extends Controller
                 'sdm_id' => 'required|integer|exists:m_sdm,sdm_id'
             ];
 
-            $messages = [
-                'status_dibuka.in' => 'Status harus dibuka atau ditutup'
-            ];
-
-            $validator = Validator::make($request->all(), $rules, $messages);
+            $validator = Validator::make($request->all(), $rules);
 
             if ($validator->fails()) {
                 return response()->json([
@@ -115,45 +133,60 @@ class TugasController extends Controller
                 ]);
             }
         }
-        return redirect('/');
+        return redirect('/tugas');
     }
 
-    public function show($id)
+    // public function show($id)
+    // {
+    //     $breadcrumb = (object) [
+    //         'title' => 'Detail Tugas',
+    //         'list' => ['Home', 'Tugas', 'Detail']
+    //     ];
+
+    //     $page = (object) [
+    //         'title' => 'Detail tugas'
+    //     ];
+
+    //     $activeMenu = 'tugas';
+        
+    //     $tugas = TugasModel::with(['kategori', 'sdm'])->findOrFail($id);
+    //     return view('tugas.show', compact('breadcrumb', 'page', 'activeMenu'));
+    // }
+    public function show_ajax($id)
     {
-        $tugas = TugasModel::with(['kategori', 'sdm'])->findOrFail($id);
-
-        $breadcrumb = (object) [
-            'title' => 'Detail Tugas',
-            'list' => ['Home', 'Tugas', 'Detail']
-        ];
-
-        $page = (object) [
-            'title' => 'Detail tugas'
-        ];
-
-        $activeMenu = 'tugas';
-
-        return view('tugas.show', compact('breadcrumb', 'page', 'activeMenu', 'tugas'));
+        $tugas = TugasModel::find($id);
+        
+        if ($tugas) {
+            return response()->json([
+                'success' => true,
+                'data' => $tugas
+            ]);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'Data tidak ditemukan'
+            ], 404);
+        }
     }
 
-    public function edit($id)
-    {
-        $breadcrumb = (object) [
-            'title' => 'Edit Tugas',
-            'list' => ['Home', 'Tugas', 'Edit']
-        ];
+//     public function edit($id)
+//     {
+//         $breadcrumb = (object) [
+//             'title' => 'Edit Tugas',
+//             'list' => ['Home', 'Tugas', 'Edit']
+//         ];
 
-        $page = (object) [
-            'title' => 'Edit Data Tugas'
-        ];
+//         $page = (object) [
+//             'title' => 'Edit Data Tugas'
+//         ];
 
-        $activeMenu = 'tugas';
+//         $activeMenu = 'tugas';
 
-        $tugas = TugasModel::with(['kategori', 'sdm'])->findOrFail($id);
-        $kategori = KategoriModel::all();
+//         $tugas = TugasModel::with(['kategori', 'sdm'])->findOrFail($id);
+//         $kategori = KategoriModel::all();
 
-        return view('tugas.edit', compact('tugas', 'kategori', 'page', 'breadcrumb', 'activeMenu'));
-    }
+//         return view('tugas.edit', compact('tugas', 'kategori', 'page', 'breadcrumb', 'activeMenu'));
+//     }
 
     public function edit_ajax($id)
     {

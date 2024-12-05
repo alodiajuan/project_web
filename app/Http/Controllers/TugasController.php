@@ -9,8 +9,6 @@ use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Validator;
 use PhpOffice\PhpSpreadsheet\IOFactory;
-use Barryvdh\DomPDF\Facade\Pdf;
-use PhpOffice\PhpSpreadsheet\Spreadsheet;
 
 class TugasController extends Controller
 {
@@ -20,7 +18,7 @@ class TugasController extends Controller
 
         $breadcrumb = (object) [
             'title' => 'Daftar Tugas',
-            'list' => ['Home', 'tugas']
+            'list' => ['Home', 'Tugas']
         ];
 
         $page = (object) [
@@ -57,7 +55,7 @@ class TugasController extends Controller
             ->addIndexColumn()
             ->addColumn('aksi', function ($tugas) {
                 // $btn = '<a href="' . url('tugas/' . $tugas->tugas_id) . '" class="btn btn-info btn-sm">Detail</a> ';
-                $btn = '<a href="' . url('tugas/' . $tugas->tugas_id . '/ajax') . '" class="btn btn-info btn-sm">Detail</a>';
+                $btn = '<button onclick="modalAction(\'' . url('/tugas/' . $tugas->tugas_id . '/show_ajax') . '\')" class="btn btn-info btn-sm">Detail</button> ';
                 $btn .= '<button onclick="modalAction(\'' . url('/tugas/' . $tugas->tugas_id . '/edit_ajax') . '\')" class="btn btn-warning btn-sm">Edit</button> ';
                 $btn .= '<button onclick="modalAction(\'' . url('/tugas/' . $tugas->tugas_id . '/delete_ajax') . '\')" class="btn btn-danger btn-sm">Hapus</button> ';
                 return $btn;
@@ -152,22 +150,38 @@ class TugasController extends Controller
     //     $tugas = TugasModel::with(['kategori', 'sdm'])->findOrFail($id);
     //     return view('tugas.show', compact('breadcrumb', 'page', 'activeMenu'));
     // }
-    public function show_ajax($id)
+    public function detail_ajax(Request $request, $id)
     {
-        $tugas = TugasModel::find($id);
-        
-        if ($tugas) {
+        if ($request->ajax() || $request->wantsJson()) {
+            $tugas = TugasModel::find($id);
+            if ($tugas) {
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Data berhasil ditampilkan'
+                ]);
+            } else {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Data tidak ditemukan'
+                ]);
+            }
+        }
+        return redirect('/tugas');
+    }
+    public function show_ajax(string $id)
+    {
+        $tugas = TugasModel::with(['kategori', 'sdm'])->find($id);
+    
+        if (!$tugas) {
             return response()->json([
-                'success' => true,
-                'data' => $tugas
-            ]);
-        } else {
-            return response()->json([
-                'success' => false,
-                'message' => 'Data tidak ditemukan'
+                'status' => false,
+                'message' => 'Data tugas tidak ditemukan.'
             ], 404);
         }
+    
+        return view('tugas.show_ajax', ['tugas' => $tugas]);
     }
+    
 
 //     public function edit($id)
 //     {

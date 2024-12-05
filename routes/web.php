@@ -51,19 +51,16 @@ Route::middleware('auth:mahasiswa,sdm')->group(function () {
     Route::group(['prefix' => 'tugas'], function () {
         Route::get('/', [TugasController::class, 'index']);  // Menampilkan halaman awal kategori
         Route::post('/list', [TugasController::class, 'list']);  // Menampilkan data kategori dalam bentuk JSON untuk datatables
-        Route::get('/create', [TugasController::class, 'create']);  // Menampilkan halaman form tambah kategori
         Route::get('/create_ajax', [TugasController::class, 'create_ajax']);
-        Route::post('/', [TugasController::class, 'store']);  // Menyimpan data kategori baru
         Route::post('/ajax', [TugasController::class, 'store_ajax']);
         Route::get('/{id}/edit_ajax', [TugasController::class, 'edit_ajax']);
         Route::put('/{id}/update_ajax', [TugasController::class, 'update_ajax']);
         Route::get('/{id}/delete_ajax', [TugasController::class, 'confirm_ajax']);  // Menampilkan halaman konfirmasi hapus
         Route::delete('/{id}/delete_ajax', [TugasController::class, 'delete_ajax']);  // Menghapus data kategori dengan AJAX
-        Route::get('/{id}', [TugasController::class, 'show']);  // Menampilkan detail kategori
-        Route::get('/{id}/edit', [TugasController::class, 'edit']);  // Menampilkan halaman form edit kategori
-        Route::put('/{id}', [TugasController::class, 'update']);  // Menyimpan perubahan data kategori
+        Route::get('/{id}/detail_ajax', [TugasController::class, 'detail_ajax']);
+        Route::get('/{id}/show_ajax', [TugasController::class, 'show_ajax']);
         Route::delete('/{id}', [TugasController::class, 'destroy']);  // Menghapus data kategori
-    });
+    }); 
     Route::group(['prefix' => 'mahasiswa'], function () {
         Route::get('/', [MahasiswaController::class, 'index']);  // Menampilkan halaman awal mahasiswa
         Route::post('/list', [MahasiswaController::class, 'list'])->name('mahasiswa.list');  

@@ -73,6 +73,13 @@
                     <span class="text-truncate">Riwayat Pengajuan</span>
                 </a>
             </li>
+            <li class="nav-header">Kompensasi</li>
+            <li class="nav-item">
+                <a href="{{ url('/presensi') }}" class="nav-link {{ $activeMenu == 'presensi' ? 'active' : '' }}">
+                    <i class="nav-icon fas fa-history"></i>
+                    <span class="text-truncate">Pengajuan</span>
+                </a>
+            </li>
             <li class="nav-item">
                 <a href="{{ url('/presensi') }}" class="nav-link {{ $activeMenu == 'presensi' ? 'active' : '' }}">
                     <i class="nav-icon fas fa-check-circle"></i>

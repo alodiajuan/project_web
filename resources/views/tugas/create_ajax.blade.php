@@ -75,7 +75,14 @@
 </form>
 
 <script>
+// Pastikan dataTugas adalah DataTable yang sudah diinisialisasi
+var datatugas; // Ini sudah didefinisikan sebelumnya, pastikan DataTable sudah diinisialisasi
 $(document).ready(function() {
+    // Inisialisasi DataTable (jika belum dilakukan)
+    datatugas = $('#tabel-tugas').DataTable({
+        // Pengaturan DataTable lainnya...
+    });
+
     $("#form-tambah").validate({
         rules: {
             tugas_kode: {
@@ -162,13 +169,14 @@ $(document).ready(function() {
                 data: $(form).serialize(),
                 success: function(response) {
                     if (response.status) {
-                        $('#myModal').modal('hide');
+                        $('#myModal').modal('hide'); // Menutup modal setelah sukses
                         Swal.fire({
                             icon: 'success',
                             title: 'Berhasil',
                             text: response.message
                         }).then(() => {
-                            datatugas.ajax.reload();
+                            // Reload DataTable setelah submit
+                            datatugas.ajax.reload(null, false); // null untuk menjaga posisi halaman tetap, false untuk tidak reset pagination
                         });
                     } else {
                         $('.error-text').text('');
@@ -214,4 +222,5 @@ $(document).ready(function() {
         return new Date(value) > new Date(startDate);
     });
 });
+
 </script>

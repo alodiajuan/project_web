@@ -38,7 +38,15 @@ return [
     'guards' => [
         'web' => [
             'driver' => 'session',
-            'provider' => 'users',
+            'provider' => 'mahasiswa',
+        ],
+        'mahasiswa' => [
+            'driver' => 'session',
+            'provider' => 'mahasiswa',
+        ],
+        'sdm' => [
+            'driver' => 'session',
+            'provider' => 'sdm',
         ],
     ],
 
@@ -60,9 +68,17 @@ return [
     */
 
     'providers' => [
-        'users' => [
+        // 'users' => [
+        //     'driver' => 'eloquent',
+        //     'model' => App\Models\SdmModel::class,
+        // ],
+        'mahasiswa' => [
             'driver' => 'eloquent',
-            'model' => App\Models\AdminModel::class,
+            'model' => App\Models\MahasiswaModel::class,
+        ],
+        'sdm' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\SdmModel::class,
         ],
 
         // 'users' => [

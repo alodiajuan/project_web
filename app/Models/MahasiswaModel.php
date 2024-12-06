@@ -5,11 +5,18 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Casts\Attribute;
+use Tymon\JWTAuth\Contracts\JWTSubject;
 
-class MahasiswaModel extends Authenticatable
+class MahasiswaModel extends Authenticatable implements JWTSubject
 {
     use HasFactory;
+    
+    public function getJWTIdentifier(){
+        return $this->getKey();
+    }
+    public function getJWTCustomClaims(){
+        return[];
+    }
 
     // Nama tabel dan primary key
     protected $table = 'm_mahasiswa';

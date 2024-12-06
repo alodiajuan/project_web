@@ -53,12 +53,15 @@ Route::middleware('auth:mahasiswa,sdm')->group(function () {
         Route::post('/list', [TugasController::class, 'list']);  // Menampilkan data kategori dalam bentuk JSON untuk datatables
         Route::get('/create_ajax', [TugasController::class, 'create_ajax']);
         Route::post('/ajax', [TugasController::class, 'store_ajax']);
+        Route::get('/get-last-kode', [TugasController::class, 'getLastKode']);
         Route::get('/{id}/edit_ajax', [TugasController::class, 'edit_ajax']);
         Route::put('/{id}/update_ajax', [TugasController::class, 'update_ajax']);
         Route::get('/{id}/delete_ajax', [TugasController::class, 'confirm_ajax']);  // Menampilkan halaman konfirmasi hapus
         Route::delete('/{id}/delete_ajax', [TugasController::class, 'delete_ajax']);  // Menghapus data kategori dengan AJAX
         Route::get('/{id}/detail_ajax', [TugasController::class, 'detail_ajax']);
         Route::get('/{id}/show_ajax', [TugasController::class, 'show_ajax']);
+        Route::get('/{id}/pengajuan_ajax', [TugasController::class, 'pengajuan_ajax']);
+        Route::get('/{id}/request_ajax', [TugasController::class, 'request_ajax']);
         Route::delete('/{id}', [TugasController::class, 'destroy']);  // Menghapus data kategori
     }); 
     Route::group(['prefix' => 'mahasiswa'], function () {

@@ -5,7 +5,7 @@ use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
-class kategoriSeeder extends Seeder
+class KategoriSeeder extends Seeder
 {
     /**
      * Run the database seeds.

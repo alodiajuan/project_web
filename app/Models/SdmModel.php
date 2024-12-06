@@ -2,19 +2,28 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Tymon\JWTAuth\Contracts\JWTSubject;
 
-class SdmModel extends Authenticatable
+class SdmModel extends Authenticatable implements JWTSubject
 {
     use HasFactory;
 
+    public function getJWTIdentifier()
+    {
+        return $this->getKey();
+    }
+
+    public function getJWTCustomClaims()
+    {
+        return [];
+    }
+
     protected $table = 'm_sdm'; // Sesuaikan dengan nama tabel
     protected $primaryKey = 'sdm_id'; // Primary key
-
 
     protected $fillable = [
         'sdm_nama',

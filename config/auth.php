@@ -31,7 +31,7 @@ return [
     | users are actually retrieved out of your database or other storage
     | mechanisms used by this application to persist your user's data.
     |
-    | Supported: "session"
+    | Supported: "session", "jwt"
     |
     */
 
@@ -46,6 +46,14 @@ return [
         ],
         'sdm' => [
             'driver' => 'session',
+            'provider' => 'sdm',
+        ],
+        'mahasiswa_api' => [ // New guard for mahasiswa API
+            'driver' => 'jwt', // Use jwt driver for API
+            'provider' => 'mahasiswa',
+        ],
+        'sdm_api' => [ // New guard for dosen API
+            'driver' => 'jwt', // Use jwt driver for API
             'provider' => 'sdm',
         ],
     ],
@@ -68,10 +76,6 @@ return [
     */
 
     'providers' => [
-        // 'users' => [
-        //     'driver' => 'eloquent',
-        //     'model' => App\Models\SdmModel::class,
-        // ],
         'mahasiswa' => [
             'driver' => 'eloquent',
             'model' => App\Models\MahasiswaModel::class,
@@ -80,11 +84,6 @@ return [
             'driver' => 'eloquent',
             'model' => App\Models\SdmModel::class,
         ],
-
-        // 'users' => [
-        //     'driver' => 'database',
-        //     'table' => 'users',
-        // ],
     ],
 
     /*
@@ -107,8 +106,14 @@ return [
     */
 
     'passwords' => [
-        'users' => [
-            'provider' => 'users',
+        'mahasiswa' => [
+            'provider' => 'mahasiswa',
+            'table' => 'password_reset_tokens',
+            'expire' => 60,
+            'throttle' => 60,
+        ],
+        'sdm' => [
+            'provider' => 'sdm',
             'table' => 'password_reset_tokens',
             'expire' => 60,
             'throttle' => 60,
@@ -129,3 +134,4 @@ return [
     'password_timeout' => 10800,
 
 ];
+

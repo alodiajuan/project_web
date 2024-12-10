@@ -57,6 +57,18 @@ class LoginController extends Controller
             'role' => $role
         ];
 
+        // Redirect logic for Dosen (sdm) role
+        if ($role === 'Dosen') {
+            if ($user->level_nama === 'dosen') {
+                $userData['redirect_to'] = 'berandadosen'; // Add redirect information
+            } else {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Anda tidak memiliki akses sebagai dosen',
+                ], 403);
+            }
+        }
+
         // Return success response
         return response()->json([
             'status' => true,

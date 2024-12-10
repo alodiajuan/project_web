@@ -56,6 +56,7 @@ class TugasController extends Controller
             ->addColumn('aksi', function ($tugas) {
                 // $btn = '<a href="' . url('tugas/' . $tugas->tugas_id) . '" class="btn btn-info btn-sm">Detail</a> ';
                 $btn = '<button onclick="modalAction(\'' . url('/tugas/' . $tugas->tugas_id . '/show_ajax') . '\')" class="btn btn-info btn-sm">Detail</button> ';
+                $btn .= '<button onclick="modalAction(\'' . url('/tugas/' . $tugas->tugas_id . '/request_ajax') . '\')" class="btn btn-info btn-sm">Request</button> ';
                 $btn .= '<button onclick="modalAction(\'' . url('/tugas/' . $tugas->tugas_id . '/edit_ajax') . '\')" class="btn btn-warning btn-sm">Edit</button> ';
                 $btn .= '<button onclick="modalAction(\'' . url('/tugas/' . $tugas->tugas_id . '/delete_ajax') . '\')" class="btn btn-danger btn-sm">Hapus</button> ';
                 return $btn;
@@ -85,13 +86,7 @@ class TugasController extends Controller
             'sdm' => $sdm
         ]);
     }
-    
-    // public function create_ajax()
-    // {
-    //     $prodis = KategoriModel::all();
-    //     $levels = SdmModel::all();
-    //     return view('tugas.create_ajax', compact('categories', 'sdm'));
-    // }
+
     public function store_ajax(Request $request)
     {
         if ($request->ajax() || $request->wantsJson()) {
@@ -133,31 +128,16 @@ class TugasController extends Controller
         }
         return redirect('/tugas');
     }
-
-    // public function show($id)
-    // {
-    //     $breadcrumb = (object) [
-    //         'title' => 'Detail Tugas',
-    //         'list' => ['Home', 'Tugas', 'Detail']
-    //     ];
-
-    //     $page = (object) [
-    //         'title' => 'Detail tugas'
-    //     ];
-
-    //     $activeMenu = 'tugas';
-        
-    //     $tugas = TugasModel::with(['kategori', 'sdm'])->findOrFail($id);
-    //     return view('tugas.show', compact('breadcrumb', 'page', 'activeMenu'));
-    // }
-    public function detail_ajax(Request $request, $id)
+    
+    public function detail_ajax(Request $show, $id)
     {
-        if ($request->ajax() || $request->wantsJson()) {
+        if ($show->ajax() || $show->wantsJson()) {
             $tugas = TugasModel::find($id);
             if ($tugas) {
                 return response()->json([
                     'status' => true,
-                    'message' => 'Data berhasil ditampilkan'
+                    'message' => 'Data berhasil ditampilkan',
+                    'data' => $tugas
                 ]);
             } else {
                 return response()->json([
@@ -168,6 +148,7 @@ class TugasController extends Controller
         }
         return redirect('/tugas');
     }
+    
     public function show_ajax(string $id)
     {
         $tugas = TugasModel::with(['kategori', 'sdm'])->find($id);
@@ -182,26 +163,41 @@ class TugasController extends Controller
         return view('tugas.show_ajax', ['tugas' => $tugas]);
     }
     
-
-//     public function edit($id)
-//     {
-//         $breadcrumb = (object) [
-//             'title' => 'Edit Tugas',
-//             'list' => ['Home', 'Tugas', 'Edit']
-//         ];
-
-//         $page = (object) [
-//             'title' => 'Edit Data Tugas'
-//         ];
-
-//         $activeMenu = 'tugas';
-
-//         $tugas = TugasModel::with(['kategori', 'sdm'])->findOrFail($id);
-//         $kategori = KategoriModel::all();
-
-//         return view('tugas.edit', compact('tugas', 'kategori', 'page', 'breadcrumb', 'activeMenu'));
-//     }
-
+    public function request_ajax(string $id)
+    {
+        $tugas = TugasModel::with(['kategori', 'sdm'])->find($id);
+    
+        if (!$tugas) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Data tugas tidak ditemukan.'
+            ], 404);
+        }
+    
+        return view('tugas.request_ajax', ['tugas' => $tugas]);
+    }
+    
+    public function pengajuan_ajax(Request $request, $id)
+    {
+        if ($request->ajax() || $request->wantsJson()) {
+            $tugas = TugasModel::find($id);
+            if ($tugas) {
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Data berhasil ditampilkan',
+                    'data' => $tugas
+                ]);
+            } else {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Data tidak ditemukan'
+                ]);
+            }
+        }
+        return redirect('/tugas');
+    }
+    
+    
     public function edit_ajax($id)
     {
         $tugas = TugasModel::with(['kategori', 'sdm'])->findOrFail($id);

@@ -11,14 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('users', function (Blueprint $table) {
+        Schema::create('task_request', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
-            $table->rememberToken();
+            $table->unsignedBigInteger('id_task');
+            $table->unsignedBigInteger('id_mahasiswa');
+            $table->enum('status', ['terima', 'tolak']);
             $table->timestamps();
+
+            $table->foreign('id_task')->references('id')->on('task');
+            $table->foreign('id_mahasiswa')->references('id')->on('users');
         });
     }
 
@@ -27,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('users');
+        Schema::dropIfExists('task_request');
     }
 };

@@ -18,15 +18,15 @@ use App\Http\Controllers\MahasiswaController;
 //    // masukkan semua route yg perlu autentikasi di sini
 // });
 
-Route::middleware('guest')->group(function () {
-    Route::get('login', [AuthController::class, 'login'])->name('login');
-    Route::post('login', [AuthController::class, 'postlogin']);
-});
+// Route::middleware('guest')->group(function () {
+Route::get('login', [AuthController::class, 'login'])->name('login');
+Route::post('login', [AuthController::class, 'postlogin']);
+// });
 
 Route::middleware('auth:mahasiswa,sdm')->group(function () {
-    Route::get('/', [WelcomeController::class,'index']); 
+    Route::get('/', [WelcomeController::class, 'index']);
     Route::get('logout', [AuthController::class, 'logout'])->name('logout');
-    
+
     Route::group(['prefix' => 'level'], function () {
         Route::get('/', [LevelController::class, 'index']);  // Menampilkan halaman awal level
         Route::post('/list', [LevelController::class, 'list']);  // Menampilkan data level dalam bentuk JSON untuk datatables
@@ -63,10 +63,10 @@ Route::middleware('auth:mahasiswa,sdm')->group(function () {
         Route::get('/{id}/pengajuan_ajax', [TugasController::class, 'pengajuan_ajax']);
         Route::get('/{id}/request_ajax', [TugasController::class, 'request_ajax']);
         Route::delete('/{id}', [TugasController::class, 'destroy']);  // Menghapus data kategori
-    }); 
+    });
     Route::group(['prefix' => 'mahasiswa'], function () {
         Route::get('/', [MahasiswaController::class, 'index']);  // Menampilkan halaman awal mahasiswa
-        Route::post('/list', [MahasiswaController::class, 'list'])->name('mahasiswa.list');  
+        Route::post('/list', [MahasiswaController::class, 'list'])->name('mahasiswa.list');
         Route::get('/create_ajax', [MahasiswaController::class, 'create_ajax']); // Pindahkan sebelum /{id}
         Route::post('/store_ajax', [MahasiswaController::class, 'store_ajax']);
         Route::get('/{id}/edit_ajax', [MahasiswaController::class, 'edit_ajax']);
@@ -100,12 +100,10 @@ Route::middleware('auth:mahasiswa,sdm')->group(function () {
         Route::get('/{id}/edit', [SdmController::class, 'edit']);  // Menampilkan halaman form edit sdm
         Route::put('/{id}', [SdmController::class, 'update']);  // Menyimpan perubahan data sdm
     });
-    
+
     Route::group(['prefix' => 'prodi'], function () {
         Route::get('/', [ProdiController::class, 'index']);  // Menampilkan halaman awal prodi
         Route::post('/list', [ProdiController::class, 'list']);  // Menampilkan data prodi dalam bentuk JSON untuk datatables
         Route::get('/{id}', [ProdiController::class, 'show']);  // Menampilkan detail prodi
     });
-    
-    
 });

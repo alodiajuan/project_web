@@ -6,7 +6,7 @@ use App\Http\Controllers\KategoriController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TugasController;
 use App\Http\Controllers\SdmController;
-use App\Http\Controllers\ProdiController;
+use App\Http\Controllers\ProdiController;   
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\KompetensiController;

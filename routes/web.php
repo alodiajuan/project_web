@@ -20,8 +20,13 @@ Route::middleware('auth')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index']);
     });
 
-    Route::middleware('role:admin')->group(function(){
+    Route::middleware('role:admin')->group(function () {
         Route::get('/mahasiswa', [UserController::class, 'mahasiswa']);
+        Route::post('/mahasiswa', [UserController::class, 'mahasiswaStore']);
+        Route::get('/mahasiswa/edit/{id}', [UserController::class, 'mahasiswaEdit']);
+        Route::get('/mahasiswa/create', [UserController::class, 'mahasiswaCreate']);
+        Route::put('/mahasiswa/update/{id}', [UserController::class, 'mahasiswaUpdate']);
+        Route::delete('/mahasiswa/delete/{id}', [UserController::class, 'mahasiswaDestroy']);
     });
 
     Route::get('logout', [AuthController::class, 'logout']);

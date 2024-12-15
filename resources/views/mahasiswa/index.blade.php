@@ -11,8 +11,7 @@
                         class="fa fa-file-excel"></i> Export mahasiswa (Excel)</a>
                 <a href="{{ url('/mahasiswa/export_pdf') }}" class="btn btn-sm btn-warning mt-1"><i
                         class="fa fa-file-pdf"></i> Export mahasiswa (PDF)</a>
-                <button onclick="modalAction('{{ url('/mahasiswa/create_ajax') }}')"
-                    class="btn btn-sm btn-success mt-1">Tambah Data</button>
+                <a href="{{ url('/mahasiswa/create') }}" class="btn btn-sm btn-success mt-1">Tambah Data</a>
             </div>
         </div>
 
@@ -82,10 +81,16 @@
                             <td>{{ $item->semester }}</td>
                             <td>{{ $item->prodi ? $item->prodi->nama : 'N/A' }}</td>
                             <td>
-                                <button onclick="modalAction('{{ url('/mahasiswa/edit/' . $item->id) }}')"
-                                    class="btn btn-sm btn-warning">Edit</button>
-                                <button onclick="modalAction('{{ url('/mahasiswa/delete/' . $item->id) }}')"
-                                    class="btn btn-sm btn-danger">Delete</button>
+                                <a href="{{ url('/mahasiswa/edit/' . $item->id) }}')"
+                                    class="btn btn-sm btn-warning">Edit</a>
+
+                                <form action="{{ url('/mahasiswa/delete/' . $item->id) }}" method="POST" class="d-inline">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-sm btn-danger mt-3"
+                                        onclick="return confirm('Apakah Anda yakin ingin menghapus data mahasiswa ini?')">Delete</button>
+                                </form>
+
                             </td>
                         </tr>
                     @endforeach
@@ -94,13 +99,3 @@
         </div>
     </div>
 @endsection
-
-@push('js')
-    <script>
-        $(document).ready(function() {
-            $('#prodi_id').on('change', function() {
-                datamahasiswa.ajax.reload();
-            });
-        });
-    </script>
-@endpush

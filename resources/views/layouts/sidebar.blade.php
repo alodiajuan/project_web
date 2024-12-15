@@ -59,16 +59,16 @@
             <!-- Pekerjaan Section -->
             <li class="nav-header">Management Task</li>
             <li class="nav-item">
-                <a href="{{ url('/tugas') }}" class="nav-link {{ $activeMenu == 'tugas' ? 'active' : '' }}">
-                    <i class="nav-icon fas fa-tasks"></i>
-                    <span class="text-truncate">Tugas</span>
+                <a href="{{ url('/kategori-tugas') }}"
+                    class="nav-link {{ $activeMenu == 'kategori-tugas' ? 'active' : '' }}">
+                    <i class="nav-icon fas fa-tags"></i>
+                    <span class="text-truncate">Kategori Tugas</span>
                 </a>
             </li>
             <li class="nav-item">
-                <a href="{{ url('/kategori-tugas') }}"
-                    class="nav-link {{ $activeMenu == 'kategori' ? 'active' : '' }}">
-                    <i class="nav-icon fas fa-tags"></i>
-                    <span class="text-truncate">Kategori Tugas</span>
+                <a href="{{ url('/tugas') }}" class="nav-link {{ $activeMenu == 'tugas' ? 'active' : '' }}">
+                    <i class="nav-icon fas fa-tasks"></i>
+                    <span class="text-truncate">Tugas</span>
                 </a>
             </li>
 

@@ -49,6 +49,13 @@ Route::middleware('auth')->group(function () {
         Route::get('/prodi/edit/{id}', [ProdiController::class, 'edit']);
         Route::put('/prodi/update/{id}', [ProdiController::class, 'update']);
         Route::delete('/prodi/delete/{id}', [ProdiController::class, 'destroy']);
+
+        Route::get('/kategori-tugas', [KategoriController::class, 'index']);
+        Route::get('/kategori-tugas/create', [KategoriController::class, 'create']);
+        Route::post('/kategori-tugas', [KategoriController::class, 'store']);
+        Route::get('/kategori-tugas/edit/{id}', [KategoriController::class, 'edit']);
+        Route::put('/kategori-tugas/update/{id}', [KategoriController::class, 'update']);
+        Route::delete('/kategori-tugas/delete/{id}', [KategoriController::class, 'destroy']);
     });
 
     Route::get('logout', [AuthController::class, 'logout']);

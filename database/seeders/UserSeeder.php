@@ -15,8 +15,6 @@ class UserSeeder extends Seeder
             'password' => Hash::make('password123'),
             'foto_profile' => 'profile.jpg',
             'nama' => 'Admin User',
-            'semester' => 1,
-            'id_kompetensi' => 1,
             'role' => 'admin',
         ]);
 
@@ -25,8 +23,6 @@ class UserSeeder extends Seeder
             'password' => Hash::make('password123'),
             'foto_profile' => 'profile.jpg',
             'nama' => 'Dosen User',
-            'semester' => 3,
-            'id_kompetensi' => 2,
             'role' => 'dosen',
         ]);
 
@@ -35,8 +31,6 @@ class UserSeeder extends Seeder
             'password' => Hash::make('password123'),
             'foto_profile' => 'profile.jpg',
             'nama' => 'Tendik User',
-            'semester' => 2,
-            'id_kompetensi' => 1,
             'role' => 'tendik',
         ]);
 

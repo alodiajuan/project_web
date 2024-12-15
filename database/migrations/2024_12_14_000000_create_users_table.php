@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('password');
             $table->string('foto_profile');
             $table->string('nama');
-            $table->integer('semester');
+            $table->integer('semester')->nullable();
             $table->unsignedBigInteger('id_kompetensi')->nullable();
             $table->unsignedBigInteger('id_prodi')->nullable();
             $table->enum('role', ['admin', 'dosen', 'tendik', 'mahasiswa']);

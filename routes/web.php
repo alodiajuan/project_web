@@ -27,6 +27,13 @@ Route::middleware('auth')->group(function () {
         Route::get('/mahasiswa/create', [UserController::class, 'mahasiswaCreate']);
         Route::put('/mahasiswa/update/{id}', [UserController::class, 'mahasiswaUpdate']);
         Route::delete('/mahasiswa/delete/{id}', [UserController::class, 'mahasiswaDestroy']);
+
+        Route::get('/sdm', [UserController::class, 'sdm']);
+        Route::post('/sdm', [UserController::class, 'sdmStore']);
+        Route::get('/sdm/edit/{id}', [UserController::class, 'sdmEdit']);
+        Route::get('/sdm/create', [UserController::class, 'sdmCreate']);
+        Route::put('/sdm/update/{id}', [UserController::class, 'sdmUpdate']);
+        Route::delete('/sdm/delete/{id}', [UserController::class, 'sdmDestroy']);
     });
 
     Route::get('logout', [AuthController::class, 'logout']);

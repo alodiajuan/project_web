@@ -161,4 +161,131 @@ class UserController extends Controller
 
         return redirect('/mahasiswa')->with('success', 'Data mahasiswa berhasil dihapus.');
     }
+
+    public function sdm(Request $request)
+    {
+        $breadcrumb = (object) [
+            'title' => 'Selamat Datang',
+            'list' => ['Home', 'Welcome']
+        ];
+
+        $activeMenu = 'sdm';
+
+        $sdm = User::whereIn('role', ['admin', 'dosen', 'tendik'])->get();
+
+        return view('sdm.index', compact('sdm', 'breadcrumb', 'activeMenu'));
+    }
+
+    public function sdmEdit(Request $request, $id)
+    {
+        $breadcrumb = (object) [
+            'title' => 'Selamat Datang',
+            'list' => ['Home', 'Welcome']
+        ];
+
+        $activeMenu = 'sdm';
+
+        $sdm = User::find($id);
+
+        return view('sdm.edit', compact('sdm', 'breadcrumb', 'activeMenu'));
+    }
+
+    public function sdmCreate(Request $request)
+    {
+        $breadcrumb = (object) [
+            'title' => 'Selamat Datang',
+            'list' => ['Home', 'Welcome']
+        ];
+
+        $activeMenu = 'sdm';
+
+        return view('sdm.create', compact('breadcrumb', 'activeMenu'));
+    }
+
+    public function sdmStore(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'nama' => 'required|string|max:255',
+            'username' => 'required|max:12|unique:users',
+            'role' => 'required',
+            'foto_profile' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'password' => 'required|min:6|confirmed',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        $photo_filename = null;
+
+        if ($request->hasFile('foto_profile')) {
+            $photo = $request->file('foto_profile');
+            $photo_filename = time() . '.' . $photo->getClientOriginalExtension();
+            $photo->move(public_path('images'), $photo_filename);
+        }
+
+        User::create([
+            'nama' => $request->input('nama'),
+            'username' => $request->input('username'),
+            'foto_profile' => $photo_filename,
+            'role' => $request->input('role'),
+            'password' => Hash::make($request->input('password')),
+        ]);
+
+        return redirect("/sdm")->with('success', 'Data sdm berhasil ditambahkan.');
+    }
+
+    public function sdmUpdate(Request $request, $id)
+    {
+        $validator = Validator::make($request->all(), [
+            'nama' => 'required|string|max:255',
+            'username' => 'required|max:16',
+            'role' => 'required',
+            'foto_profile' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'password' => 'nullable|min:6|confirmed',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        $sdm = User::findOrFail($id);
+
+        $sdm->nama = $request->input('nama');
+        $sdm->username = $request->input('username');
+        $sdm->role = $request->input('role');
+
+        if ($request->filled('password')) {
+            $sdm->password = Hash::make($request->input('password'));
+        }
+
+        if ($request->hasFile('foto_profile')) {
+            if ($sdm->foto_profile && file_exists(public_path('images/' . $sdm->foto_profile))) {
+                unlink(public_path('images/' . $sdm->foto_profile));
+            }
+
+            $photo = $request->file('foto_profile');
+            $filename = time() . '.' . $photo->getClientOriginalExtension();
+            $photo->move(public_path('images'), $filename);
+
+            $sdm->foto_profile = $filename;
+        }
+
+        $sdm->save();
+
+        return redirect('/sdm')->with('success', 'Data sdm berhasil diperbarui.');
+    }
+
+    public function sdmDestroy($id)
+    {
+        $sdm = User::findOrFail($id);
+
+        if ($sdm->foto_profile && file_exists(public_path('images/' . $sdm->foto_profile))) {
+            unlink(public_path('images/' . $sdm->foto_profile));
+        }
+
+        $sdm->delete();
+
+        return redirect('/sdm')->with('success', 'Data sdm berhasil dihapus.');
+    }
 }

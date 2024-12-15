@@ -55,7 +55,7 @@
                     <tr>
                         <th>No</th>
                         <th>Nama</th>
-                        <th>Username</th>
+                        <th>NIM</th>
                         <th>Foto</th>
                         <th>Kompetensi</th>
                         <th>Semester</th>
@@ -81,7 +81,7 @@
                             <td>{{ $item->semester }}</td>
                             <td>{{ $item->prodi ? $item->prodi->nama : 'N/A' }}</td>
                             <td>
-                                <a href="{{ url('/mahasiswa/edit/' . $item->id) }}')"
+                                <a href="{{ url('/mahasiswa/edit/' . $item->id) }}"
                                     class="btn btn-sm btn-warning">Edit</a>
 
                                 <form action="{{ url('/mahasiswa/delete/' . $item->id) }}" method="POST" class="d-inline">

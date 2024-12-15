@@ -12,49 +12,7 @@ http://localhost:8000/api
 
 ### 1. Authentication
 
-#### a. Create Register
-
--   **Endpoint** : `/api/register`
--   **Method**: `POST`
--   **Description**: untuk pembuatan akun pengguna baru.
--   **Request:**
-
-```json
-{
-    "username": "string (required, unique)",
-    "password": "string (required, min: 8 characters)",
-    "foto_profile": "string (required, URL format)",
-    "nama": "string (required)",
-    "semester": "integer (required if role is 'mahasiswa')",
-    "id_kompetensi": "integer (nullable)",
-    "id_prodi": "integer (nullable)",
-    "role": "string (required, enum: ['admin', 'dosen', 'tendik', 'mahasiswa'])"
-}
-
-```
-
--   **Response**:
-
-```json
-{
-    "success": true,
-    "message": "User registered successfully",
-    "data": {
-        "id": 1,
-        "username": "user123",
-        "foto_profile": "https://example.com/profile.jpg",
-        "nama": "John Doe",
-        "semester": 4,
-        "id_kompetensi": 1,
-        "id_prodi": 2,
-        "role": "mahasiswa",
-        "created_at": "2024-12-15T12:00:00Z"
-    }
-}
-
-```
-
-#### b. Login
+#### a. Login
 
 -   **Endpoint:** `/api/login`
 -   **Method:** `POST`
@@ -86,7 +44,7 @@ http://localhost:8000/api
 }
 ```
 
-#### c. Logout
+#### b. Logout
 
 -   **Endpoint:** ` /api/logout`
 -   **Method:** `POST`
@@ -101,7 +59,7 @@ http://localhost:8000/api
 }
 ```
 
-#### d. User Profile
+#### c. User Profile
 
 -   **Endpoint:** `/api/userProfile`
 -   **Method:** `GET`

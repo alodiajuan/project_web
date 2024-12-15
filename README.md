@@ -129,8 +129,243 @@ http://localhost:8000/api
 
 ### 2. Task
 
+#### a. Create tasks
+-   **Endpoint:** `/api/tasks`
+-   **Method:** `POST`
+-   **Description:** Membuat tugas baru.
+
+-   **Request:**
+
+```json
+{
+    "id_dosen": 1,
+    "judul": "Tugas Pemrograman",
+    "deskripsi": "Tugas membuat aplikasi web menggunakan Laravel",
+    "bobot": 20,
+    "semester": 5,
+    "id_jenis": 2,
+    "tipe": "file"
+}
+```
+
+-   **Response:**
+
+```json
+{
+    "success": true,
+    "message": "Task created successfully",
+    "data": {
+        "id": 1,
+        "id_dosen": 1,
+        "judul": "Tugas Pemrograman",
+        "deskripsi": "Tugas membuat aplikasi web menggunakan Laravel",
+        "bobot": 20,
+        "semester": 5,
+        "id_jenis": 2,
+        "tipe": "file",
+        "created_at": "2024-12-15T12:00:00Z"
+    }
+}
+```
+
+#### a. Get tasks
+-   **Endpoint:** `/api/tasks`
+-   **Method:** `GET`
+-   **Description:** Mendapatkan daftar semua tugas
+
+-   **Response:**
+
+```json
+{
+    "success": true,
+    "data": [
+        {
+            "id": 1,
+            "id_dosen": 1,
+            "judul": "Tugas Pemrograman",
+            "deskripsi": "Tugas membuat aplikasi web menggunakan Laravel",
+            "bobot": 20,
+            "semester": 5,
+            "id_jenis": 2,
+            "tipe": "file",
+            "created_at": "2024-12-15T12:00:00Z"
+        }
+    ]
+}
+```
+
 ### 3. Compensation
+-   **Endpoint:** `/api/compensations`
+-   **Method:** `POST`
+-   **Description:** Membuat kompensasi atas tugas yang dikirimkan.
+
+-   **Request:**
+
+```json
+{
+    "id_task": 1,
+    "id_submission": 3,
+    "id_dosen": 1,
+    "id_mahasiswa": 2,
+    "semester": 5
+}
+```
+
+-   **Response:**
+
+```json
+{
+    "success": true,
+    "message": "Compensation created successfully",
+    "data": {
+        "id": 1,
+        "id_task": 1,
+        "id_submission": 3,
+        "id_dosen": 1,
+        "id_mahasiswa": 2,
+        "semester": 5,
+        "created_at": "2024-12-15T12:00:00Z"
+    }
+}
+```
 
 ### 4. Task_Submission
 
+#### a. Create Submission
+-   **Endpoint:** `/api/task-submissions`
+-   **Method:** `POST`
+-   **Description:** Mahasiswa mengirimkan tugas untuk disetujui dosen.
+
+-   **Request:**
+
+```json
+{
+    "id_task": 1,
+    "id_mahasiswa": 2,
+    "file": "https://example.com/task-submission.pdf",
+    "url": "https://github.com/mahasiswa/project-web"
+}
+```
+
+-   **Response:**
+
+```json
+{
+    "success": true,
+    "message": "Task submission created successfully",
+    "data": {
+        "id": 1,
+        "id_task": 1,
+        "id_mahasiswa": 2,
+        "file": "https://example.com/task-submission.pdf",
+        "url": "https://github.com/mahasiswa/project-web",
+        "created_at": "2024-12-15T12:00:00Z"
+    }
+}
+```
+
 ### 5. Task_Request
+-   **Endpoint:** `/api/task-requests`
+-   **Method:** `POST`
+-   **Description:** Mahasiswa mengajukan permintaan untuk menerima atau menolak tugas..
+
+-   **Request:**
+
+```json
+{
+    "id_task": 1,
+    "id_mahasiswa": 2,
+    "status": "terima"
+}
+```
+
+-   **Response:**
+
+```json
+{
+    "success": true,
+    "message": "Task request submitted successfully",
+    "data": {
+        "id": 1,
+        "id_task": 1,
+        "id_mahasiswa": 2,
+        "status": "terima",
+        "created_at": "2024-12-15T12:00:00Z"
+    }
+}
+```
+
+### 6. Competence
+-   **Endpoint:** `/api/competences`
+-   **Method:** `GET`
+-   **Description:**  Mendapatkan daftar kompetensi.
+
+-   **Response:**
+
+```json
+{
+    "success": true,
+    "data": [
+        {
+            "id": 1,
+            "nama": "Pemrograman",
+            "created_at": "2024-12-15T12:00:00Z"
+        },
+        {
+            "id": 2,
+            "nama": "Jaringan Komputer",
+            "created_at": "2024-12-15T12:00:00Z"
+        }
+    ]
+}
+```
+
+### 7. Type Task
+-   **Endpoint:** `/api/type-tasks`
+-   **Method:** `GET`
+-   **Description:**  Mendapatkan daftar jenis tugas.
+
+-   **Response:**
+
+```json
+{
+    "success": true,
+    "data": [
+        {
+            "id": 1,
+            "nama": "Tugas Mandiri",
+            "created_at": "2024-12-15T12:00:00Z"
+        },
+        {
+            "id": 2,
+            "nama": "Tugas Kelompok",
+            "created_at": "2024-12-15T12:00:00Z"
+        }
+    ]
+}
+```
+
+### 8. Type Task
+-   **Endpoint:** `/api/prodi`
+-   **Method:** `GET`
+-   **Description:**   Mendapatkan daftar program studi.
+
+-   **Response:**
+
+```json
+{
+    "success": true,
+    "data": [
+        {
+            "id": 1,
+            "nama": "Teknik Informatika",
+            "created_at": "2024-12-15T12:00:00Z"
+        },
+        {
+            "id": 2,
+            "nama": "Sistem Informasi",
+            "created_at": "2024-12-15T12:00:00Z"
+        }
+    ]
+}
+```

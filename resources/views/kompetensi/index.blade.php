@@ -1,66 +1,40 @@
 @extends('layouts.template')
+
 @section('content')
-   <div class="card card-outline card-primary">
-       <div class="card-header">
-           <h3 class="card-title">{{ $page->title }}</h3>
-           <div class="card-tools">
-               <a class="btn btn-sm btn-primary mt-1" href="{{ url('kompetensi/create') }}">Tambah</a>
-           </div>
-       </div>
-       <div class="card-body">
-           @if (session('success'))
-               <div class="alert alert-success">{{ session('success') }}</div>
-           @endif
-           @if (session('error'))
-               <div class="alert alert-danger">{{ session('error') }}</div>
-           @endif
-           <table class="table table-bordered table-striped table-hover table-sm" id="table_kompetensi">
-               <thead>
-                   <tr>
-                       <th>ID</th>
-                       <th>Deskripsi</th>
-                       <th>Mahasiswa ID</th>
-                       <th>Aksi</th>
-                   </tr>
-               </thead>
-           </table>
-       </div>
-   </div>
+    <div class="card card-outline card-primary">
+        <div class="card-header">
+            <h3 class="card-title">Daftar Kompetensi</h3>
+            <a href="{{ url('/kompetensi/create') }}" class="btn btn-primary btn-sm float-right">Tambah Kompetensi</a>
+        </div>
+
+        <div class="card-body">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Nama Kompetensi</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($kompetensi as $competence)
+                        <tr>
+                            <td>{{ $loop->iteration }}</td>
+                            <td>{{ $competence->nama }}</td>
+                            <td>
+                                <a href="{{ url('/kompetensi/edit/' . $competence->id) }}"
+                                    class="btn btn-warning btn-sm">Edit</a>
+                                <form action="{{ url('/kompetensi/delete/' . $competence->id) }}" method="POST"
+                                    style="display:inline;">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
+                                </form>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+    </div>
 @endsection
-@push('css')
-@endpush
-@push('js')
-   <script>
-       $(document).ready(function() {
-           var dataKompetensi = $('#table_kompetensi').DataTable({
-               serverSide: true,
-               ajax: {
-                   "url": "{{ url('kompetensi/list') }}",
-                   "dataType": "json", 
-                   "type": "POST"
-               },
-               columns: [{
-                   data: "DT_RowIndex",
-                   className: "text-center",
-                   orderable: false,
-                   searchable: false
-               }, {
-                   data: "deskripsi",
-                   className: "",
-                   orderable: true,
-                   searchable: true
-               }, {
-                   data: "mahasiswa_id",
-                   className: "",
-                   orderable: true, 
-                   searchable: true
-               }, {
-                   data: "aksi",
-                   className: "",
-                   orderable: false,
-                   searchable: false
-               }]
-           });
-       });
-   </script>
-@endpush

@@ -9,6 +9,7 @@ use App\Http\Controllers\SdmController;
 use App\Http\Controllers\ProdiController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\KompetensiController;
 use App\Http\Controllers\MahasiswaController;
 use App\Http\Controllers\UserController;
 
@@ -34,6 +35,13 @@ Route::middleware('auth')->group(function () {
         Route::get('/sdm/create', [UserController::class, 'sdmCreate']);
         Route::put('/sdm/update/{id}', [UserController::class, 'sdmUpdate']);
         Route::delete('/sdm/delete/{id}', [UserController::class, 'sdmDestroy']);
+
+        Route::get('/kompetensi', [KompetensiController::class, 'index']);
+        Route::get('/kompetensi/create', [KompetensiController::class, 'create']);
+        Route::post('/kompetensi', [KompetensiController::class, 'store']);
+        Route::get('/kompetensi/edit/{id}', [KompetensiController::class, 'edit']);
+        Route::put('/kompetensi/update/{id}', [KompetensiController::class, 'update']);
+        Route::delete('/kompetensi/delete/{id}', [KompetensiController::class, 'destroy']);
     });
 
     Route::get('logout', [AuthController::class, 'logout']);

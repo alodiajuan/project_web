@@ -19,6 +19,8 @@ Route::post('login', [AuthController::class, 'postlogin']);
 Route::middleware('auth')->group(function () {
     Route::middleware('role:admin,dosen,tendik,mahasiswa')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index']);
+        Route::get('/profile', [UserController::class, 'me']);
+        Route::put('/profile/update', [UserController::class, 'updateProfile']);
     });
 
     Route::middleware('role:admin')->group(function () {

@@ -6,11 +6,81 @@ use App\Models\Competence;
 use App\Models\Prodi;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
+    public function me(Request $request)
+    {
+        $breadcrumb = (object) [
+            'title' => 'Selamat Datang',
+            'list' => ['Home', 'Welcome']
+        ];
+
+        $activeMenu = 'profile';
+
+        $user = Auth::user();
+        $role = $user->role;
+
+        $prodi = Prodi::all();
+
+        $kompetensi = Competence::all();
+
+        return view('profile', compact('user', 'prodi', 'kompetensi', 'role', 'activeMenu', 'breadcrumb'));
+    }
+
+    public function updateProfile(Request $request)
+    {
+        $user = User::find(Auth::id());
+        $role = $user->role;
+
+        $validator = Validator::make($request->all(), [
+            'nama' => 'required|string|max:255',
+            'username' => 'required|string|max:255|unique:users,username,' . $user->id,
+            'foto_profile' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'password' => 'nullable|string|min:8',
+            'semester' => $role === 'mahasiswa' ? 'required|integer|min:1|max:14' : 'nullable|integer|min:1|max:14',
+            'id_kompetensi' => $role === 'mahasiswa' ? 'required|exists:competence,id' : 'nullable|exists:competence,id',
+            'id_prodi' => $role === 'mahasiswa' ? 'required|exists:prodi,id' : 'nullable|exists:prodi,id',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        $user->nama = $request->input('nama');
+        $user->username = $request->input('username');
+
+        if ($request->hasFile('foto_profile')) {
+
+            if ($user->foto_profile && file_exists(public_path($user->foto_profile))) {
+                unlink(public_path($user->foto_profile));
+            }
+
+
+            $file = $request->file('foto_profile');
+            $fileName = time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path('uploads/foto_profile'), $fileName);
+            $user->foto_profile = 'uploads/foto_profile/' . $fileName;
+        }
+
+        if ($request->filled('password')) {
+            $user->password = Hash::make($request->input('password'));
+        }
+
+        if ($role === 'mahasiswa') {
+            $user->semester = $request->input('semester');
+            $user->id_kompetensi = $request->input('id_kompetensi');
+            $user->id_prodi = $request->input('id_prodi');
+        }
+
+        $user->save();
+
+        return redirect("/profile")->with('success', 'Profil berhasil diperbarui.');
+    }
+
     public function mahasiswa(Request $request)
     {
         $breadcrumb = (object) [

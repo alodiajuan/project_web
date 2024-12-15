@@ -14,7 +14,7 @@ http://localhost:8000/api
 
 #### a. Login
 
--   **Endpoint:** `/api/login`
+-   **Endpoint:** `/api/v1/login`
 -   **Method:** `POST`
 -   **Description:** Login User Berhasil
 -   **Request:**
@@ -46,7 +46,7 @@ http://localhost:8000/api
 
 #### b. Logout
 
--   **Endpoint:** ` /api/logout`
+-   **Endpoint:** ` /api/v1/logout`
 -   **Method:** `POST`
 -   **Description:** Logout Berhasil dan Menghapus token autentikasi pengguna untuk keluar dari sistem.
 

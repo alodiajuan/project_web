@@ -1,66 +1,329 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# API SPESIFICATIONS
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+API ini menyediakan berbagai endpoint untuk menghubungkan mobile apps ke database.
 
-## About Laravel
+## BASE URL
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+```
+http://localhost:8000/api
+```
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## RESOURCES
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### 1. Authentication
 
-## Learning Laravel
+#### a. Login
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+-   **Endpoint:** `/api/login`
+-   **Method:** `POST`
+-   **Description:** Login User Berhasil
+-   **Request:**
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+```json
+{
+    "username": "number (required)",
+    "password": "string (required)"
+}
+```
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+-   **Response**:
 
-## Laravel Sponsors
+```json
+{
+    "success": true,
+    "message": "Login successful",
+    "data": {
+        "user": {
+            "id": 1,
+            "username": "user123",
+            "nama": "John Doe",
+            "role": "mahasiswa"
+        },
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+    }
+}
+```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+#### b. Logout
 
-### Premium Partners
+-   **Endpoint:** ` /api/logout`
+-   **Method:** `POST`
+-   **Description:** Logout Berhasil dan Menghapus token autentikasi pengguna untuk keluar dari sistem.
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+-   **Response:**
 
-## Contributing
+```json
+{
+    "success": true,
+    "message": "Logout successful"
+}
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+#### c. User Profile
 
-## Code of Conduct
+-   **Endpoint:** `/api/userProfile`
+-   **Method:** `GET`
+-   **Description:** Mengambil informasi profil pengguna yang sedang login.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+-   **Response:**
 
-## Security Vulnerabilities
+```json
+{
+    "success": true,
+    "data": {
+        "id": 1,
+        "username": "user123",
+        "foto_profile": "https://example.com/profile.jpg",
+        "nama": "John Doe",
+        "semester": 4,
+        "id_kompetensi": 1,
+        "id_prodi": 2,
+        "role": "mahasiswa",
+        "created_at": "2024-12-15T12:00:00Z",
+        "updated_at": "2024-12-15T12:00:00Z"
+    }
+}
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### 2. Task
 
-## License
+#### a. Create tasks
+-   **Endpoint:** `/api/tasks`
+-   **Method:** `POST`
+-   **Description:** Membuat tugas baru.
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+-   **Request:**
+
+```json
+{
+    "id_dosen": 1,
+    "judul": "Tugas Pemrograman",
+    "deskripsi": "Tugas membuat aplikasi web menggunakan Laravel",
+    "bobot": 20,
+    "semester": 5,
+    "id_jenis": 2,
+    "tipe": "file"
+}
+```
+
+-   **Response:**
+
+```json
+{
+    "success": true,
+    "message": "Task created successfully",
+    "data": {
+        "id": 1,
+        "id_dosen": 1,
+        "judul": "Tugas Pemrograman",
+        "deskripsi": "Tugas membuat aplikasi web menggunakan Laravel",
+        "bobot": 20,
+        "semester": 5,
+        "id_jenis": 2,
+        "tipe": "file",
+        "created_at": "2024-12-15T12:00:00Z"
+    }
+}
+```
+
+#### a. Get tasks
+-   **Endpoint:** `/api/tasks`
+-   **Method:** `GET`
+-   **Description:** Mendapatkan daftar semua tugas
+
+-   **Response:**
+
+```json
+{
+    "success": true,
+    "data": [
+        {
+            "id": 1,
+            "id_dosen": 1,
+            "judul": "Tugas Pemrograman",
+            "deskripsi": "Tugas membuat aplikasi web menggunakan Laravel",
+            "bobot": 20,
+            "semester": 5,
+            "id_jenis": 2,
+            "tipe": "file",
+            "created_at": "2024-12-15T12:00:00Z"
+        }
+    ]
+}
+```
+
+### 3. Compensation
+-   **Endpoint:** `/api/compensations`
+-   **Method:** `POST`
+-   **Description:** Membuat kompensasi atas tugas yang dikirimkan.
+
+-   **Request:**
+
+```json
+{
+    "id_task": 1,
+    "id_submission": 3,
+    "id_dosen": 1,
+    "id_mahasiswa": 2,
+    "semester": 5
+}
+```
+
+-   **Response:**
+
+```json
+{
+    "success": true,
+    "message": "Compensation created successfully",
+    "data": {
+        "id": 1,
+        "id_task": 1,
+        "id_submission": 3,
+        "id_dosen": 1,
+        "id_mahasiswa": 2,
+        "semester": 5,
+        "created_at": "2024-12-15T12:00:00Z"
+    }
+}
+```
+
+### 4. Task_Submission
+
+#### a. Create Submission
+-   **Endpoint:** `/api/task-submissions`
+-   **Method:** `POST`
+-   **Description:** Mahasiswa mengirimkan tugas untuk disetujui dosen.
+
+-   **Request:**
+
+```json
+{
+    "id_task": 1,
+    "id_mahasiswa": 2,
+    "file": "https://example.com/task-submission.pdf",
+    "url": "https://github.com/mahasiswa/project-web"
+}
+```
+
+-   **Response:**
+
+```json
+{
+    "success": true,
+    "message": "Task submission created successfully",
+    "data": {
+        "id": 1,
+        "id_task": 1,
+        "id_mahasiswa": 2,
+        "file": "https://example.com/task-submission.pdf",
+        "url": "https://github.com/mahasiswa/project-web",
+        "created_at": "2024-12-15T12:00:00Z"
+    }
+}
+```
+
+### 5. Task_Request
+-   **Endpoint:** `/api/task-requests`
+-   **Method:** `POST`
+-   **Description:** Mahasiswa mengajukan permintaan untuk menerima atau menolak tugas..
+
+-   **Request:**
+
+```json
+{
+    "id_task": 1,
+    "id_mahasiswa": 2,
+    "status": "terima"
+}
+```
+
+-   **Response:**
+
+```json
+{
+    "success": true,
+    "message": "Task request submitted successfully",
+    "data": {
+        "id": 1,
+        "id_task": 1,
+        "id_mahasiswa": 2,
+        "status": "terima",
+        "created_at": "2024-12-15T12:00:00Z"
+    }
+}
+```
+
+### 6. Competence
+-   **Endpoint:** `/api/competences`
+-   **Method:** `GET`
+-   **Description:**  Mendapatkan daftar kompetensi.
+
+-   **Response:**
+
+```json
+{
+    "success": true,
+    "data": [
+        {
+            "id": 1,
+            "nama": "Pemrograman",
+            "created_at": "2024-12-15T12:00:00Z"
+        },
+        {
+            "id": 2,
+            "nama": "Jaringan Komputer",
+            "created_at": "2024-12-15T12:00:00Z"
+        }
+    ]
+}
+```
+
+### 7. Type Task
+-   **Endpoint:** `/api/type-tasks`
+-   **Method:** `GET`
+-   **Description:**  Mendapatkan daftar jenis tugas.
+
+-   **Response:**
+
+```json
+{
+    "success": true,
+    "data": [
+        {
+            "id": 1,
+            "nama": "Tugas Mandiri",
+            "created_at": "2024-12-15T12:00:00Z"
+        },
+        {
+            "id": 2,
+            "nama": "Tugas Kelompok",
+            "created_at": "2024-12-15T12:00:00Z"
+        }
+    ]
+}
+```
+
+### 8. Type Task
+-   **Endpoint:** `/api/prodi`
+-   **Method:** `GET`
+-   **Description:**   Mendapatkan daftar program studi.
+
+-   **Response:**
+
+```json
+{
+    "success": true,
+    "data": [
+        {
+            "id": 1,
+            "nama": "Teknik Informatika",
+            "created_at": "2024-12-15T12:00:00Z"
+        },
+        {
+            "id": 2,
+            "nama": "Sistem Informasi",
+            "created_at": "2024-12-15T12:00:00Z"
+        }
+    ]
+}
+```

@@ -42,6 +42,13 @@ Route::middleware('auth')->group(function () {
         Route::get('/kompetensi/edit/{id}', [KompetensiController::class, 'edit']);
         Route::put('/kompetensi/update/{id}', [KompetensiController::class, 'update']);
         Route::delete('/kompetensi/delete/{id}', [KompetensiController::class, 'destroy']);
+
+        Route::get('/prodi', [ProdiController::class, 'index']);
+        Route::get('/prodi/create', [ProdiController::class, 'create']);
+        Route::post('/prodi', [ProdiController::class, 'store']);
+        Route::get('/prodi/edit/{id}', [ProdiController::class, 'edit']);
+        Route::put('/prodi/update/{id}', [ProdiController::class, 'update']);
+        Route::delete('/prodi/delete/{id}', [ProdiController::class, 'destroy']);
     });
 
     Route::get('logout', [AuthController::class, 'logout']);

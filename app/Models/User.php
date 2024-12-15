@@ -25,6 +25,11 @@ class User extends Authenticatable
         'remember_token',
     ];
 
+    public function prodi()
+    {
+        return $this->belongsTo(Prodi::class, 'id_prodi');
+    }
+
     public function competence()
     {
         return $this->belongsTo(Competence::class, 'id_kompetensi');

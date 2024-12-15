@@ -15,6 +15,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             TypeTaskSeeder::class,
             CompetenceSeeder::class,
+            ProdiSeeder::class,
             UserSeeder::class,
             TaskSeeder::class,
             TaskRequestSeeder::class,

@@ -13,17 +13,19 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('usename')->unique();
+            $table->string('username')->unique();
             $table->string('password');
             $table->string('foto_profile');
             $table->string('nama');
             $table->integer('semester');
             $table->unsignedBigInteger('id_kompetensi')->nullable();
+            $table->unsignedBigInteger('id_prodi')->nullable();
             $table->enum('role', ['admin', 'dosen', 'tendik', 'mahasiswa']);
             $table->rememberToken();
             $table->timestamps();
 
             $table->foreign('id_kompetensi')->references('id')->on('competence');
+            $table->foreign('id_prodi')->references('id')->on('prodi');
         });
     }
 

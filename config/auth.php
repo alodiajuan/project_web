@@ -15,7 +15,6 @@ return [
 
     'defaults' => [
         'guard' => 'web',
-        'passwords' => 'users',
     ],
 
     /*
@@ -38,23 +37,7 @@ return [
     'guards' => [
         'web' => [
             'driver' => 'session',
-            'provider' => 'mahasiswa',
-        ],
-        'mahasiswa' => [
-            'driver' => 'session',
-            'provider' => 'mahasiswa',
-        ],
-        'sdm' => [
-            'driver' => 'session',
-            'provider' => 'sdm',
-        ],
-        'mahasiswa_api' => [ // New guard for mahasiswa API
-            'driver' => 'jwt', // Use jwt driver for API
-            'provider' => 'mahasiswa',
-        ],
-        'sdm_api' => [ // New guard for dosen API
-            'driver' => 'jwt', // Use jwt driver for API
-            'provider' => 'sdm',
+            'provider' => 'users',
         ],
     ],
 
@@ -76,13 +59,9 @@ return [
     */
 
     'providers' => [
-        'mahasiswa' => [
+        'users' => [
             'driver' => 'eloquent',
-            'model' => App\Models\MahasiswaModel::class,
-        ],
-        'sdm' => [
-            'driver' => 'eloquent',
-            'model' => App\Models\SdmModel::class,
+            'model' => App\Models\User::class,
         ],
     ],
 
@@ -105,21 +84,6 @@ return [
     |
     */
 
-    'passwords' => [
-        'mahasiswa' => [
-            'provider' => 'mahasiswa',
-            'table' => 'password_reset_tokens',
-            'expire' => 60,
-            'throttle' => 60,
-        ],
-        'sdm' => [
-            'provider' => 'sdm',
-            'table' => 'password_reset_tokens',
-            'expire' => 60,
-            'throttle' => 60,
-        ],
-    ],
-
     /*
     |--------------------------------------------------------------------------
     | Password Confirmation Timeout
@@ -134,4 +98,3 @@ return [
     'password_timeout' => 10800,
 
 ];
-

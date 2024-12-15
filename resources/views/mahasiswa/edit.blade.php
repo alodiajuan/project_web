@@ -1,17 +1,15 @@
-@extends('layouts.template')
+{{-- @extends('layouts.template')
 @section('content')
     <div class="card card-outline card-primary">
         <div class="card-header">
-            <h3 class="card-title">{{ $page->title }}</h3>
+            <h3 class="card-title">Daftar Mahasiswa</h3>
             <div class="card-tools"></div>
         </div>
         <div class="card-body">
             @empty($mahasiswa)
-                <div class="alert alert-danger alert-dismissible">
-                    <h5><i class="icon fas fa-ban"></i> Kesalahan!</h5>
-                    Data yang Anda cari tidak ditemukan.
+                <div>
+                    Data sedang kosong...
                 </div>
-                <a href="{{ url('/mahasiswa') }}" class="btn btn-sm btn-default mt-2">Kembali</a>
             @else
                 <form method="POST" action="{{ url('/mahasiswa/' . $mahasiswa->mahasiswa_id) }}" class="form-horizontal"
                     enctype="multipart/form-data">
@@ -161,4 +159,4 @@
 
 @push('js')
     <!-- Additional JavaScript -->
-@endpush
+@endpush --}}

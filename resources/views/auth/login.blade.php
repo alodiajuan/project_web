@@ -111,10 +111,10 @@
             <div class="card-body">
 
                 <form action="/login" method="POST" id="form-login">
-                    @method('POST')
                     @csrf
                     <div class="input-group mb-3">
-                        <input type="text" id="username" name="username" class="form-control" placeholder="NIP/NIM">
+                        <input type="text" id="username" name="username" required class="form-control"
+                            placeholder="NIP/NIM">
                         <div class="input-group-append">
                             <div class="input-group-text">
                                 <span class="fas fa-id-card"></span>
@@ -123,7 +123,7 @@
                         <small id="error-username" class="error-text text-danger"></small>
                     </div>
                     <div class="input-group mb-3">
-                        <input type="password" id="password" name="password" class="form-control"
+                        <input type="password" id="password" name="password" required class="form-control"
                             placeholder="Password">
                         <div class="input-group-append">
                             <div class="input-group-text">
@@ -131,22 +131,6 @@
                             </div>
                         </div>
                         <small id="error-password" class="error-text text-danger"></small>
-                    </div>
-                    <div class="input-group mb-3">
-                        <select class="form-control" name="role" id="role">
-                            <option value="">Masuk Sebagai</option>
-                            <option value="MHS">Mahasiswa</option>
-                            <option value="ADM">Admin</option>
-                            <option value="DSN">Dosen</option>
-                            <option value="TDK">Tendik</option>
-                            <option value="KPR">Kaprodi</option>
-                        </select>
-                        <div class="input-group-append">
-                            <div class="input-group-text">
-                                <span class="fas fa-users"></span>
-                            </div>
-                        </div>
-                        <small id="error-role" class="error-text text-danger"></small>
                     </div>
                     <div class="row">
                         <div class="col-8">
@@ -171,79 +155,6 @@
     <script src="{{ asset('adminlte/plugins/jquery-validation/additional-methods.min.js') }}"></script>
     <script src="{{ asset('adminlte/plugins/sweetalert2/sweetalert2.min.js') }}"></script>
     <script src="{{ asset('adminlte/dist/js/adminlte.min.js') }}"></script>
-
-    <script>
-        $(document).ready(function() {
-            $("#form-login").validate({
-                rules: {
-                    username: {
-                        required: true,
-                        minlength: 6
-                    },
-                    password: {
-                        required: true,
-                        minlength: 6
-                    },
-                    role: {
-                        required: true
-                    }
-                },
-                messages: {
-                    username: {
-                        required: "Username harus diisi",
-                        minlength: "NIP/NIM Minimal 6 karakter"
-                    },
-                    password: {
-                        required: "Password harus diisi",
-                        minlength: "Password minimal 6 karakter"
-                    },
-                    role: {
-                        required: "Pilih role Anda"
-                    }
-                },
-                submitHandler: function(form) {
-                    $.ajax({
-                        url: form.action,
-                        type: form.method,
-                        data: $(form).serialize(),
-                        success: function(response) {
-                            if (response.status) {
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: 'Berhasil',
-                                    text: response.message,
-                                }).then(function() {
-                                    window.location = response.redirect;
-                                });
-                            } else {
-                                $('.error-text').text('');
-                                $.each(response.msgField, function(prefix, val) {
-                                    $('#error-' + prefix).text(val[0]);
-                                });
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Terjadi Kesalahan',
-                                    text: response.message
-                                });
-                            }
-                        }
-                    });
-                    return false;
-                },
-                errorElement: 'span',
-                errorPlacement: function(error, element) {
-                    error.addClass('invalid-feedback');
-                    element.closest('.input-group').append(error);
-                },
-                highlight: function(element, errorClass, validClass) {
-                    $(element).addClass('is-invalid');
-                },
-                unhighlight: function(element, errorClass, validClass) {
-                    $(element).removeClass('is-invalid');
-                }
-            });
-        });
-    </script>
 </body>
 
 </html>

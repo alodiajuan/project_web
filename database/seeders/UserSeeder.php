@@ -11,9 +11,9 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         User::create([
-            'usename' => 'adminuser',
+            'username' => 'adminuser',
             'password' => Hash::make('password123'),
-            'foto_profile' => 'admin.jpg',
+            'foto_profile' => 'profile.jpg',
             'nama' => 'Admin User',
             'semester' => 1,
             'id_kompetensi' => 1,
@@ -21,9 +21,9 @@ class UserSeeder extends Seeder
         ]);
 
         User::create([
-            'usename' => 'dosenuser',
+            'username' => 'dosenuser',
             'password' => Hash::make('password123'),
-            'foto_profile' => 'dosen.jpg',
+            'foto_profile' => 'profile.jpg',
             'nama' => 'Dosen User',
             'semester' => 3,
             'id_kompetensi' => 2,
@@ -31,23 +31,24 @@ class UserSeeder extends Seeder
         ]);
 
         User::create([
-            'usename' => 'mahasiswauser',
+            'username' => 'tendikuser',
             'password' => Hash::make('password123'),
-            'foto_profile' => 'mahasiswa.jpg',
-            'nama' => 'Mahasiswa User',
-            'semester' => 5,
-            'id_kompetensi' => 3,
-            'role' => 'mahasiswa',
-        ]);
-
-        User::create([
-            'usename' => 'tendikuser',
-            'password' => Hash::make('password123'),
-            'foto_profile' => 'tendik.jpg',
+            'foto_profile' => 'profile.jpg',
             'nama' => 'Tendik User',
             'semester' => 2,
             'id_kompetensi' => 1,
             'role' => 'tendik',
+        ]);
+
+        User::create([
+            'username' => 'mahasiswauser',
+            'password' => Hash::make('password123'),
+            'foto_profile' => 'profile.jpg',
+            'nama' => 'Mahasiswa User',
+            'semester' => 5,
+            'id_kompetensi' => 3,
+            'id_prodi' => 1,
+            'role' => 'mahasiswa',
         ]);
     }
 }

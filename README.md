@@ -5,7 +5,7 @@ API ini menyediakan berbagai endpoint untuk menghubungkan mobile apps ke databas
 ## BASE URL
 
 ```
-http://localhost:8000/api
+http://127.0.0.1:8000/api/v1
 ```
 
 ## RESOURCES
@@ -46,7 +46,7 @@ http://localhost:8000/api
 
 #### b. Logout
 
--   **Endpoint:** ` /api/logout`
+-   **Endpoint:**  `/api/v1/`
 -   **Method:** `POST`
 -   **Description:** Logout Berhasil dan Menghapus token autentikasi pengguna untuk keluar dari sistem.
 
@@ -61,7 +61,7 @@ http://localhost:8000/api
 
 #### c. User Profile
 
--   **Endpoint:** `/api/userProfile`
+-   **Endpoint:** `/api/v1/`
 -   **Method:** `GET`
 -   **Description:** Mengambil informasi profil pengguna yang sedang login.
 
@@ -88,7 +88,7 @@ http://localhost:8000/api
 ### 2. Task
 
 #### a. Create tasks
--   **Endpoint:** `/api/tasks`
+-   **Endpoint:** `/api/v1/`
 -   **Method:** `POST`
 -   **Description:** Membuat tugas baru.
 
@@ -127,7 +127,7 @@ http://localhost:8000/api
 ```
 
 #### a. Get tasks
--   **Endpoint:** `/api/tasks`
+-   **Endpoint:** `/api/v1/`
 -   **Method:** `GET`
 -   **Description:** Mendapatkan daftar semua tugas
 
@@ -153,7 +153,7 @@ http://localhost:8000/api
 ```
 
 ### 3. Compensation
--   **Endpoint:** `/api/compensations`
+-   **Endpoint:** `/api/v1/compensations`
 -   **Method:** `POST`
 -   **Description:** Membuat kompensasi atas tugas yang dikirimkan.
 
@@ -190,7 +190,7 @@ http://localhost:8000/api
 ### 4. Task_Submission
 
 #### a. Create Submission
--   **Endpoint:** `/api/task-submissions`
+-   **Endpoint:** `/api/v1/task-submissions`
 -   **Method:** `POST`
 -   **Description:** Mahasiswa mengirimkan tugas untuk disetujui dosen.
 
@@ -223,7 +223,7 @@ http://localhost:8000/api
 ```
 
 ### 5. Task_Request
--   **Endpoint:** `/api/task-requests`
+-   **Endpoint:** `/api/v1/task-requests`
 -   **Method:** `POST`
 -   **Description:** Mahasiswa mengajukan permintaan untuk menerima atau menolak tugas..
 
@@ -254,7 +254,7 @@ http://localhost:8000/api
 ```
 
 ### 6. Competence
--   **Endpoint:** `/api/competences`
+-   **Endpoint:** `/api/v1/competences`
 -   **Method:** `GET`
 -   **Description:**  Mendapatkan daftar kompetensi.
 
@@ -279,7 +279,7 @@ http://localhost:8000/api
 ```
 
 ### 7. Type Task
--   **Endpoint:** `/api/type-tasks`
+-   **Endpoint:** `/api/v1/type-tasks`
 -   **Method:** `GET`
 -   **Description:**  Mendapatkan daftar jenis tugas.
 
@@ -304,7 +304,7 @@ http://localhost:8000/api
 ```
 
 ### 8. Type Task
--   **Endpoint:** `/api/prodi`
+-   **Endpoint:** `/api/v1/prodi`
 -   **Method:** `GET`
 -   **Description:**   Mendapatkan daftar program studi.
 

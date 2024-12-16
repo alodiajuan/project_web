@@ -32,9 +32,9 @@
                                 @endif
                             </td>
                             <td>
+                                <a href="{{ url('/pengajuan/' . $submission->id) }}" class="btn btn-sm btn-primary">Lihat
+                                    Detail</a>
                                 @if (is_null($submission->acc_dosen))
-                                    <a href="{{ url('/pengajuan/' . $submission->id) }}" class="btn btn-sm btn-primary">Lihat
-                                        Detail</a>
                                     <form action="{{ url('/pengajuan/' . $submission->id . '/terima') }}" method="POST"
                                         style="display: inline;">
                                         @csrf
@@ -45,8 +45,6 @@
                                         @csrf
                                         <button type="submit" class="btn btn-sm btn-danger">Tolak</button>
                                     </form>
-                                @else
-                                    <span class="text-muted">Tidak ada aksi</span>
                                 @endif
                             </td>
                         </tr>

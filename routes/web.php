@@ -1,16 +1,13 @@
 <?php
 
-use App\Http\Controllers\LevelController;
-use App\Http\Controllers\WelcomeController;
 use App\Http\Controllers\KategoriController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TugasController;
-use App\Http\Controllers\SdmController;
 use App\Http\Controllers\ProdiController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\KompetensiController;
-use App\Http\Controllers\MahasiswaController;
+use App\Http\Controllers\PengajuanController;
 use App\Http\Controllers\UserController;
 
 Route::get('login', [AuthController::class, 'login']);
@@ -36,6 +33,11 @@ Route::middleware('auth')->group(function () {
         Route::get('/tugas/edit/{id}', [TugasController::class, 'edit']);
         Route::put('/tugas/{id}', [TugasController::class, 'update']);
         Route::delete('/tugas/delete/{id}', [TugasController::class, 'destroy']);
+
+        Route::get('/pengajuan', [PengajuanController::class, 'index']);
+        Route::get('/pengajuan/{id}', [PengajuanController::class, 'show']);
+        Route::post('/pengajuan/{id}/terima', [PengajuanController::class, 'approve']);
+        Route::post('/pengajuan/{id}/tolak', [PengajuanController::class, 'decline']);
     });
 
     Route::middleware('role:admin')->group(function () {

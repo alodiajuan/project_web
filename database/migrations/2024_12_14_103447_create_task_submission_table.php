@@ -16,9 +16,9 @@ return new class extends Migration
             $table->unsignedBigInteger('id_mahasiswa');
             $table->unsignedBigInteger('id_task');
             $table->unsignedBigInteger('id_dosen')->nullable();
-            $table->string('acc_dosen')->nullable();
-            $table->string('file');
-            $table->string('url');
+            $table->enum('acc_dosen', ['terima', 'tolak'])->nullable();
+            $table->string('file')->nullable();
+            $table->string('url')->nullable();
             $table->timestamps();
 
             $table->foreign('id_mahasiswa')->references('id')->on('users');

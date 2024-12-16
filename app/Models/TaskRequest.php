@@ -21,7 +21,7 @@ class TaskRequest extends Model
         return $this->belongsTo(Task::class, 'id_task');
     }
 
-    public function mahasiswa()
+    public function user()
     {
         return $this->belongsTo(User::class, 'id_mahasiswa');
     }

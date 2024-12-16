@@ -2,20 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\TugasModel;
-use App\Models\KategoriModel;
-use App\Models\SdmModel;
+use App\Models\Task;
+use App\Models\TaskRequest;
+use App\Models\TypeTask;
 use Illuminate\Http\Request;
-use Yajra\DataTables\Facades\DataTables;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
-use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class TugasController extends Controller
 {
     public function index()
     {
-        $kategoris = KategoriModel::all(); // Mengambil semua data level
-
         $breadcrumb = (object) [
             'title' => 'Daftar Tugas',
             'list' => ['Home', 'Tugas']
@@ -27,255 +24,152 @@ class TugasController extends Controller
 
         $activeMenu = 'tugas';
 
-        return view('tugas.index', compact('kategoris', 'breadcrumb', 'page', 'activeMenu'));
+        $tasks = Task::where('id_dosen', Auth::id())->get();
+
+        return view('tugas.index', compact('breadcrumb', 'page', 'tasks', 'activeMenu'));
     }
 
-    public function list(Request $request)
+    public function create()
     {
-        $tugas = TugasModel::select(
-            'tugas_id',
-            'tugas_kode',
-            'tugas_nama',
-            'deskripsi',
-            'jam_kompen',
-            'status_dibuka',
-            'tanggal_mulai',
-            'tanggal_akhir',
-            'kategori_id',
-            'sdm_id')
-            ->with('kategori', 'sdm');
+        $breadcrumb = (object) [
+            'title' => 'Tambah Tugas',
+            'list' => ['Home', 'Tugas', 'Tambah']
+        ];
 
-        if ($request->kategori_id) {
-            $tugas->where('kategori_id', $request->kategori_id);
-        } elseif ($request->sdm_id) {
-            $tugas->where('sdm_id', $request->sdm_id);
-        }
+        $page = (object) [
+            'title' => 'Form Tambah Tugas'
+        ];
 
-        return DataTables::of($tugas)
-            ->addIndexColumn()
-            ->addColumn('aksi', function ($tugas) {
-                // $btn = '<a href="' . url('tugas/' . $tugas->tugas_id) . '" class="btn btn-info btn-sm">Detail</a> ';
-                $btn = '<button onclick="modalAction(\'' . url('/tugas/' . $tugas->tugas_id . '/show_ajax') . '\')" class="btn btn-info btn-sm">Detail</button> ';
-                $btn .= '<button onclick="modalAction(\'' . url('/tugas/' . $tugas->tugas_id . '/request_ajax') . '\')" class="btn btn-info btn-sm">Request</button> ';
-                $btn .= '<button onclick="modalAction(\'' . url('/tugas/' . $tugas->tugas_id . '/edit_ajax') . '\')" class="btn btn-warning btn-sm">Edit</button> ';
-                $btn .= '<button onclick="modalAction(\'' . url('/tugas/' . $tugas->tugas_id . '/delete_ajax') . '\')" class="btn btn-danger btn-sm">Hapus</button> ';
-                return $btn;
-            })
-            ->editColumn('status_dibuka', function ($tugas) {
-                return $tugas->status_dibuka;
-            })
-            ->editColumn('tanggal_mulai', function ($tugas) {
-                return date('Y-m-d', strtotime($tugas->tanggal_mulai));
-            })
-            ->editColumn('tanggal_akhir', function ($tugas) {
-                return date('Y-m-d', strtotime($tugas->tanggal_akhir));
-            })
-            ->rawColumns(['aksi'])
-            ->make(true);
+        $activeMenu = 'tugas';
+
+        $jenis_tasks = TypeTask::all();
+
+        return view('tugas.create', compact('breadcrumb', 'page', 'jenis_tasks', 'activeMenu'));
     }
 
-    public function create_ajax()
+    public function store(Request $request)
     {
-        // Ambil data kategori dari model
-        $categories = KategoriModel::select('kategori_id', 'kategori_nama')->get();
-        $sdm = SdmModel::select('sdm_id', 'sdm_nama')->get();
-        
-        // Kirim data ke view
-        return view('tugas.create_ajax', [
-            'categories' => $categories,
-            'sdm' => $sdm
+        $validator = Validator::make($request->all(), [
+            'judul' => 'required|string|max:255',
+            'deskripsi' => 'required|string',
+            'bobot' => 'required|integer|min:1',
+            'semester' => 'required|integer|min:1|max:8',
+            'id_jenis' => 'required|exists:type_task,id',
+            'tipe' => 'required|in:file,url',
         ]);
-    }
 
-    public function store_ajax(Request $request)
-    {
-        if ($request->ajax() || $request->wantsJson()) {
-            $rules = [
-                'tugas_kode' => 'required|string|max:20|unique:m_tugas',
-                'tugas_nama' => 'required|string|max:255',
-                'deskripsi' => 'required|string',
-                'jam_kompen' => 'required|integer',
-                'status_dibuka' => 'required|in:dibuka,ditutup',
-                'tanggal_mulai' => 'required|date',
-                'tanggal_akhir' => 'required|date|after:tanggal_mulai',
-                'kategori_id' => 'required|integer',
-                'sdm_id' => 'required|integer|exists:m_sdm,sdm_id'
-            ];
-
-            $validator = Validator::make($request->all(), $rules);
-
-            if ($validator->fails()) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Validasi Gagal',
-                    'msgField' => $validator->errors()
-                ]);
-            }
-
-            try {
-                TugasModel::create($request->all());
-                return response()->json([
-                    'status' => true,
-                    'message' => 'Data tugas berhasil disimpan'
-                ]);
-            } catch (\Exception $e) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Gagal menyimpan data',
-                    'msgField' => ['error' => [$e->getMessage()]]
-                ]);
-            }
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
         }
-        return redirect('/tugas');
+
+        Task::create([
+            'id_dosen' => Auth::id(),
+            'judul' => $request->judul,
+            'deskripsi' => $request->deskripsi,
+            'bobot' => $request->bobot,
+            'semester' => $request->semester,
+            'id_jenis' => $request->id_jenis,
+            'tipe' => $request->tipe,
+        ]);
+
+        return redirect('/tugas')->with('success', 'Tugas berhasil ditambahkan.');
     }
-    
-    public function detail_ajax(Request $show, $id)
+
+    public function edit($id)
     {
-        if ($show->ajax() || $show->wantsJson()) {
-            $tugas = TugasModel::find($id);
-            if ($tugas) {
-                return response()->json([
-                    'status' => true,
-                    'message' => 'Data berhasil ditampilkan',
-                    'data' => $tugas
-                ]);
-            } else {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Data tidak ditemukan'
-                ]);
-            }
+        $breadcrumb = (object) [
+            'title' => 'Edit Tugas',
+            'list' => ['Home', 'Tugas', 'Edit']
+        ];
+
+        $page = (object) [
+            'title' => 'Form Edit Tugas'
+        ];
+
+        $activeMenu = 'tugas';
+
+        $task = Task::where('id', $id)->where('id_dosen', Auth::id())->firstOrFail();
+        $jenis_tasks = TypeTask::all();
+
+        return view('tugas.edit', compact('breadcrumb', 'page', 'task', 'jenis_tasks', 'activeMenu'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $task = Task::where('id', $id)->where('id_dosen', Auth::id())->firstOrFail();
+
+        $validator = Validator::make($request->all(), [
+            'judul' => 'required|string|max:255',
+            'deskripsi' => 'required|string',
+            'bobot' => 'required|integer|min:1',
+            'semester' => 'required|integer|min:1|max:8',
+            'id_jenis' => 'required|exists:type_task,id',
+            'tipe' => 'required|in:file,url',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
         }
-        return redirect('/tugas');
-    }
-    
-    public function show_ajax(string $id)
-    {
-        $tugas = TugasModel::with(['kategori', 'sdm'])->find($id);
-    
-        if (!$tugas) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Data tugas tidak ditemukan.'
-            ], 404);
-        }
-    
-        return view('tugas.show_ajax', ['tugas' => $tugas]);
-    }
-    
-    public function request_ajax(string $id)
-    {
-        $tugas = TugasModel::with(['kategori', 'sdm'])->find($id);
-    
-        if (!$tugas) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Data tugas tidak ditemukan.'
-            ], 404);
-        }
-    
-        return view('tugas.request_ajax', ['tugas' => $tugas]);
-    }
-    
-    public function pengajuan_ajax(Request $request, $id)
-    {
-        if ($request->ajax() || $request->wantsJson()) {
-            $tugas = TugasModel::find($id);
-            if ($tugas) {
-                return response()->json([
-                    'status' => true,
-                    'message' => 'Data berhasil ditampilkan',
-                    'data' => $tugas
-                ]);
-            } else {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Data tidak ditemukan'
-                ]);
-            }
-        }
-        return redirect('/tugas');
-    }
-    
-    
-    public function edit_ajax($id)
-    {
-        $tugas = TugasModel::with(['kategori', 'sdm'])->findOrFail($id);
-        $kategori = KategoriModel::all();
-        $sdm = SdmModel::all();
 
-        return view('tugas.edit_ajax', compact('tugas', 'kategori', 'sdm'));
+        $task->update([
+            'judul' => $request->judul,
+            'deskripsi' => $request->deskripsi,
+            'bobot' => $request->bobot,
+            'semester' => $request->semester,
+            'id_jenis' => $request->id_jenis,
+            'tipe' => $request->tipe,
+        ]);
+
+        return redirect('/tugas')->with('success', 'Tugas berhasil diperbarui.');
     }
 
-    public function update_ajax(Request $request, $id)
+    public function destroy($id)
     {
-        if ($request->ajax() || $request->wantsJson()) {
-            $rules = [
-                'tugas_kode' => 'required|string|max:20|unique:m_tugas,tugas_kode,' . $id . ',tugas_id',
-                'tugas_nama' => 'required|string|max:255',
-                'deskripsi' => 'required|string',
-                'jam_kompen' => 'required|integer',
-                'status_dibuka' => 'required|in:dibuka,ditutup',
-                'tanggal_mulai' => 'required|date',
-                'tanggal_akhir' => 'required|date|after:tanggal_mulai',
-                'kategori_id' => 'required|integer',
-                'sdm_id' => 'required|integer|exists:m_sdm,sdm_id'
-            ];
+        $task = Task::where('id', $id)->where('id_dosen', Auth::id())->firstOrFail();
 
-            $messages = [
-                'status_dibuka.in' => 'Status harus dibuka atau ditutup'
-            ];
+        $task->delete();
 
-            $validator = Validator::make($request->all(), $rules, $messages);
-            if ($validator->fails()) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Validasi gagal',
-                    'msgField' => $validator->errors()
-                ]);
-            }
-
-            try {
-                $tugas = TugasModel::findOrFail($id);
-                $tugas->update($request->all());
-                return response()->json([
-                    'status' => true,
-                    'message' => 'Data berhasil diupdate'
-                ]);
-            } catch (\Exception $e) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Gagal mengupdate data',
-                    'msgField' => ['error' => [$e->getMessage()]]
-                ]);
-            }
-        }
-        return redirect('/');
+        return redirect('/tugas')->with('success', 'Tugas berhasil dihapus.');
     }
 
-    public function confirm_ajax($id)
+
+    public function show($id)
     {
-        $tugas = TugasModel::with(['kategori', 'sdm'])->findOrFail($id);
-        return view('tugas.confirm_ajax', compact('tugas'));
+        $task = Task::where('id', $id)
+            ->where('id_dosen', Auth::id())
+            ->firstOrFail();
+
+        $requests = TaskRequest::where('id_task', $task->id)
+            ->with(['user', 'user.prodi', 'user.competence'])
+            ->get();
+
+        $breadcrumb = (object) [
+            'title' => 'Detail Tugas',
+            'list' => ['Home', 'Tugas', 'Detail']
+        ];
+
+        $activeMenu = "tugas";
+
+        $page = (object) [
+            'title' => 'Detail Tugas'
+        ];
+
+        return view('tugas.show', compact('breadcrumb', 'page', 'task', 'activeMenu', 'requests'));
     }
 
-    public function delete_ajax(Request $request, $id)
+    public function approvedRequest($id)
     {
-        if ($request->ajax() || $request->wantsJson()) {
-            try {
-                $tugas = TugasModel::findOrFail($id);
-                $tugas->delete();
-                return response()->json([
-                    'status' => true,
-                    'message' => 'Data berhasil dihapus'
-                ]);
-            } catch (\Exception $e) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Gagal menghapus data'
-                ]);
-            }
-        }
-        return redirect('/');
+        $taskRequest = TaskRequest::findOrFail($id);
+        $taskRequest->update(['status' => 'terima']);
+
+        return redirect()->back()->with('success', 'Request telah diterima.');
+    }
+
+    public function declineRequest($id)
+    {
+        $taskRequest = TaskRequest::findOrFail($id);
+        $taskRequest->update(['status' => 'tolak']);
+
+        return redirect()->back()->with('success', 'Request telah ditolak.');
     }
 }

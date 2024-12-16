@@ -26,6 +26,18 @@ Route::middleware('auth')->group(function () {
         Route::put('/profile/update', [UserController::class, 'updateProfile']);
     });
 
+    Route::middleware('role:admin,dosen,tendik')->group(function () {
+        Route::get('/tugas', [TugasController::class, 'index']);
+        Route::get('/tugas/create', [TugasController::class, 'create']);
+        Route::get('/tugas/show/{id}', [TugasController::class, 'show']);
+        Route::get('/tugas/request/{id}/approve', [TugasController::class, 'approvedRequest']);
+        Route::get('/tugas/request/{id}/decline', [TugasController::class, 'declineRequest']);
+        Route::post('/tugas', [TugasController::class, 'store']);
+        Route::get('/tugas/edit/{id}', [TugasController::class, 'edit']);
+        Route::put('/tugas/{id}', [TugasController::class, 'update']);
+        Route::delete('/tugas/delete/{id}', [TugasController::class, 'destroy']);
+    });
+
     Route::middleware('role:admin')->group(function () {
         Route::get('/mahasiswa', [UserController::class, 'mahasiswa']);
         Route::post('/mahasiswa', [UserController::class, 'mahasiswaStore']);

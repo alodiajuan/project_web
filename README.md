@@ -71,16 +71,16 @@ http://127.0.0.1:8000/api/v1
 {
     "success": true,
     "data": {
-        "id": 1,
-        "username": "user123",
-        "foto_profile": "https://example.com/profile.jpg",
-        "nama": "John Doe",
-        "semester": 4,
-        "id_kompetensi": 1,
-        "id_prodi": 2,
+        "id": 4,
+        "username": "mahasiswauser",
+        "foto_profile": "profile.jpg",
+        "nama": "Mahasiswa User",
+        "semester": 5,
+        "kompetensi": "Kompetensi Manajemen",
+        "prodi": "Teknik Informatika",
         "role": "mahasiswa",
-        "created_at": "2024-12-15T12:00:00Z",
-        "updated_at": "2024-12-15T12:00:00Z"
+        "created_at": "2024-12-16T11:01:37.000000Z",
+        "updated_at": "2024-12-16T11:01:37.000000Z"
     }
 }
 ```

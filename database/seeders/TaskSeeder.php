@@ -10,7 +10,7 @@ class TaskSeeder extends Seeder
     public function run(): void
     {
         Task::create([
-            'id_dosen' => 2,
+            'id_dosen' => 1,
             'judul' => 'Tugas Pemrograman',
             'deskripsi' => 'Mengerjakan tugas pemrograman web dengan Laravel.',
             'bobot' => 100,

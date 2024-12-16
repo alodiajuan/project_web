@@ -35,4 +35,14 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Competence::class, 'id_kompetensi');
     }
+
+    public function taskRequests()
+    {
+        return $this->hasMany(TaskRequest::class, 'id_mahasiswa');
+    }
+
+    public function hasRequestedTask($task)
+    {
+        return $this->taskRequests()->where('id_task', $task->id)->exists();
+    }
 }

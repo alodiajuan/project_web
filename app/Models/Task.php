@@ -20,6 +20,21 @@ class Task extends Model
         'tipe'
     ];
 
+    public function taskRequests()
+    {
+        return $this->hasMany(TaskRequest::class, 'id_task');
+    }
+
+    public function taskSubmissions()
+    {
+        return $this->hasMany(TaskSubmission::class, 'id_task');
+    }
+
+    public function compensations()
+    {
+        return $this->hasMany(Compensation::class, 'id_task');
+    }
+
     public function typeTask()
     {
         return $this->belongsTo(TypeTask::class, 'id_jenis');

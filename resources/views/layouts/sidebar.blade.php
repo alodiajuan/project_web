@@ -57,22 +57,27 @@
             @endif
 
             <!-- Pekerjaan Section -->
-            <li class="nav-header">Management Task</li>
-            @if (in_array($userRole, ['admin']))
-                <li class="nav-item">
-                    <a href="{{ url('/kategori-tugas') }}"
-                        class="nav-link {{ $activeMenu == 'kategori-tugas' ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-tags"></i>
-                        <span class="text-truncate">Kategori Tugas</span>
-                    </a>
+            @if (in_array($userRole, ['admin', 'dosen', 'tendik']))
+                <li class="nav-header">Management Task</li>
+                @if (in_array($userRole, ['admin']))
+                    <li class="nav-item">
+                        <a href="{{ url('/kategori-tugas') }}"
+                            class="nav-link {{ $activeMenu == 'kategori-tugas' ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-tags"></i>
+                            <span class="text-truncate">Kategori Tugas</span>
+                        </a>
+                    </li>
+                @endif
                 </li>
+            @else
+                <li class="nav-header">Pekerjaan</li>
+                <li class="nav-item">
+                    <a href="{{ url('/tasks') }}" class="nav-link {{ $activeMenu == 'tasks' ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-tasks"></i>
+                        <span class="text-truncate">Tugas</span>
+                    </a>
             @endif
-            <li class="nav-item">
-                <a href="{{ url('/tugas') }}" class="nav-link {{ $activeMenu == 'tugas' ? 'active' : '' }}">
-                    <i class="nav-icon fas fa-tasks"></i>
-                    <span class="text-truncate">Tugas</span>
-                </a>
-            </li>
+
 
             <!-- Kompensasi Section -->
             <li class="nav-header">Kompensasi</li>

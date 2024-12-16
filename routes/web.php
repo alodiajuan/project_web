@@ -9,6 +9,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\KompetensiController;
 use App\Http\Controllers\PengajuanController;
 use App\Http\Controllers\RiwayatController;
+use App\Http\Controllers\TasksController;
 use App\Http\Controllers\UserController;
 
 Route::get('login', [AuthController::class, 'login']);
@@ -39,6 +40,13 @@ Route::middleware('auth')->group(function () {
         Route::get('/pengajuan/{id}', [PengajuanController::class, 'show']);
         Route::post('/pengajuan/{id}/terima', [PengajuanController::class, 'approve']);
         Route::post('/pengajuan/{id}/tolak', [PengajuanController::class, 'decline']);
+    });
+
+    Route::middleware('role:mahasiswa')->group(function () {
+        Route::get('/tasks', [TasksController::class, 'index']);
+        Route::get('/tasks/{id}', [TasksController::class, 'show']);
+        Route::get('/tasks/request/{id}', [TasksController::class, 'request']);
+        Route::post('/tasks', [TasksController::class, 'store']);
     });
 
     Route::middleware('role:admin')->group(function () {

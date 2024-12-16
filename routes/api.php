@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\TaskController;
+use App\Http\Controllers\Api\TaskSubmissionController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function () {
@@ -10,20 +11,22 @@ Route::prefix('v1')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
     Route::get('/userProfile', [AuthController::class, 'userProfile'])->middleware('auth:sanctum');
 
-    // task
+
     Route::middleware(['auth:sanctum'])->group(function () {
+        // task
         Route::post('/tasks', [TaskController::class, 'store'])
-             ->name('api.tasks.store')
-             ->middleware('role:admin,dosen,tendik');
+            ->middleware('role:admin,dosen,tendik');
 
-             Route::get('/tasks', [TaskController::class, 'index']);
+        Route::get('/tasks', [TaskController::class, 'index']);
+
+        // competence
+
+        // prodi
+
+        // taskRequest
+
+        // taskSubmissions
+        Route::post('/task-submissions', [TaskSubmissionController::class, 'store'])
+            ->middleware('role:admin,dosen,tendik,mahasiswa');
     });
-
-    // competence
-
-    // prodi
-
-    // taskRequest
-
-    // taskSubmissions
 });

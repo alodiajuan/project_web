@@ -19,6 +19,13 @@ class RoleMiddleware
         $user = Auth::user();
 
         if (!$user || !in_array($user->role, $role)) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Access denied. You do not have the required role.'
+                ], 403);
+            }
+            
             Auth::logout();
             return redirect('/login')->with('error', 'You do not have permission to access this page.');
         }

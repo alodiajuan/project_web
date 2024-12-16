@@ -56,7 +56,7 @@ class Kernel extends HttpKernel
     protected $middlewareAliases = [
         'authentication' => \App\Http\Middleware\Authenticate::class,
         'auth' => \App\Http\Middleware\Authenticate::class,
-        'role' => \App\Http\Middleware\RoleMiddleware::class,
+       'role' => \App\Http\Middleware\RoleMiddleware::class,
         'can' => \Illuminate\Auth\Middleware\Authorize::class,
         'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
         'password.confirm' => \Illuminate\Auth\Middleware\RequirePassword::class,

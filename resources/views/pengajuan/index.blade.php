@@ -9,7 +9,7 @@
             <table class="table table-bordered table-striped">
                 <thead>
                     <tr>
-                        <th>No</th> <!-- Menambahkan kolom nomor -->
+                        <th>No</th>
                         <th>Pemberi Tugas</th>
                         <th>Nama Tugas</th>
                         <th>Nama Mahasiswa</th>
@@ -20,7 +20,7 @@
                 <tbody>
                     @foreach ($taskSubmissions as $submission)
                         <tr>
-                            <td>{{ $loop->iteration }}</td> <!-- Menampilkan nomor urut -->
+                            <td>{{ $loop->iteration }}</td>
                             <td>{{ $submission->task->dosen->nama }}</td>
                             <td>{{ $submission->task->judul }}</td>
                             <td>{{ $submission->mahasiswa->nama }}</td>

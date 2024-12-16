@@ -8,8 +8,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Auth;
-
 
 class AuthController extends Controller
 {
@@ -21,7 +19,7 @@ class AuthController extends Controller
                 'username' => 'required',
                 'password' => 'required|string|min:6',
             ]);
-    
+
             if ($validator->fails()) {
                 return response()->json([
                     'success' => false,
@@ -29,18 +27,18 @@ class AuthController extends Controller
                     'errors' => $validator->errors(),
                 ], 422);
             }
-    
+
             $user = User::where('username', $request->username)->first();
-    
+
             if (!$user || !Hash::check($request->password, $user->password)) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Invalid credentials',
                 ], 401);
             }
-    
+
             $token = $user->createToken('auth_token')->plainTextToken;
-    
+
             return response()->json([
                 'success' => true,
                 'message' => 'Login successful',
@@ -54,7 +52,6 @@ class AuthController extends Controller
                     'token' => $token,
                 ],
             ]);
-    
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json([
                 'success' => false,
@@ -81,7 +78,7 @@ class AuthController extends Controller
     {
         try {
             if ($request->user()) {
-                $userId = $request->user()->id; 
+                $userId = $request->user()->id;
                 $request->user()->currentAccessToken()->delete();
 
                 Log::info('User logged out successfully', ['user_id' => $userId]);

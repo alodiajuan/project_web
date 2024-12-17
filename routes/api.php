@@ -10,7 +10,7 @@ Route::prefix('v1')->group(function () {
     // auth
     Route::post('/login', [AuthController::class, 'login']);
     Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
-    Route::get('/userProfile', [AuthController::class, 'userProfile'])->middleware('auth:sanctum');
+    Route::get('/userProfile', action: [AuthController::class, 'userProfile'])->middleware('auth:sanctum');
 
     Route::middleware(['auth:sanctum'])->group(function () {
         // task

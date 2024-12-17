@@ -9,6 +9,7 @@ use App\Http\Controllers\CompensationController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\KompetensiController;
 use App\Http\Controllers\PengajuanController;
+use App\Http\Controllers\PeriodeController;
 use App\Http\Controllers\RiwayatController;
 use App\Http\Controllers\TasksController;
 use App\Http\Controllers\UserController;
@@ -92,6 +93,13 @@ Route::middleware('auth')->group(function () {
         Route::get('/kategori-tugas/edit/{id}', [KategoriController::class, 'edit']);
         Route::put('/kategori-tugas/update/{id}', [KategoriController::class, 'update']);
         Route::delete('/kategori-tugas/delete/{id}', [KategoriController::class, 'destroy']);
+
+        Route::get('/periode', [PeriodeController::class, 'index']);
+        Route::get('/periode/create', [PeriodeController::class, 'create']);
+        Route::post('/periode/store', [PeriodeController::class, 'store']);
+        Route::get('/periode/edit/{id}', [PeriodeController::class, 'edit']);
+        Route::put('/periode/update/{id}', [PeriodeController::class, 'update']);
+        Route::delete('/periode/delete/{id}', [PeriodeController::class, 'destroy']);
 
         Route::get('/riwayat', [RiwayatController::class, 'index']);
         Route::get('/riwayat/{id}', [RiwayatController::class, 'show']);

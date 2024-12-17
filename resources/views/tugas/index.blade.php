@@ -41,14 +41,6 @@
                             <td>
                                 <a href="{{ url('/tugas/edit/' . $task->id) }}" class="btn btn-sm btn-warning">Edit</a>
                                 <a href="{{ url('/tugas/show/' . $task->id) }}" class="btn btn-sm btn-dark">Detail</a>
-                                <form action="{{ url('/tugas/delete/' . $task->id) }}" method="POST" class="d-inline">
-                                    @method('DELETE')
-                                    @csrf
-                                    <button type="submit" class="btn btn-sm btn-danger"
-                                        onclick="return confirm('Apakah Anda yakin ingin menghapus task ini?')">
-                                        Delete
-                                    </button>
-                                </form>
                             </td>
                         </tr>
                     @endforeach

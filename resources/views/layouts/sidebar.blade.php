@@ -54,6 +54,12 @@
                         <span class="text-truncate">Program Studi</span>
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a href="{{ url('/periode') }}" class="nav-link {{ $activeMenu == 'periode' ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-check-circle"></i>
+                        <span class="text-truncate">Tahun Ajaran</span>
+                    </a>
+                </li>
             @endif
 
             <!-- Pekerjaan Section -->

@@ -11,7 +11,7 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         User::create([
-            'username' => 'adminuser',
+            'username' => '1234567890',
             'password' => Hash::make('password123'),
             'foto_profile' => 'profile.jpg',
             'nama' => 'Admin User',
@@ -19,7 +19,7 @@ class UserSeeder extends Seeder
         ]);
 
         User::create([
-            'username' => 'dosenuser',
+            'username' => '2345678901',
             'password' => Hash::make('password123'),
             'foto_profile' => 'profile.jpg',
             'nama' => 'Dosen User',
@@ -27,7 +27,7 @@ class UserSeeder extends Seeder
         ]);
 
         User::create([
-            'username' => 'tendikuser',
+            'username' => '3456789012',
             'password' => Hash::make('password123'),
             'foto_profile' => 'profile.jpg',
             'nama' => 'Tendik User',
@@ -35,7 +35,7 @@ class UserSeeder extends Seeder
         ]);
 
         User::create([
-            'username' => 'mahasiswauser',
+            'username' => '4567890123',
             'password' => Hash::make('password123'),
             'foto_profile' => 'profile.jpg',
             'nama' => 'Mahasiswa User',

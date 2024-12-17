@@ -16,6 +16,7 @@ class DatabaseSeeder extends Seeder
             TypeTaskSeeder::class,
             CompetenceSeeder::class,
             ProdiSeeder::class,
+            PeriodeSeeder::class,
             UserSeeder::class,
             TaskSeeder::class,
             TaskRequestSeeder::class,

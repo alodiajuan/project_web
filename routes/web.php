@@ -18,6 +18,7 @@ Route::post('login', [AuthController::class, 'postlogin']);
 Route::get('/', function () {
     return redirect('/dashboard');
 });
+Route::get('/verification-compensation/{id}', [RiwayatController::class, 'verification']);
 
 Route::middleware('auth')->group(function () {
     Route::middleware('role:admin,dosen,tendik,mahasiswa')->group(function () {

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Compensation;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class RiwayatController extends Controller
 {
@@ -46,13 +47,11 @@ class RiwayatController extends Controller
 
     public function download($id)
     {
-        $compensation = Compensation::findOrFail($id);
-
         $compensation = Compensation::with([
             'dosen:id,nama,username',
             'mahasiswa:id,nama,username',
             'task:id,judul,bobot',
-        ])->find($id);
+        ])->findOrFail($id);
 
         if (!$compensation) {
             abort(404, 'Compensation record not found');
@@ -60,12 +59,25 @@ class RiwayatController extends Controller
 
         $kaprodi = ["nama" => "Hendra Pradibta, SE., M.Se", "nip" => "198305212006041003"];
 
+        $url = url("/verification-compensation/{$compensation->id}");
+        $qrCode = base64_encode(QrCode::format('png')->size(80)->generate($url));
 
-        $pdf = Pdf::loadView('riwayat.pdf', compact('compensation', 'kaprodi'))
+        $pdf = Pdf::loadView('riwayat.pdf', compact('compensation', 'kaprodi', 'qrCode'))
             ->setPaper('a4', 'landscape')
             ->set_option('isHtml5ParserEnabled', true)
             ->setOption('dpi', 96);
 
         return $pdf->download('kompensasi.pdf');
+    }
+
+    public function verification($id)
+    {
+        $compensation = Compensation::with([
+            'dosen:id,nama,username',
+            'mahasiswa:id,nama,username',
+            'task:id,judul,bobot',
+        ])->findOrFail($id);
+
+        return view('riwayat.verifikasi', compact('compensation'));
     }
 }

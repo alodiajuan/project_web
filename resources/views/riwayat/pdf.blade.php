@@ -24,6 +24,9 @@
                     <p>Telp. 0341404424 Fax. 0341404420, http://www.poltek-malang.ac.id</p>
                 </div>
             </td>
+            <td>
+                <img src="data:image/png;base64,{{ $qrCode }}" alt="QR Code">
+            </td>
         </tr>
     </table>
 

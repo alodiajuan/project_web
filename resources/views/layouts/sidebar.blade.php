@@ -68,6 +68,11 @@
                         </a>
                     </li>
                 @endif
+                <li class="nav-item">
+                    <a href="{{ url('/tugas') }}" class="nav-link {{ $activeMenu == 'tugas' ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-tags"></i>
+                        <span class="text-truncate">Tugas</span>
+                    </a>
                 </li>
             @else
                 <li class="nav-header">Pekerjaan</li>
@@ -91,7 +96,7 @@
                 </li>
             @endif
 
-            @if (in_array($userRole, ['admin']))
+            @if (in_array($userRole, ['admin', 'dosen', 'tendik']))
                 <li class="nav-item">
                     <a href="{{ url('/pengajuan') }}"
                         class="nav-link {{ $activeMenu == 'pengajuan' ? 'active' : '' }}">
@@ -99,12 +104,15 @@
                         <span class="text-truncate">Pengajuan</span>
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a href="{{ url('/riwayat') }}" class="nav-link {{ $activeMenu == 'riwayat' ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-history"></i>
-                        <span class="text-truncate">Riwayat</span>
-                    </a>
-                </li>
+                @if (in_array($userRole, ['admin']))
+                    <li class="nav-item">
+                        <a href="{{ url('/riwayat') }}"
+                            class="nav-link {{ $activeMenu == 'riwayat' ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-history"></i>
+                            <span class="text-truncate">Riwayat</span>
+                        </a>
+                    </li>
+                @endif
             @endif
         </ul>
     </nav>

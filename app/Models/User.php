@@ -18,6 +18,7 @@ class User extends Authenticatable
         'nama',
         'semester',
         'id_kompetensi',
+        'id_prodi',
         'role'
     ];
 

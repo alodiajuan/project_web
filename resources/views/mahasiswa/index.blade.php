@@ -5,12 +5,20 @@
         <div class="card-header">
             <h3 class="card-title">Daftar mahasiswa yang terdapat dalam sistem</h3>
             <div class="card-tools">
-                <button onclick="modalAction('{{ url('/mahasiswa/import') }}')" class="btn btn-sm btn-info mt-1">Import
-                    mahasiswa</button>
-                <a href="{{ url('/mahasiswa/export_excel') }}" class="btn btn-sm btn-primary mt-1"><i
-                        class="fa fa-file-excel"></i> Export mahasiswa (Excel)</a>
-                <a href="{{ url('/mahasiswa/export_pdf') }}" class="btn btn-sm btn-warning mt-1"><i
-                        class="fa fa-file-pdf"></i> Export mahasiswa (PDF)</a>
+                <form action="{{ url('/users/import') }}" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    <button type="button" class="btn btn-sm btn-info mt-1"
+                        onclick="document.getElementById('fileInput').click()">
+                        Import mahasiswa
+                    </button>
+                    <input type="file" id="fileInput" name="file" style="display: none;"
+                        onchange="this.form.submit()">
+                </form>
+
+                <a href="{{ url('/users/export?role=mahasiswa') }}" class="btn btn-sm btn-primary mt-1">
+                    <i class="fa fa-file-excel"></i> Export mahasiswa (Excel)
+                </a>
+
                 <a href="{{ url('/mahasiswa/create') }}" class="btn btn-sm btn-success mt-1">Tambah Data</a>
             </div>
         </div>
@@ -81,8 +89,7 @@
                             <td>{{ $item->semester }}</td>
                             <td>{{ $item->prodi ? $item->prodi->nama : 'N/A' }}</td>
                             <td>
-                                <a href="{{ url('/mahasiswa/edit/' . $item->id) }}"
-                                    class="btn btn-sm btn-warning">Edit</a>
+                                <a href="{{ url('/mahasiswa/edit/' . $item->id) }}" class="btn btn-sm btn-warning">Edit</a>
 
                                 <form action="{{ url('/mahasiswa/delete/' . $item->id) }}" method="POST" class="d-inline">
                                     @csrf

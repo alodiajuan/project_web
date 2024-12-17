@@ -5,12 +5,19 @@
         <div class="card-header">
             <h3 class="card-title">Daftar SDM yang terdapat dalam sistem</h3>
             <div class="card-tools">
-                <button onclick="modalAction('{{ url('/sdm/import') }}')" class="btn btn-sm btn-info mt-1">Import
-                    Data</button>
-                <a href="{{ url('/sdm/export_excel') }}" class="btn btn-sm btn-primary mt-1"><i class="fa fa-file-excel"></i>
-                    Export (Excel)</a>
-                <a href="{{ url('/sdm/export_pdf') }}" class="btn btn-sm btn-warning mt-1"><i class="fa fa-file-pdf"></i>
-                    Export (PDF)</a>
+                <form action="{{ url('/users/import') }}" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    <button type="button" class="btn btn-sm btn-info mt-1"
+                        onclick="document.getElementById('fileInput').click()">
+                        Import Data
+                    </button>
+                    <input type="file" id="fileInput" name="file" style="display: none;"
+                        onchange="this.form.submit()">
+                </form>
+
+                <a href="{{ url('/users/export?role=sdm') }}" class="btn btn-sm btn-primary mt-1">
+                    <i class="fa fa-file-excel"></i> Export Data (Excel)
+                </a>
                 <a href="{{ url('/sdm/create') }}" class="btn btn-sm btn-success mt-1">Tambah Data</a>
             </div>
         </div>

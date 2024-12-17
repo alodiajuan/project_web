@@ -13,7 +13,7 @@ class CompensationSeeder extends Seeder
             'id_task' => 1,
             'id_submission' => 1,
             'id_dosen' => 2,
-            'id_mahasiswa' => 3,
+            'id_mahasiswa' => 4,
             'semester' => 5,
         ]);
     }

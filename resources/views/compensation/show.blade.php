@@ -18,14 +18,14 @@
                 </tr>
                 <tr>
                     <th>Nama Dosen</th>
-                    <td>{{ $taskSubmission->dosen ? $taskSubmission->dosen->nama : 'Belum Ditugaskan' }}</td>
+                    <td>{{ $taskSubmission->task->dosen ? $taskSubmission->task->dosen->nama : 'Belum Ditugaskan' }}</td>
                 </tr>
                 <tr>
                     <th>Status Kompensasi</th>
                     <td>
-                        @if ($taskSubmission->compensations->acc_dosen == 'terima')
+                        @if ($taskSubmission->acc_dosen == 'terima')
                             Diterima
-                        @elseif ($taskSubmission->compensations->acc_dosen == 'tolak')
+                        @elseif ($taskSubmission->acc_dosen == 'tolak')
                             Ditolak
                         @else
                             Belum Direview

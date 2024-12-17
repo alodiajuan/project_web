@@ -21,12 +21,12 @@
                     @foreach ($taskSubmissions as $submission)
                         <tr>
                             <td>{{ $loop->iteration }}</td>
-                            <td>{{ $submission->dosen ? $submission->dosen->nama : 'Belum Ditugaskan' }}</td>
+                            <td>{{ $submission->task->dosen ? $submission->task->dosen->nama : 'Belum Ditugaskan' }}</td>
                             <td>{{ $submission->task->judul }}</td>
                             <td>
-                                @if ($submission->compensations->acc_dosen == 'terima')
+                                @if ($submission->acc_dosen == 'terima')
                                     Diterima
-                                @elseif ($submission->compensations->acc_dosen == 'tolak')
+                                @elseif ($submission->acc_dosen == 'tolak')
                                     Ditolak
                                 @else
                                     Belum Direview

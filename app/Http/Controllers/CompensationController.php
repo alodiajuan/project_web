@@ -11,17 +11,17 @@ class CompensationController extends Controller
     public function index()
     {
         $breadcrumb = (object) [
-            'title' => 'Daftar Kompetensi',
-            'list' => ['Home', 'Kompetensi']
+            'title' => 'Daftar Kompensasi',
+            'list' => ['Home', 'Kompensasi']
         ];
 
         $page = (object) [
-            'title' => 'Daftar Kompetensi yang terdaftar dalam sistem'
+            'title' => 'Daftar Kompensasi yang terdaftar dalam sistem'
         ];
 
-        $activeMenu = 'kompetensi';
+        $activeMenu = 'kompensasi';
 
-        $taskSubmissions = TaskSubmission::with(['task', 'dosen', 'compensations'])
+        $taskSubmissions = TaskSubmission::with(['task.dosen', 'compensations'])
             ->where('id_mahasiswa', Auth::id())
             ->get();
 
@@ -31,17 +31,17 @@ class CompensationController extends Controller
     public function show($id)
     {
         $breadcrumb = (object) [
-            'title' => 'Detail Kompetensi',
-            'list' => ['Home', 'Kompetensi', 'Detail']
+            'title' => 'Detail Kompensasi',
+            'list' => ['Home', 'Kompensasi', 'Detail']
         ];
 
         $page = (object) [
-            'title' => 'Detail dari Kompetensi Tugas'
+            'title' => 'Detail dari Kompensasi Tugas'
         ];
 
-        $activeMenu = 'kompetensi';
+        $activeMenu = 'kompensasi';
 
-        $taskSubmission = TaskSubmission::with('task', 'dosen', 'compensations')->findOrFail($id);
+        $taskSubmission = TaskSubmission::with('task.dosen', 'compensations')->findOrFail($id);
 
         return view('compensation.show', compact('taskSubmission', 'breadcrumb', 'page', 'activeMenu'));
     }

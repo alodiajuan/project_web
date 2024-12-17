@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 class TaskSubmission extends Model
 {
@@ -32,5 +33,11 @@ class TaskSubmission extends Model
     public function dosen()
     {
         return $this->belongsTo(User::class, 'id_dosen');
+    }
+
+    public function compensations()
+    {
+        return $this->hasOne(Compensation::class, 'id_submission')
+            ->where('id_mahasiswa', Auth::id());
     }
 }

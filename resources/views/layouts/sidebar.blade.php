@@ -81,13 +81,24 @@
 
             <!-- Kompensasi Section -->
             <li class="nav-header">Kompensasi</li>
-            <li class="nav-item">
-                <a href="{{ url('/pengajuan') }}" class="nav-link {{ $activeMenu == 'pengajuan' ? 'active' : '' }}">
-                    <i class="nav-icon fas fa-history"></i>
-                    <span class="text-truncate">Pengajuan</span>
-                </a>
-            </li>
+            @if (in_array($userRole, ['mahasiswa']))
+                <li class="nav-item">
+                    <a href="{{ url('/kompensasi') }}"
+                        class="nav-link {{ $activeMenu == 'kompensasi' ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-history"></i>
+                        <span class="text-truncate">Kompensasi</span>
+                    </a>
+                </li>
+            @endif
+
             @if (in_array($userRole, ['admin']))
+                <li class="nav-item">
+                    <a href="{{ url('/pengajuan') }}"
+                        class="nav-link {{ $activeMenu == 'pengajuan' ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-history"></i>
+                        <span class="text-truncate">Pengajuan</span>
+                    </a>
+                </li>
                 <li class="nav-item">
                     <a href="{{ url('/riwayat') }}" class="nav-link {{ $activeMenu == 'riwayat' ? 'active' : '' }}">
                         <i class="nav-icon fas fa-history"></i>

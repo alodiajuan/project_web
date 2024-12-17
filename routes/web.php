@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TugasController;
 use App\Http\Controllers\ProdiController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CompensationController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\KompetensiController;
 use App\Http\Controllers\PengajuanController;
@@ -47,6 +48,9 @@ Route::middleware('auth')->group(function () {
         Route::get('/tasks/{id}', [TasksController::class, 'show']);
         Route::get('/tasks/request/{id}', [TasksController::class, 'request']);
         Route::post('/tasks', [TasksController::class, 'store']);
+
+        Route::get('/kompensasi', [CompensationController::class, 'index']);
+        Route::get('/kompensasi/{id}', [CompensationController::class, 'show']);
     });
 
     Route::middleware('role:admin')->group(function () {

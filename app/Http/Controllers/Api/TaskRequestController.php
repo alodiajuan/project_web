@@ -42,21 +42,10 @@ class TaskRequestController extends Controller
                 ], 400);
             }
 
+            // Create the task request
             $taskRequest = TaskRequest::create([
                 'id_task' => $request->id_task,
-                'judul' => $request->input('judul'),
-                'deskripsi' => $request->input('deskripsi'),
-                'bobot' => $request->input('bobot'),
-                'semester' => $request->input('semester'),
-                'data' => [
-                    'id' => $request->id,
-                    'username' => $request->requestname,
-                    'foto_profile' => $request->foto_profile ? $baseUrl . '/' . $request->foto_profile : null,
-                    'nama' => $request->nama,
-                    'semester' => $request->semester,
-                    'kompetensi' => $request->competence->nama,
-                    'prodi' => $request->prodi->nama,
-                ],
+                'id_mahasiswa' => $request->id_mahasiswa,
                 'status' => $request->status
             ]);
 

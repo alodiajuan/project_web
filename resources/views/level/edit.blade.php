@@ -9,7 +9,7 @@
             @empty($level)
                 <div class="alert alert-danger alert-dismissible">
                     <h5><i class="icon fas fa-ban"></i> Kesalahan!</h5>
-                    Data yang Anda cari tidak ditemukan .
+                    Data yang Anda cari tidak ditemukan.
                 </div>
                 <a href="{{ url('level') }}" class="btn btn-sm btn-default mt-2">Kembali</a>
             @else

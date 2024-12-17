@@ -34,15 +34,14 @@ class TaskController extends Controller
             'bobot' => 'required|numeric|min:0|max:100',
             'semester' => 'required|integer|min:1|max:8',
             'jenis' => [
-            'required',
-            'array',
-            function ($attribute, $value, $fail) {
-                // Validasi bahwa jenis memiliki kunci 'id' dan nilainya ada di tabel type_task
-                if (!isset($value['id']) || !TypeTask::where('id', $value['id'])->exists()) {
-                    $fail('Invalid task type');
+                'required',
+                'array',
+                function ($attribute, $value, $fail) {
+                    if (!isset($value['id']) || !TypeTask::where('id', $value['id'])->exists()) {
+                        $fail('Invalid task type');
+                    }
                 }
-            }
-        ],
+            ],
             'tipe' => 'required|in:file,text,link'
         ]);
 
@@ -61,7 +60,7 @@ class TaskController extends Controller
                 'deskripsi' => $request->input('deskripsi'),
                 'bobot' => $request->input('bobot'),
                 'semester' => $request->input('semester'),
-               'id_jenis' => $request->input('jenis')['id'],
+                'id_jenis' => $request->input('jenis')['id'],
                 'tipe' => $request->input('tipe')
             ]);
 

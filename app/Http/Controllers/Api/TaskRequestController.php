@@ -12,18 +12,16 @@ use Illuminate\Support\Facades\Validator;
 class TaskRequestController extends Controller
 {
     /**
-     * Submit a task request
+     * terima atau tolak request tugas
      */
     public function submitTaskRequest(Request $request)
     {
-        // Validate the incoming request
         $validator = Validator::make($request->all(), [
-            'id_task' => 'required|exists:tasks,id',
+            'id_task' => 'required|exists:task,id',
             'id_mahasiswa' => 'required|exists:users,id',
             'status' => 'required|in:terima,tolak'
         ]);
 
-        // Check validation
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
@@ -33,7 +31,6 @@ class TaskRequestController extends Controller
         }
 
         try {
-            // Check if task request already exists
             $existingRequest = TaskRequest::where('id_task', $request->id_task)
                 ->where('id_mahasiswa', $request->id_mahasiswa)
                 ->first();
@@ -45,10 +42,21 @@ class TaskRequestController extends Controller
                 ], 400);
             }
 
-            // Create the task request
             $taskRequest = TaskRequest::create([
                 'id_task' => $request->id_task,
-                'id_mahasiswa' => $request->id_mahasiswa,
+                'judul' => $request->input('judul'),
+                'deskripsi' => $request->input('deskripsi'),
+                'bobot' => $request->input('bobot'),
+                'semester' => $request->input('semester'),
+                'data' => [
+                    'id' => $request->id,
+                    'username' => $request->requestname,
+                    'foto_profile' => $request->foto_profile ? $baseUrl . '/' . $request->foto_profile : null,
+                    'nama' => $request->nama,
+                    'semester' => $request->semester,
+                    'kompetensi' => $request->competence->nama,
+                    'prodi' => $request->prodi->nama,
+                ],
                 'status' => $request->status
             ]);
 
@@ -61,58 +69,6 @@ class TaskRequestController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to submit task request',
-                'error' => $e->getMessage()
-            ], 500);
-        }
-    }
-
-    /**
-     * Approve or reject task request (for admin, dosen, tendik)
-     */
-    public function processTaskRequest(Request $request)
-    {
-        // Ensure only admin, dosen, or tendik can process
-        $user = Auth::user();
-        if (!in_array($user->role, ['admin', 'dosen', 'tendik'])) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Unauthorized access'
-            ], 403);
-        }
-
-        // Validate the incoming request
-        $validator = Validator::make($request->all(), [
-            'task_request_id' => 'required|exists:task_request,id',
-            'action' => 'required|in:approve,reject'
-        ]);
-
-        // Check validation
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Validation Error',
-                'errors' => $validator->errors()
-            ], 400);
-        }
-
-        try {
-            // Find the task request
-            $taskRequest = TaskRequest::findOrFail($request->task_request_id);
-
-            // Update task request status based on action
-            $taskRequest->status = $request->action === 'terima' ? 'terima' : 'tolak';
-            $taskRequest->processed_by = $user->id;
-            $taskRequest->save();
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Task request ' . $request->action . 'd successfully',
-                'data' => $taskRequest
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to process task request',
                 'error' => $e->getMessage()
             ], 500);
         }

@@ -64,7 +64,7 @@ class TaskController extends Controller
                 'tipe' => $request->input('tipe')
             ]);
 
-            $task->load(['typeTask', 'dosen']);
+            $task->load(['typeTask']);
 
             return response()->json([
                 'success' => true,
@@ -101,13 +101,12 @@ class TaskController extends Controller
                 ->map(function ($task) {
                     return [
                         'id' => $task->id,
-                        'id_dosen' => $task->id_dosen,
-                        'nama_dosen' => $task->dosen->name ?? null,
+                        // 'id_dosen' => $task->id_dosen,
+                        'nama_dosen' => $task->dosen->nama ?? null,
                         'judul' => $task->judul,
                         'deskripsi' => $task->deskripsi,
                         'bobot' => $task->bobot,
                         'semester' => $task->semester,
-                        'id_jenis' => $task->id_jenis,
                         'nama_jenis' => $task->typeTask->nama ?? null,
                         'tipe' => $task->tipe,
                         'created_at' => $task->created_at ? $task->created_at->toIso8601String() : null

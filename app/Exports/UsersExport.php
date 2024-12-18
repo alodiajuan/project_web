@@ -2,9 +2,10 @@
 
 namespace App\Exports;
 
-use Maatwebsite\Excel\Concerns\FromCollection;
+use Illuminate\Contracts\View\View;
+use Maatwebsite\Excel\Concerns\FromView;
 
-class UsersExport implements FromCollection
+class UsersExport implements FromView
 {
     /**
      * @return \Illuminate\Support\Collection
@@ -16,36 +17,43 @@ class UsersExport implements FromCollection
         $this->users = $users;
     }
 
-    public function collection()
+    public function view(): View
     {
-        return $this->users;
+        return view('exports.users', [
+            'users' => $this->users
+        ]);
     }
 
-    public function headings(): array
-    {
-        return [
-            'Username',
-            'Password',
-            'Nama',
-            'Semester',
-            'Kompetensi',
-            'Prodi',
-            'Role',
-            'Foto Profile'
-        ];
-    }
+    // public function collection()
+    // {
+    //     return $this->users;
+    // }
 
-    public function map($user): array
-    {
-        return [
-            $user->username,
-            $user->password,
-            $user->nama,
-            $user->semester,
-            $user->competence ? $user->competence->nama : null,
-            $user->prodi ? $user->prodi->nama : null,
-            $user->role,
-            $user->foto_profile
-        ];
-    }
+    // public function headings(): array
+    // {
+    //     return [
+    //         'Username',
+    //         'Password',
+    //         'Nama',
+    //         'Semester',
+    //         'Kompetensi',
+    //         'Prodi',
+    //         'Role',
+    //         'Foto Profile'
+    //     ];
+    // }
+
+    // public function map($user): array
+    // {
+    //     return [
+    //         $user->username,
+    //         $user->password,
+    //         $user->nama,
+    //         $user->semester,
+    //         $user->competence ? $user->competence->nama : null,
+    //         $user->prodi ? $user->prodi->nama : null,
+    //         $user->role,
+    //         $user->foto_profile
+    //     ];
+    // }
 }

@@ -87,6 +87,13 @@
                         <i class="nav-icon fas fa-tasks"></i>
                         <span class="text-truncate">Tugas</span>
                     </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ url('/requests') }}" class="nav-link {{ $activeMenu == 'request' ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-tasks"></i>
+                        <span class="text-truncate">Request Tugas</span>
+                    </a>
+                </li>
             @endif
 
 

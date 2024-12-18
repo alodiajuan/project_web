@@ -35,7 +35,7 @@
                             <td>
                                 @if (isset($task->isRequested))
                                     @if ($task->isRequested['status'] == null)
-                                        BELUM ADA
+                                        MENUNGGU
                                     @elseif ($task->isRequested['status'] == 'terima')
                                         TERIMA
                                     @elseif ($task->isRequested['status'] == 'tolak')
@@ -46,7 +46,11 @@
                                 @endif
                             </td>
                             <td>
-                                <a href="{{ url('/requests/' . $task->id) }}" class="btn btn-sm btn-dark">Detail</a>
+                                <a href="{{ url('/tasks/' . $task->id) }}" class="btn btn-sm btn-dark">Detail</a>
+                                @if (!isset($task->isRequested) || !$task->isRequested)
+                                    <a href="{{ url('/tasks/request/' . $task->id) }}"
+                                        class="btn btn-sm btn-primary">Request</a>
+                                @endif
                             </td>
                         </tr>
                     @endforeach

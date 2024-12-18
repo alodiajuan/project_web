@@ -34,6 +34,10 @@
                             </td>
                             <td>
                                 <a href="{{ url('kompensasi/' . $submission->id) }}" class="btn btn-sm btn-dark">Detail</a>
+                                @if ($submission->acc_dosen == 'terima')
+                                    <a href="{{ url('/compensations/download/' . $submission->id) }}"
+                                        class="btn btn-sm btn-primary">Download</a>
+                                @endif
                             </td>
                         </tr>
                     @endforeach

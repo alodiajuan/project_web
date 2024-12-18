@@ -22,6 +22,7 @@ class CompensationController extends Controller
         $activeMenu = 'kompensasi';
 
         $taskSubmissions = TaskSubmission::with(['task.dosen', 'compensations'])
+            ->where('progress', 100)
             ->where('id_mahasiswa', Auth::id())
             ->get();
 

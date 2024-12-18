@@ -45,6 +45,10 @@ Route::middleware('auth')->group(function () {
         Route::post('/pengajuan/{id}/tolak', [PengajuanController::class, 'decline']);
     });
 
+    Route::middleware('role:mahasiswa,admin')->group(function () {
+        Route::get('/compensations/download/{id}', [RiwayatController::class, 'download']);
+    });
+
     Route::middleware('role:mahasiswa')->group(function () {
         Route::get('/tasks', [TasksController::class, 'index']);
         Route::get('/tasks/{id}', [TasksController::class, 'show']);
@@ -103,7 +107,6 @@ Route::middleware('auth')->group(function () {
 
         Route::get('/riwayat', [RiwayatController::class, 'index']);
         Route::get('/riwayat/{id}', [RiwayatController::class, 'show']);
-        Route::get('/compensations/download/{id}', [RiwayatController::class, 'download']);
     });
 
     Route::get('logout', [AuthController::class, 'logout']);

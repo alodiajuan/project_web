@@ -7,7 +7,7 @@
         </div>
 
         <div class="card-body">
-            <form action="{{ url('/tugas') }}" method="POST">
+            <form action="{{ url('/tugas') }}" method="POST" enctype="multipart/form-data">
                 @csrf
 
                 <div class="form-group">
@@ -27,7 +27,14 @@
 
                 <div class="form-group">
                     <label>Semester</label>
-                    <input type="number" name="semester" class="form-control" placeholder="Masukkan semester task" required>
+                    <select name="semester" class="form-control" required>
+                        <option value="" selected disabled>Pilih Semester</option>
+                        @foreach ($periods as $period)
+                            <option value="{{ $period->semester }}">
+                                {{ $period->nama }} ({{ $period->tipe }})
+                            </option>
+                        @endforeach
+                    </select>
                 </div>
 
                 <div class="form-group">
@@ -47,6 +54,26 @@
                         <option value="file">File</option>
                         <option value="url">URL</option>
                     </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Kuota</label>
+                    <input type="number" name="kuota" class="form-control" placeholder="Masukkan kuota peserta" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Deadline</label>
+                    <input type="datetime-local" name="deadline" class="form-control" required>
+                </div>
+
+                <div class="form-group">
+                    <label>File Pendukung (Opsional)</label>
+                    <input type="file" name="file" class="form-control">
+                </div>
+
+                <div class="form-group">
+                    <label>URL Pendukung (Opsional)</label>
+                    <input type="url" name="url" class="form-control" placeholder="Masukkan URL pendukung">
                 </div>
 
                 <button type="submit" class="btn btn-primary">Simpan</button>

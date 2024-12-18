@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Task;
 use App\Models\TaskRequest;
 use App\Models\TypeTask;
+use App\Models\Periode;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -43,8 +44,9 @@ class TugasController extends Controller
         $activeMenu = 'tugas';
 
         $jenis_tasks = TypeTask::all();
+        $periods = Periode::all();
 
-        return view('tugas.create', compact('breadcrumb', 'page', 'jenis_tasks', 'activeMenu'));
+        return view('tugas.create', compact('breadcrumb', 'page', 'jenis_tasks', 'activeMenu', 'periods'));
     }
 
     public function store(Request $request)
@@ -53,24 +55,39 @@ class TugasController extends Controller
             'judul' => 'required|string|max:255',
             'deskripsi' => 'required|string',
             'bobot' => 'required|integer|min:1',
+            'kuota' => 'required|integer|min:1',
             'semester' => 'required|integer|min:1|max:8',
             'id_jenis' => 'required|exists:type_task,id',
             'tipe' => 'required|in:file,url',
+            'deadline' => 'required|date|after:today',
+            'file' => 'nullable|file',
         ]);
 
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
-        Task::create([
+        $data = [
             'id_dosen' => Auth::id(),
             'judul' => $request->judul,
             'deskripsi' => $request->deskripsi,
             'bobot' => $request->bobot,
+            'kuota' => $request->kuota,
             'semester' => $request->semester,
             'id_jenis' => $request->id_jenis,
             'tipe' => $request->tipe,
-        ]);
+            'url' => $request->url,
+            'deadline' => $request->deadline,
+        ];
+
+        if ($request->hasFile('file')) {
+            $file = $request->file('file');
+            $fileName = time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path('tugas'), $fileName);
+            $data['file'] = 'tugas/' . $fileName;
+        }
+
+        Task::create($data);
 
         return redirect('/tugas')->with('success', 'Tugas berhasil ditambahkan.');
     }
@@ -90,8 +107,9 @@ class TugasController extends Controller
 
         $task = Task::where('id', $id)->where('id_dosen', Auth::id())->firstOrFail();
         $jenis_tasks = TypeTask::all();
+        $periods = Periode::all();
 
-        return view('tugas.edit', compact('breadcrumb', 'page', 'task', 'jenis_tasks', 'activeMenu'));
+        return view('tugas.edit', compact('breadcrumb', 'page', 'task', 'jenis_tasks', 'activeMenu', 'periods'));
     }
 
     public function update(Request $request, $id)
@@ -102,23 +120,38 @@ class TugasController extends Controller
             'judul' => 'required|string|max:255',
             'deskripsi' => 'required|string',
             'bobot' => 'required|integer|min:1',
+            'kuota' => 'required|integer|min:1',
             'semester' => 'required|integer|min:1|max:8',
             'id_jenis' => 'required|exists:type_task,id',
             'tipe' => 'required|in:file,url',
+            'deadline' => 'required|date|after:today',
+            'file' => 'nullable|file',
         ]);
 
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
-        $task->update([
+        $data = [
             'judul' => $request->judul,
             'deskripsi' => $request->deskripsi,
             'bobot' => $request->bobot,
+            'kuota' => $request->kuota,
             'semester' => $request->semester,
             'id_jenis' => $request->id_jenis,
             'tipe' => $request->tipe,
-        ]);
+            'url' => $request->url,
+            'deadline' => $request->deadline,
+        ];
+
+        if ($request->hasFile('file')) {
+            $file = $request->file('file');
+            $fileName = time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path('tugas'), $fileName);
+            $data['file'] = 'tugas/' . $fileName;
+        }
+
+        $task->update($data);
 
         return redirect('/tugas')->with('success', 'Tugas berhasil diperbarui.');
     }
@@ -131,7 +164,6 @@ class TugasController extends Controller
 
         return redirect('/tugas')->with('success', 'Tugas berhasil dihapus.');
     }
-
 
     public function show($id)
     {

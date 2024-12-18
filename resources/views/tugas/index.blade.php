@@ -26,6 +26,7 @@
                         <th>Bobot</th>
                         <th>Semester</th>
                         <th>Tipe</th>
+                        <th>Deadline</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
@@ -36,8 +37,9 @@
                             <td>{{ $task->judul }}</td>
                             <td>{{ $task->deskripsi }}</td>
                             <td>{{ $task->bobot }}</td>
-                            <td>{{ $task->semester }}</td>
+                            <td>{{ $task->periode ? $task->periode->nama : 'Tidak Ditemukan' }}</td>
                             <td>{{ ucfirst($task->tipe) }}</td>
+                            <td>{{ \Carbon\Carbon::parse($task->deadline)->format('d-m-Y') }}</td>
                             <td>
                                 <a href="{{ url('/tugas/edit/' . $task->id) }}" class="btn btn-sm btn-warning">Edit</a>
                                 <a href="{{ url('/tugas/show/' . $task->id) }}" class="btn btn-sm btn-dark">Detail</a>

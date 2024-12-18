@@ -15,10 +15,19 @@ class Task extends Model
         'judul',
         'deskripsi',
         'bobot',
+        'kuota',
+        'file',
+        'url',
+        'deadline',
         'semester',
         'id_jenis',
         'tipe'
     ];
+
+    public function periode()
+    {
+        return $this->belongsTo(Periode::class, 'semester', 'semester');
+    }
 
     public function taskRequests()
     {

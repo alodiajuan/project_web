@@ -10,8 +10,21 @@
             <h4>Tugas: {{ $task->judul }}</h4>
             <p><strong>Deskripsi:</strong> {{ $task->deskripsi }}</p>
             <p><strong>Bobot:</strong> {{ $task->bobot }}</p>
-            <p><strong>Semester:</strong> {{ $task->semester }}</p>
+            <p><strong>Semester:</strong> {{ $task->periode ? $task->periode->nama : 'Tidak Ditemukan' }}</p>
             <p><strong>Tipe:</strong> {{ $task->tipe }}</p>
+            <p><strong>Deadline:</strong> {{ \Carbon\Carbon::parse($task->deadline)->format('d-m-Y') }}</p>
+
+            <hr>
+
+            @if ($task->file)
+                <p><strong>File Pendukung:</strong>
+                    <a href="{{ asset('tugas/' . $task->file) }}" download>Download File</a>
+                </p>
+            @elseif($task->url)
+                <p><strong>URL Pendukung:</strong>
+                    <a href="{{ $task->url }}" target="_blank">{{ $task->url }}</a>
+                </p>
+            @endif
 
             <hr>
 

@@ -18,8 +18,12 @@ return new class extends Migration
             $table->text('deskripsi');
             $table->integer('bobot');
             $table->integer('semester');
+            $table->integer('kuota');
+            $table->string('file')->nullable();
+            $table->string('url')->nullable();
             $table->unsignedBigInteger('id_jenis');
             $table->enum('tipe', ['file', 'url']);
+            $table->dateTime('deadline');
             $table->timestamps();
 
             $table->foreign('id_jenis')->references('id')->on('type_task');

@@ -115,6 +115,28 @@
                     </div>
                 </div>
 
+                <div class="form-group row">
+                    <label for="alfa" class="col-sm-2 col-form-label">Alfa</label>
+                    <div class="col-sm-10">
+                        <input type="number" class="form-control" id="alfa" name="alfa"
+                            value="{{ old('alfa') }}" required>
+                        @error('alfa')
+                            <div class="text-danger">{{ $message }}</div>
+                        @enderror
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label for="compensation" class="col-sm-2 col-form-label">Kompensasi</label>
+                    <div class="col-sm-10">
+                        <input type="number" class="form-control" id="compensation" name="compensation"
+                            value="{{ old('compensation') }}" required>
+                        @error('compensation')
+                            <div class="text-danger">{{ $message }}</div>
+                        @enderror
+                    </div>
+                </div>
+
                 <button type="submit" class="btn btn-sm btn-primary mt-3">Tambah</button>
                 <a href="{{ url('/mahasiswa') }}" class="btn btn-sm btn-secondary mt-3">Batal</a>
             </form>

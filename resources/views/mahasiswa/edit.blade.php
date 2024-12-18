@@ -95,6 +95,28 @@
                 </div>
 
                 <div class="form-group row">
+                    <label for="alfa" class="col-sm-2 col-form-label">Alfa</label>
+                    <div class="col-sm-10">
+                        <input type="number" class="form-control" id="alfa" name="alfa"
+                            value="{{ old('alfa', $mahasiswa->alfa) }}" required>
+                        @error('alfa')
+                            <span class="text-danger">{{ $message }}</span>
+                        @enderror
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label for="compensation" class="col-sm-2 col-form-label">Kompensasi</label>
+                    <div class="col-sm-10">
+                        <input type="number" class="form-control" id="compensation" name="compensation"
+                            value="{{ old('compensation', $mahasiswa->compensation) }}" required>
+                        @error('compensation')
+                            <span class="text-danger">{{ $message }}</span>
+                        @enderror
+                    </div>
+                </div>
+
+                <div class="form-group row">
                     <label for="password" class="col-sm-2 col-form-label">Password</label>
                     <div class="col-sm-10">
                         <input type="password" class="form-control" id="password" name="password">
@@ -107,7 +129,8 @@
                 <div class="form-group row">
                     <label for="password_confirmation" class="col-sm-2 col-form-label">Konfirmasi Password</label>
                     <div class="col-sm-10">
-                        <input type="password" class="form-control" id="password_confirmation" name="password_confirmation">
+                        <input type="password" class="form-control" id="password_confirmation"
+                            name="password_confirmation">
                     </div>
                 </div>
 

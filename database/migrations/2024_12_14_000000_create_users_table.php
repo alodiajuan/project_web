@@ -21,6 +21,8 @@ return new class extends Migration
             $table->unsignedBigInteger('id_kompetensi')->nullable();
             $table->unsignedBigInteger('id_prodi')->nullable();
             $table->enum('role', ['admin', 'dosen', 'tendik', 'mahasiswa']);
+            $table->integer('alfa')->nullable();
+            $table->integer('compensation')->nullable();
             $table->rememberToken();
             $table->timestamps();
 

@@ -145,6 +145,8 @@ class UserController extends Controller
             'kompetensi' => 'nullable|string|max:255',
             'semester' => 'required|integer|min:1|max:8',
             'foto_profile' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'alfa' => 'required|integer',
+            'compensation' => 'required|integer',
             'password' => 'required|min:6|confirmed',
         ]);
 
@@ -183,6 +185,8 @@ class UserController extends Controller
             'kompetensi' => 'nullable|string|max:255',
             'semester' => 'required|integer|min:1|max:8',
             'foto_profile' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'alfa' => 'required|integer',
+            'compensation' => 'required|integer',
             'password' => 'nullable|min:6|confirmed',
         ]);
 

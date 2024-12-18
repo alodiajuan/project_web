@@ -60,13 +60,10 @@ class DashboardController extends Controller
             $requestCount = TaskRequest::where('id_mahasiswa', $user->id)
                 ->whereNull('status')
                 ->count();
-            $totalBobot = Compensation::where('id_mahasiswa', $user->id)
-                ->join('task', 'compensation.id_task', '=', 'task.id') // Bergabung dengan tabel task
-                ->sum('task.bobot');
             $dataDashboard = [
                 "primary" => [$taskCount, "Tasks"],
                 "second" => [$requestCount, "Requests"],
-                "three" => [$totalBobot, "Compensations"]
+                "three" => [$user->compensation - $user->alfa, "Compensations"]
             ];
 
             $tasks = Task::with(['dosen', 'taskSubmissions' => function ($query) {

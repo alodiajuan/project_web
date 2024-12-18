@@ -1,97 +1,87 @@
 @extends('layouts.template')
+
 @section('content')
     <div class="card card-outline card-primary">
         <div class="card-header">
-            <h3 class="card-title">{{ $page->title }}</h3>
-            <div class="card-tools">
-                <a href="{{ url('tugas') }}" class="btn btn-sm btn-default">Kembali</a>
-            </div>
+            <h3 class="card-title">Edit Tugas</h3>
         </div>
+
         <div class="card-body">
-            @empty($tugas)
-                <div class="alert alert-danger alert-dismissible">
-                    <h5><i class="icon fas fa-ban"></i> Kesalahan!</h5>
-                    Data yang Anda cari tidak ditemukan.
+            <form action="{{ url('/tugas/' . $task->id) }}" method="POST" enctype="multipart/form-data">
+                @csrf
+                @method('PUT')
+
+                <div class="form-group">
+                    <label>Judul</label>
+                    <input type="text" name="judul" class="form-control" placeholder="Masukkan judul task" value="{{ old('judul', $task->judul) }}" required>
                 </div>
-                <a href="{{ url('tugas') }}" class="btn btn-sm btn-default mt-2">Kembali</a>
-            @else
-                <form method="POST" action="{{ url('/tugas/' . $tugas->tugas_id) }}" class="form-horizontal">
-                    @csrf
-                    @method('PUT')
-                    <div class="form-group row">
-                        <label class="col-1 control-label col-form-label">Kode Tugas</label>
-                        <div class="col-11">
-                            <input type="text" class="form-control" id="tugas_kode" name="tugas_kode"
-                                value="{{ old('tugas_kode', $tugas->tugas_kode) }}" required>
-                            @error('tugas_kode')
-                                <small class="form-text text-danger">{{ $message }}</small>
-                            @enderror
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label class="col-1 control-label col-form-label">Nama Tugas</label>
-                        <div class="col-11">
-                            <input type="text" class="form-control" id="tugas_nama" name="tugas_nama"
-                                value="{{ old('tugas_nama', $tugas->tugas_nama) }}" required>
-                            @error('tugas_nama')
-                                <small class="form-text text-danger">{{ $message }}</small>
-                            @enderror
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label class="col-1 control-label col-form-label">Kategori</label>
-                        <div class="col-11">
-                            <select class="form-control" id="kategori_id" name="kategori_id" required>
-                                <option value="">- Pilih Kategori -</option>
-                                @foreach ($kategori as $k)
-                                    <option value="{{ $k->kategori_id }}"
-                                        {{ old('kategori_id', $tugas->kategori_id) == $k->kategori_id ? 'selected' : '' }}>
-                                        {{ $k->kategori_nama }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            @error('kategori_id')
-                                <small class="form-text text-danger">{{ $message }}</small>
-                            @enderror
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label class="col-1 control-label col-form-label">Jam Kompen</label>
-                        <div class="col-11">
-                            <input type="number" class="form-control" id="jam_kompen" name="jam_kompen"
-                                value="{{ old('jam_kompen', $tugas->jam_kompen) }}" required>
-                            @error('jam_kompen')
-                                <small class="form-text text-danger">{{ $message }}</small>
-                            @enderror
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label class="col-1 control-label col-form-label">Status</label>
-                        <div class="col-11">
-                            <select class="form-control" id="status_dibuka" name="status_dibuka" required>
-                                <option value="1" {{ old('status_dibuka', $tugas->status_dibuka) ? 'selected' : '' }}>
-                                    Dibuka</option>
-                                <option value="0" {{ !old('status_dibuka', $tugas->status_dibuka) ? 'selected' : '' }}>
-                                    Ditutup</option>
-                            </select>
-                            @error('status_dibuka')
-                                <small class="form-text text-danger">{{ $message }}</small>
-                            @enderror
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label class="col-1 control-label col-form-label"></label>
-                        <div class="col-11">
-                            <button type="submit" class="btn btn-primary btn-sm">Simpan</button>
-                            <a class="btn btn-sm btn-default ml-1" href="{{ url('tugas') }}">Kembali</a>
-                        </div>
-                    </div>
-                </form>
-            @endempty
+
+                <div class="form-group">
+                    <label>Deskripsi</label>
+                    <textarea name="deskripsi" class="form-control" rows="4" placeholder="Masukkan deskripsi task" required>{{ old('deskripsi', $task->deskripsi) }}</textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Bobot</label>
+                    <input type="number" name="bobot" class="form-control" placeholder="Masukkan bobot task" value="{{ old('bobot', $task->bobot) }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Semester</label>
+                    <select name="semester" class="form-control" required>
+                        <option value="" selected disabled>Pilih Semester</option>
+                        @foreach ($periods as $period)
+                            <option value="{{ $period->semester }}" {{ old('semester', $task->semester) == $period->semester ? 'selected' : '' }}>
+                                {{ $period->nama }} ({{ $period->tipe }})
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Kategori Tugas</label>
+                    <select name="id_jenis" class="form-control" required>
+                        <option value="" selected disabled>Pilih Kategori Tugas</option>
+                        @foreach ($jenis_tasks as $jenis)
+                            <option value="{{ $jenis->id }}" {{ old('id_jenis', $task->id_jenis) == $jenis->id ? 'selected' : '' }}>
+                                {{ $jenis->nama }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Tipe Tugas</label>
+                    <select name="tipe" class="form-control" required>
+                        <option value="" selected disabled>Pilih Tipe Tugas</option>
+                        <option value="file" {{ old('tipe', $task->tipe) == 'file' ? 'selected' : '' }}>File</option>
+                        <option value="url" {{ old('tipe', $task->tipe) == 'url' ? 'selected' : '' }}>URL</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Kuota</label>
+                    <input type="number" name="kuota" class="form-control" placeholder="Masukkan kuota peserta" value="{{ old('kuota', $task->kuota) }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Deadline</label>
+                    <input type="datetime-local" name="deadline" class="form-control" value="{{ old('deadline', \Carbon\Carbon::parse($task->deadline)->format('Y-m-d\TH:i')) }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label>File Pendukung (Opsional)</label>
+                    <input type="file" name="file" class="form-control">
+                </div>
+
+                <div class="form-group">
+                    <label>URL Pendukung (Opsional)</label>
+                    <input type="url" name="url" class="form-control" placeholder="Masukkan URL pendukung" value="{{ old('url', $task->url) }}">
+                </div>
+
+                <button type="submit" class="btn btn-primary">Simpan</button>
+                <a href="{{ url('/tugas') }}" class="btn btn-secondary">Kembali</a>
+            </form>
         </div>
     </div>
 @endsection
-@push('css')
-@endpush
-@push('js')
-@endpush

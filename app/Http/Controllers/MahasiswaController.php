@@ -26,7 +26,7 @@ class MahasiswaController extends Controller
             'list' => ['Home', 'Mahasiswa']
         ];
 
-        $page = (object) [
+        $page = [
             'title' => 'Daftar mahasiswa yang terdaftar dalam sistem'
         ];
 

@@ -30,7 +30,6 @@
                 padding-top: 0;
                 padding-bottom: 0;
                 margin-top: -5px;
-                /* Sesuaikan nilai ini untuk mengatur posisi ke atas */
             }
 
             .dropdown-menu {
@@ -42,52 +41,36 @@
             }
         </style>
         @php
-            if (auth()->guard('mahasiswa')->check()) {
-                $user = auth()->guard('mahasiswa')->user();
-                $nama = $user->mahasiswa_nama;
-            } else {
-                $user = auth()->guard('sdm')->user();
-                $nama = $user->sdm_nama;
-            }
+            $user = Auth::user();
         @endphp
 
         <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
                 data-toggle="dropdown">
-                <img src="{{ $user->foto ?? asset('img/default-avatar.png') }}" class="avatar img-fluid rounded-circle"
-                    alt="Profile Image" />
-                <span class="text-dark">{{ $nama }}</span>
+                <img src="{{ $user->foto_profile ? asset('images/' . $user->foto_profile) : asset('img/default-avatar.png') }}"
+                    class="avatar img-fluid rounded-circle" alt="Profile Image" />
+                <span class="text-dark">{{ $user->nama }}</span>
             </a>
             <div class="dropdown-menu dropdown-menu-end shadow">
                 <div class="px-4 py-3">
                     <div class="d-flex align-items-center">
-                        <img src="{{ $user->foto ?? asset('img/default-avatar.png') }}"
+                        <img src="{{ $user->foto_profile ? asset('images/' . $user->foto_profile) : asset('img/default-avatar.png') }}"
                             class="avatar rounded-circle me-3" alt="Profile Image">
                         <div>
-                            <h6 class="mb-0">{{ $nama }}</h6>
+                            <h6 class="mb-0">{{ $user->nama }}</h6>
                             <small class="text-muted">
-                                <strong>{{ $user->level->level_nama }}</strong>
+                                <strong>{{ $user->role }}</strong>
                             </small>
                         </div>
                     </div>
                 </div>
                 <div class="dropdown-divider"></div>
-                <a class="dropdown-item py-2" href="{{ url('/profile') }}">
+                <a class="dropdown-item py-2" href="/profile">
                     <i class="fas fa-user me-2"></i> Edit Profile
                 </a>
-                <a class="dropdown-item py-2" href="#" onclick="logout()">
-                    <i class="fas fa-sign-out-alt me-2"></i> Log Out
+                <a class="dropdown-item py-2" href="/logout" <i class="fas fa-sign-out-alt me-2"></i> Log Out
                 </a>
             </div>
-
-
-            <script>
-                function logout() {
-                    localStorage.removeItem('authToken');
-                    window.location.href = '{{ url('logout') }}';
-                    alert('Anda telah berhasil logout!');
-                }
-            </script>
         </li>
     </ul>
 </nav>

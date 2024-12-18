@@ -1,60 +1,84 @@
 <?php
+
 namespace App\Http\Controllers;
 
+use App\Exports\UsersExport;
+use App\Imports\UsersImport;
+use App\Models\User;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
+use Maatwebsite\Excel\Facades\Excel;
 
 class AuthController extends Controller
 {
     public function login()
     {
-        if (Auth::guard('mahasiswa')->check() || Auth::guard('sdm')->check()) {
-            return redirect('/');
-        }
         return view('auth.login');
     }
 
     public function postlogin(Request $request)
     {
-        if($request->ajax() || $request->wantsJson()){
-            $role = $request->input('role');
-            
-            if ($role == 'MHS') {
-                if (Auth::guard('mahasiswa')->attempt(['nim' => $request->username, 'password' => $request->password])) {
-                    return response()->json([
-                        'status' => true,
-                        'message' => 'Login Berhasil',
-                        'redirect' => url('/')
-                    ]);
-                }
-            } else {
-                if (Auth::guard('sdm')->attempt(['nip' => $request->username, 'password' => $request->password])) {
-                    $user = Auth::guard('sdm')->user();
-                    if ($user->level && $user->level->level_kode === $role) {
-                        return response()->json([
-                            'status' => true,
-                            'message' => 'Login Berhasil',
-                            'redirect' => url('/')
-                        ]);
-                    }
-                    Auth::guard('sdm')->logout();
-                }
-            }
+        $validator = Validator::make($request->all(), [
+            'username' => 'required',
+            'password' => 'required|string|min:6'
+        ]);
 
-            return response()->json([
-                'status' => false,
-                'message' => 'Login Gagal',
-            ]);
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
         }
-        return redirect('login');
+
+        $credentials = $request->only('username', 'password');
+
+        if (Auth::attempt($credentials)) {
+            return redirect('/dashboard');
+        }
+
+
+        return redirect()->back()->withErrors(['error' => 'Invalid Email or Password.']);;
     }
 
     public function logout(Request $request)
     {
-        Auth::guard('mahasiswa')->logout();
-        Auth::guard('sdm')->logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-        return redirect('login');
+        Auth::logout();
+        return redirect('/login')->with('success', 'You have been logged out.');
+    }
+
+    public function import(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'file' => 'required|mimes:xlsx,xls,csv|max:2048',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        try {
+            Excel::import(new UsersImport, $request->file('file'));
+            return redirect()->back()->with('success', 'Data berhasil diimport!');
+        } catch (Exception $e) {
+            return redirect()->back()->with('error', 'Terjadi kesalahan saat mengimpor data. Silakan coba lagi.');
+        }
+    }
+
+    public function export(Request $request)
+    {
+        try {
+            $role = $request->get('role', 'mahasiswa');
+
+            if ($role == 'mahasiswa') {
+                $users = User::where('role', 'mahasiswa')->with(['competence', 'prodi'])->get();
+            } else {
+                $users = User::whereIn('role', ['admin', 'dosen', 'tendik'])->with(['competence', 'prodi'])->get();
+            }
+
+            return Excel::download(new UsersExport($users), 'users.xlsx');
+        } catch (Exception $e) {
+            return redirect()->back()->with('error', 'Terjadi kesalahan saat mengekspor data. Silakan coba lagi.');
+        }
     }
 }

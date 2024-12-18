@@ -2,9 +2,9 @@
 
 namespace Database\Seeders;
 
+use App\Models\Prodi;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
 
 class ProdiSeeder extends Seeder
 {
@@ -13,24 +13,16 @@ class ProdiSeeder extends Seeder
      */
     public function run(): void
     {
-        $data = [
-            [
-                'prodi_id' => 1,
-                'prodi_kode' => 'TI',
-                'prodi_nama' => 'Teknik Informatika',
-            ],
-            [
-                'prodi_id' => 2,
-                'prodi_kode' => 'SIB',
-                'prodi_nama' => 'Sistem Informasi Bisnis',
-            ],
-            [
-                'prodi_id' => 3,
-                'prodi_kode' => 'PPLS',
-                'prodi_nama' => 'Pengembangan Piranti Lunak Situs'
-            ],
-        ];
+        Prodi::create([
+            'nama' => 'Teknik Informatika',
+        ]);
 
-        DB::table('m_prodi')->insert($data); // Sesuaikan nama tabel dengan tabel di database Anda
+        Prodi::create([
+            'nama' => 'Sistem Informasi',
+        ]);
+
+        Prodi::create([
+            'nama' => 'Manajemen Informatika',
+        ]);
     }
 }

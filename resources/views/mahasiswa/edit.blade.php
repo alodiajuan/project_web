@@ -1,164 +1,119 @@
 @extends('layouts.template')
+
 @section('content')
     <div class="card card-outline card-primary">
         <div class="card-header">
-            <h3 class="card-title">{{ $page->title }}</h3>
-            <div class="card-tools"></div>
+            <h3 class="card-title">Edit Data Mahasiswa</h3>
         </div>
+
         <div class="card-body">
-            @empty($mahasiswa)
-                <div class="alert alert-danger alert-dismissible">
-                    <h5><i class="icon fas fa-ban"></i> Kesalahan!</h5>
-                    Data yang Anda cari tidak ditemukan.
+            <form action="{{ url('/mahasiswa/update/' . $mahasiswa->id) }}" method="POST" enctype="multipart/form-data">
+                @csrf
+                @method('PUT')
+
+                <div class="form-group row">
+                    <label for="nama" class="col-sm-2 col-form-label">Nama</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="nama" name="nama"
+                            value="{{ old('nama', $mahasiswa->nama) }}" required>
+                        @error('nama')
+                            <span class="text-danger">{{ $message }}</span>
+                        @enderror
+                    </div>
                 </div>
-                <a href="{{ url('/mahasiswa') }}" class="btn btn-sm btn-default mt-2">Kembali</a>
-            @else
-                <form method="POST" action="{{ url('/mahasiswa/' . $mahasiswa->mahasiswa_id) }}" class="form-horizontal"
-                    enctype="multipart/form-data">
-                    @csrf
-                    @method('PUT')
-                    <div class="form-group row">
-                        <label class="col-2 control-label col-form-label">Program Studi</label>
-                        <div class="col-10">
-                            <select class="form-control" id="prodi_id" name="prodi_id" required>
-                                <option value="">- Pilih Program Studi -</option>
-                                @foreach ($prodi as $item)
-                                    <option value="{{ $item->prodi_id }}" @if ($item->prodi_id == $mahasiswa->prodi_id) selected @endif>
-                                        {{ $item->prodi_nama }}</option>
-                                @endforeach
-                            </select>
-                            @error('prodi_id')
-                                <small class="form-text text-danger">{{ $message }}</small>
-                            @enderror
-                        </div>
-                    </div>
 
-                    <div class="form-group row">
-                        <label class="col-2 control-label col-form-label">Level</label>
-                        <div class="col-10">
-                            <select class="form-control" id="level_id" name="level_id">
-                                <option value="">- Pilih Level -</option>
-                                @foreach ($level as $item)
-                                    <option value="{{ $item->level_id }}" @if ($item->level_id == $mahasiswa->level_id) selected @endif>
-                                        {{ $item->level_nama }}</option>
-                                @endforeach
-                            </select>
-                            @error('level_id')
-                                <small class="form-text text-danger">{{ $message }}</small>
-                            @enderror
-                        </div>
+                <div class="form-group row">
+                    <label for="username" class="col-sm-2 col-form-label">NIM</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="username" name="username"
+                            value="{{ old('username', $mahasiswa->username) }}" required>
+                        @error('username')
+                            <span class="text-danger">{{ $message }}</span>
+                        @enderror
                     </div>
+                </div>
 
-                    <div class="form-group row">
-                        <label class="col-2 control-label col-form-label">Kompetensi</label>
-                        <div class="col-10">
-                            <select class="form-control" id="kompetensi_id" name="kompetensi_id">
-                                <option value="">- Pilih Kompetensi -</option>
-                                @foreach ($kompetensi as $item)
-                                    <option value="{{ $item->kompetensi_id }}"
-                                        @if ($item->kompetensi_id == $mahasiswa->kompetensi_id) selected @endif>
-                                        {{ $item->kompetensi_nama }}</option>
-                                @endforeach
-                            </select>
-                            @error('kompetensi_id')
-                                <small class="form-text text-danger">{{ $message }}</small>
-                            @enderror
-                        </div>
+                <div class="form-group row">
+                    <label for="prodi_id" class="col-sm-2 col-form-label">Program Studi</label>
+                    <div class="col-sm-10">
+                        <select class="form-control" id="prodi_id" name="prodi_id" required>
+                            @foreach ($prodi as $prodiItem)
+                                <option value="{{ $prodiItem->id }}"
+                                    {{ old('prodi_id', $mahasiswa->id_prodi) == $prodiItem->id ? 'selected' : '' }}>
+                                    {{ $prodiItem->nama }}
+                                </option>
+                            @endforeach
+                        </select>
+                        @error('prodi_id')
+                            <span class="text-danger">{{ $message }}</span>
+                        @enderror
                     </div>
+                </div>
 
-                    <div class="form-group row">
-                        <label class="col-2 control-label col-form-label">NIM</label>
-                        <div class="col-10">
-                            <input type="text" class="form-control" id="nim" name="nim"
-                                value="{{ old('nim', $mahasiswa->nim) }}" required>
-                            @error('nim')
-                                <small class="form-text text-danger">{{ $message }}</small>
-                            @enderror
-                        </div>
+                <div class="form-group row">
+                    <label for="foto_profile" class="col-sm-2 col-form-label">Foto Profile</label>
+                    <div class="col-sm-10">
+                        <input type="file" class="form-control-file" id="foto_profile" name="foto_profile">
+                        @if ($mahasiswa->foto_profile)
+                            <img src="{{ asset('images/' . $mahasiswa->foto_profile) }}" alt="Foto Profile"
+                                class="img-thumbnail mt-2" width="100">
+                        @else
+                            <p>No Image</p>
+                        @endif
+                        @error('foto_profile')
+                            <span class="text-danger">{{ $message }}</span>
+                        @enderror
                     </div>
+                </div>
 
-                    <div class="form-group row">
-                        <label class="col-2 control-label col-form-label">Nama Mahasiswa</label>
-                        <div class="col-10">
-                            <input type="text" class="form-control" id="mahasiswa_nama" name="mahasiswa_nama"
-                                value="{{ old('mahasiswa_nama', $mahasiswa->mahasiswa_nama) }}" required>
-                            @error('mahasiswa_nama')
-                                <small class="form-text text-danger">{{ $message }}</small>
-                            @enderror
-                        </div>
+                <div class="form-group row">
+                    <label for="kompetensi_id" class="col-sm-2 col-form-label">Kompetensi</label>
+                    <div class="col-sm-10">
+                        <select class="form-control" id="kompetensi_id" name="kompetensi_id" required>
+                            @foreach ($kompetensi as $item)
+                                <option value="{{ $item->id }}"
+                                    {{ old('kompetensi_id', $mahasiswa->id_kompetensi) == $item->id ? 'selected' : '' }}>
+                                    {{ $item->nama }}
+                                </option>
+                            @endforeach
+                        </select>
+                        @error('kompetensi_id')
+                            <span class="text-danger">{{ $message }}</span>
+                        @enderror
                     </div>
+                </div>
 
-                    <div class="form-group row">
-                        <label class="col-2 control-label col-form-label">Username</label>
-                        <div class="col-10">
-                            <input type="text" class="form-control" id="username" name="username"
-                                value="{{ old('username', $mahasiswa->username) }}">
-                            @error('username')
-                                <small class="form-text text-danger">{{ $message }}</small>
-                            @enderror
-                        </div>
+                <div class="form-group row">
+                    <label for="semester" class="col-sm-2 col-form-label">Semester</label>
+                    <div class="col-sm-10">
+                        <input type="number" class="form-control" id="semester" name="semester"
+                            value="{{ old('semester', $mahasiswa->semester) }}" required>
+                        @error('semester')
+                            <span class="text-danger">{{ $message }}</span>
+                        @enderror
                     </div>
+                </div>
 
-                    <div class="form-group row">
-                        <label class="col-2 control-label col-form-label">Password</label>
-                        <div class="col-10">
-                            <input type="password" class="form-control" id="password" name="password">
-                            @error('password')
-                                <small class="form-text text-danger">{{ $message }}</small>
-                            @else
-                                <small class="form-text text-muted">Abaikan (jangan diisi) jika tidak ingin
-                                    mengganti password.</small>
-                            @enderror
-                        </div>
+                <div class="form-group row">
+                    <label for="password" class="col-sm-2 col-form-label">Password</label>
+                    <div class="col-sm-10">
+                        <input type="password" class="form-control" id="password" name="password">
+                        @error('password')
+                            <span class="text-danger">{{ $message }}</span>
+                        @enderror
                     </div>
+                </div>
 
-                    <div class="form-group row">
-                        <label class="col-2 control-label col-form-label">Semester</label>
-                        <div class="col-10">
-                            <input type="number" class="form-control" id="semester" name="semester"
-                                value="{{ old('semester', $mahasiswa->semester) }}" min="1" max="14">
-                            @error('semester')
-                                <small class="form-text text-danger">{{ $message }}</small>
-                            @enderror
-                        </div>
+                <div class="form-group row">
+                    <label for="password_confirmation" class="col-sm-2 col-form-label">Konfirmasi Password</label>
+                    <div class="col-sm-10">
+                        <input type="password" class="form-control" id="password_confirmation" name="password_confirmation">
                     </div>
+                </div>
 
-                    <div class="form-group row">
-                        <label class="col-2 control-label col-form-label">Foto</label>
-                        <div class="col-10">
-                            <input type="file" class="form-control" id="foto" name="foto" accept=".png,.jpg,.jpeg">
-                            @error('foto')
-                                <small class="form-text text-danger">{{ $message }}</small>
-                            @else
-                                <small class="form-text text-muted">Abaikan (jangan diisi) jika tidak ingin
-                                    mengganti foto.</small>
-                            @enderror
-                            @if ($mahasiswa->foto)
-                                <div class="mt-2">
-                                    <img src="{{ $mahasiswa->foto }}" alt="Foto Mahasiswa" class="img-thumbnail"
-                                        style="max-height: 200px;">
-                                </div>
-                            @endif
-                        </div>
-                    </div>
-
-                    <div class="form-group row">
-                        <label class="col-2 control-label col-form-label"></label>
-                        <div class="col-10">
-                            <button type="submit" class="btn btn-primary btn-sm">Simpan</button>
-                            <a class="btn btn-sm btn-default ml-1" href="{{ url('mahasiswa') }}">Kembali</a>
-                        </div>
-                    </div>
-                </form>
-            @endempty
+                <button type="submit" class="btn btn-sm btn-primary mt-3">Update</button>
+                <a href="{{ url('/mahasiswa') }}" class="btn btn-sm btn-secondary mt-3">Cancel</a>
+            </form>
         </div>
     </div>
 @endsection
-
-@push('css')
-    <!-- Additional CSS -->
-@endpush
-
-@push('js')
-    <!-- Additional JavaScript -->
-@endpush

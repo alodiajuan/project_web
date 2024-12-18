@@ -56,7 +56,19 @@ class TasksController extends Controller
 
         $activeMenu = 'tasks';
 
-        $task = Task::with('dosen')->findOrFail($id);
+        $task = Task::with('dosen', 'periode')->findOrFail($id);
+        $submissions = TaskSubmission::where('id_task', $task->id)
+            ->where('id_mahasiswa', Auth::id())
+            ->get();
+
+        $available = true;
+
+        foreach ($submissions as $submission) {
+            if ($submission->progress === 100) {
+                $available = false;
+                break;
+            }
+        }
 
         $request = $task->taskRequests()
             ->where('id_mahasiswa', Auth::id())
@@ -70,14 +82,13 @@ class TasksController extends Controller
             $task->requestStatus = null;
         }
 
-        return view('tasks.show', compact('task', 'breadcrumb', 'page', 'activeMenu'));
+        return view('tasks.show', compact('task', 'submissions', 'available', 'breadcrumb', 'page', 'activeMenu'));
     }
 
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'id_task' => 'required|exists:task,id',
-            'type' => 'required|in:file,url',
             'file' => 'nullable|file',
             'url' => 'nullable|url',
         ]);
@@ -86,23 +97,25 @@ class TasksController extends Controller
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
+        $task = Task::findOrFail($request->id_task);
+
         $data = [
             'id_task' => $request->id_task,
             'id_mahasiswa' => Auth::id(),
         ];
 
-        if ($request->type == 'file' && $request->hasFile('file')) {
+        if ($task->tipe == 'file' && $request->hasFile('file')) {
             $file = $request->file('file');
             $fileName = time() . '_' . $file->getClientOriginalName();
             $file->move(public_path('submissions'), $fileName);
             $data['file'] = 'submissions/' . $fileName;
-        } elseif ($request->type == 'url' && $request->url) {
+        } elseif ($task->tipe == 'url' && $request->url) {
             $data['url'] = $request->url;
         }
 
         TaskSubmission::create($data);
 
-        return redirect()->back()->with('success', 'Tugas berhasil disubmit!');
+        return redirect("/tasks")->with('success', 'Tugas berhasil disubmit!');
     }
 
     public function request($id)

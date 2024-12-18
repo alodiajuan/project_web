@@ -32,7 +32,19 @@
                             <td>{{ $task->judul }}</td>
                             <td>{{ $task->bobot }}</td>
                             <td>{{ ucfirst($task->tipe) }}</td>
-                            <td>{{ isset($task->isRequested) ? ($task->requestStatus == 'terima' ? 'TERIMA' : 'TOLAK') : 'BELUM ADA' }}
+                            <td>
+                                @if (isset($task->isRequested))
+                                    @if ($task->requestStatus == null)
+                                        BELUM ADA
+                                    @elseif ($task->requestStatus == 'terima')
+                                        TERIMA
+                                    @elseif ($task->requestStatus == 'tolak')
+                                        TOLAK
+                                    @endif
+                                @else
+                                    BELUM ADA
+                                @endif
+                            </td>
                             </td>
                             <td>
                                 <a href="{{ url('/tasks/' . $task->id) }}" class="btn btn-sm btn-dark">Detail</a>

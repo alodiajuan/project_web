@@ -68,6 +68,39 @@ class DashboardController extends Controller
                 "second" => [$requestCount, "Requests"],
                 "three" => [$totalBobot, "Compensations"]
             ];
+
+            $tasks = Task::with(['dosen', 'taskSubmissions' => function ($query) {
+                $query->where('id_mahasiswa', Auth::id())
+                    ->where('progress', '<', 100);
+            }])
+                ->whereHas('taskSubmissions', function ($query) {
+                    $query->where('id_mahasiswa', Auth::id())
+                        ->where('progress', '<', 100);
+                })
+                ->get()->map(function ($task) {
+                    $taskHasCompletedSubmission = $task->taskSubmissions->contains(function ($submission) {
+                        return $submission->progress === 100;
+                    });
+
+                    if ($taskHasCompletedSubmission) {
+                        return null;
+                    }
+
+                    $highestProgressSubmission = $task->taskSubmissions->sortByDesc('progress')->first();
+
+                    return tap($task, function ($task) use ($highestProgressSubmission) {
+                        if ($highestProgressSubmission) {
+                            $task->highestProgressSubmission = $highestProgressSubmission;
+                        }
+                    });
+                })->filter();
+
+            return view('dashboard.index', [
+                'breadcrumb' => $breadcrumb,
+                'activeMenu' => $activeMenu,
+                'data' => $dataDashboard,
+                'tasks' => $tasks
+            ]);
         }
 
         return view('dashboard.index', ['breadcrumb' => $breadcrumb, 'activeMenu' => $activeMenu, "data" => $dataDashboard]);

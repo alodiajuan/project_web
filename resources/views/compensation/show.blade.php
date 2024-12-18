@@ -48,7 +48,14 @@
                 </tr>
             </table>
 
-            <a href="{{ url('/kompensasi') }}" class="btn btn-sm btn-secondary">Kembali</a>
+            <div>
+                @if ($taskSubmission->acc_dosen == 'terima')
+                    <a href="{{ url('/compensations/download/' . $taskSubmission->compensations->id) }}"
+                        class="btn btn-sm btn-primary">Download</a>
+                @endif
+                <a href="{{ url('/kompensasi') }}" class="btn btn-sm btn-secondary">Kembali</a>
+            </div>
+
         </div>
     </div>
 @endsection

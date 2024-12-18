@@ -244,8 +244,16 @@ class UserController extends Controller
         ];
 
         $activeMenu = 'sdm';
+        
+        $role = $request->input('role');
 
-        $sdm = User::whereIn('role', ['admin', 'dosen', 'tendik'])->get();
+        $query = User::whereIn('role', ['admin', 'dosen', 'tendik']);
+
+        if ($role) {
+            $query->where('role', $role);
+        }
+    
+        $sdm = $query->get();
 
         return view('sdm.index', compact('sdm', 'breadcrumb', 'activeMenu'));
     }

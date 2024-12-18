@@ -34,6 +34,27 @@
                 </div>
             @endif
 
+            <div class="row">
+                <div class="col-md-12">
+                    <form action="{{ url('/sdm') }}" class="form-group row align-items-center" method="GET">
+                        <div class="col-auto">
+                            <label class="control-label col-form-label">Filter:</label>
+                        </div>
+                        <div class="col-auto">
+                            <select class="form-control" id="role" name="role">
+                                <option value="">- Semua -</option>
+                                <option value="admin" {{ request('role') == 'admin' ? 'selected' : '' }}>Admin</option>
+                                <option value="dosen" {{ request('role') == 'dosen' ? 'selected' : '' }}>Dosen</option>
+                                <option value="tendik" {{ request('role') == 'tendik' ? 'selected' : '' }}>Tendik</option>
+                            </select>
+                        </div>
+                        <div class="col-auto">
+                            <button type="submit" class="btn btn-sm btn-primary">Filter</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
             <table class="table table-bordered table-striped table-hover table-sm" id="table_mahasiswa">
                 <thead>
                     <tr>

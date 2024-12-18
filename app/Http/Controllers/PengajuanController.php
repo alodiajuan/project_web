@@ -7,6 +7,7 @@ use App\Models\Compensation;
 use App\Models\TaskSubmission;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 
 class PengajuanController extends Controller
 {
@@ -48,22 +49,39 @@ class PengajuanController extends Controller
         return view('pengajuan.show', compact('taskSubmission', 'breadcrumb', 'page', 'activeMenu'));
     }
 
-    public function approve($id)
+    public function approve(Request $request, $id)
     {
-        $taskSubmission = TaskSubmission::findOrFail($id);
-        $taskSubmission->id_dosen = Auth::id();
-        $taskSubmission->acc_dosen = 'terima';
-        $taskSubmission->save();
-
-        Compensation::create([
-            'id_task' => $taskSubmission->id_task,
-            'id_submission' => $taskSubmission->id,
-            'id_dosen' => $taskSubmission->task->id_dosen,
-            'id_mahasiswa' => $taskSubmission->id_mahasiswa,
-            'semester' => $taskSubmission->mahasiswa->semester,
+        $validator = Validator::make($request->all(), [
+            "progress" => "required|integer|min:1|max:100"
         ]);
 
-        return back()->with('success', 'Pengumpulan tugas diterima.');
+        if ($validator->fails()) {
+            return back()->withErrors($validator)->withInput();
+        }
+
+        $taskSubmission = TaskSubmission::findOrFail($id);
+        $progress = $request->progress;
+
+        $taskSubmission->id_dosen = Auth::id();
+        $taskSubmission->acc_dosen = 'terima';
+        $taskSubmission->progress = $progress;
+
+        if ($taskSubmission->save()) {
+            if ($progress == 100) {
+                Compensation::create([
+                    'id_task' => $taskSubmission->id_task,
+                    'id_submission' => $taskSubmission->id,
+                    'id_dosen' => $taskSubmission->task->id_dosen,
+                    'id_mahasiswa' => $taskSubmission->id_mahasiswa,
+                    'bobot' => $taskSubmission->task->bobot,
+                    'semester' => $taskSubmission->mahasiswa->semester,
+                ]);
+            }
+
+            return back()->with('success', 'Pengumpulan tugas diterima.');
+        }
+
+        return back()->with('error', 'Gagal menyimpan pengajuan.');
     }
 
     public function decline($id)

@@ -16,6 +16,7 @@ class TaskSubmission extends Model
         'id_task',
         'id_dosen',
         'acc_dosen',
+        'progress',
         'file',
         'url'
     ];

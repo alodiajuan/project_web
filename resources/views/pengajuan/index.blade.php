@@ -5,6 +5,7 @@
         <div class="card-header">
             <h3 class="card-title">Daftar Pengumpulan Tugas</h3>
         </div>
+
         <div class="card-body">
             <table class="table table-bordered table-striped">
                 <thead>
@@ -34,20 +35,46 @@
                             <td>
                                 <a href="{{ url('/pengajuan/' . $submission->id) }}" class="btn btn-sm btn-primary">Lihat
                                     Detail</a>
+
                                 @if (is_null($submission->acc_dosen))
-                                    <form action="{{ url('/pengajuan/' . $submission->id . '/terima') }}" method="POST"
-                                        style="display: inline;">
-                                        @csrf
-                                        <button type="submit" class="btn btn-sm btn-success">Terima</button>
-                                    </form>
+                                    <button type="button" class="btn btn-sm btn-success" data-toggle="modal"
+                                        data-target="#modalTerima{{ $submission->id }}">Terima</button>
                                     <form action="{{ url('/pengajuan/' . $submission->id . '/tolak') }}" method="POST"
                                         style="display: inline;">
                                         @csrf
                                         <button type="submit" class="btn btn-sm btn-danger">Tolak</button>
                                     </form>
                                 @endif
+
                             </td>
                         </tr>
+
+                        <!-- Modal for approving progress -->
+                        <div class="modal fade" id="modalTerima{{ $submission->id }}" tabindex="-1" role="dialog"
+                            aria-labelledby="modalTerimaLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="modalTerimaLabel">Masukkan Progress</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form action="{{ url('/pengajuan/' . $submission->id . '/terima') }}"
+                                            method="POST">
+                                            @csrf
+                                            <div class="form-group">
+                                                <label for="progress">Progress (%)</label>
+                                                <input type="number" name="progress" id="progress" class="form-control"
+                                                    min="0" max="100" placeholder="Masukkan progress" required>
+                                            </div>
+                                            <button type="submit" class="btn btn-primary">Kirim</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     @endforeach
                 </tbody>
             </table>

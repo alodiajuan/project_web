@@ -17,6 +17,7 @@ return new class extends Migration
             $table->unsignedBigInteger('id_task');
             $table->unsignedBigInteger('id_dosen')->nullable();
             $table->enum('acc_dosen', ['terima', 'tolak'])->nullable();
+            $table->integer('progress')->nullable();
             $table->string('file')->nullable();
             $table->string('url')->nullable();
             $table->timestamps();

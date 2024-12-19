@@ -18,7 +18,7 @@
 
             @if ($task->file)
                 <p><strong>File Pendukung:</strong>
-                    <a href="{{ asset('tugas/' . $task->file) }}" download>Download File</a>
+                    <a href="{{ asset($task->file) }}" download>Download File</a>
                 </p>
             @elseif($task->url)
                 <p><strong>URL Pendukung:</strong>

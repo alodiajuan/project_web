@@ -59,11 +59,10 @@ class UserController extends Controller
                 unlink(public_path($user->foto_profile));
             }
 
-
             $file = $request->file('foto_profile');
             $fileName = time() . '_' . $file->getClientOriginalName();
-            $file->move(public_path('uploads/foto_profile'), $fileName);
-            $user->foto_profile = 'uploads/foto_profile/' . $fileName;
+            $file->move(public_path('images/profile'), $fileName);
+            $user->foto_profile = 'images/profile/' . $fileName;
         }
 
         if ($request->filled('password')) {
@@ -158,8 +157,9 @@ class UserController extends Controller
 
         if ($request->hasFile('foto_profile')) {
             $photo = $request->file('foto_profile');
-            $photo_filename = time() . '.' . $photo->getClientOriginalExtension();
-            $photo->move(public_path('images'), $photo_filename);
+            $filename = time() . '.' . $photo->getClientOriginalExtension();
+            $photo->move(public_path('images/profile'), $photo_filename);
+            $photo_filename = 'images/profile/' . $filename;
         }
 
         User::create([
@@ -170,6 +170,8 @@ class UserController extends Controller
             'semester' => $request->input('semester'),
             'foto_profile' => $photo_filename,
             'role' => 'mahasiswa',
+            'alfa' =>  $request->input('alfa'),
+            'compensation' =>  $request->input('compensation'),
             'password' => Hash::make($request->input('password')),
         ]);
 
@@ -201,21 +203,23 @@ class UserController extends Controller
         $mahasiswa->id_prodi = $request->input('prodi_id');
         $mahasiswa->id_kompetensi = $request->input('kompetensi_id');
         $mahasiswa->semester = $request->input('semester');
+        $mahasiswa->alfa = $request->input('alfa');
+        $mahasiswa->compensation = $request->input('compensation');
 
         if ($request->filled('password')) {
             $mahasiswa->password = Hash::make($request->input('password'));
         }
 
         if ($request->hasFile('foto_profile')) {
-            if ($mahasiswa->foto_profile && file_exists(public_path('images/' . $mahasiswa->foto_profile))) {
-                unlink(public_path('images/' . $mahasiswa->foto_profile));
+            if ($mahasiswa->foto_profile && file_exists(public_path($mahasiswa->foto_profile))) {
+                unlink(public_path($mahasiswa->foto_profile));
             }
 
             $photo = $request->file('foto_profile');
             $filename = time() . '.' . $photo->getClientOriginalExtension();
-            $photo->move(public_path('images'), $filename);
+            $photo->move(public_path('images/profile'), $filename);
 
-            $mahasiswa->foto_profile = $filename;
+            $mahasiswa->foto_profile = 'images/profile/'. $filename;
         }
 
         $mahasiswa->save();
@@ -227,8 +231,8 @@ class UserController extends Controller
     {
         $mahasiswa = User::findOrFail($id);
 
-        if ($mahasiswa->foto_profile && file_exists(public_path('images/' . $mahasiswa->foto_profile))) {
-            unlink(public_path('images/' . $mahasiswa->foto_profile));
+        if ($mahasiswa->foto_profile && file_exists(public_path($mahasiswa->foto_profile))) {
+            unlink(public_path($mahasiswa->foto_profile));
         }
 
         $mahasiswa->delete();
@@ -302,8 +306,8 @@ class UserController extends Controller
 
         if ($request->hasFile('foto_profile')) {
             $photo = $request->file('foto_profile');
-            $photo_filename = time() . '.' . $photo->getClientOriginalExtension();
-            $photo->move(public_path('images'), $photo_filename);
+            $photo_filename = 'images/profile/'. time() . '.' . $photo->getClientOriginalExtension();
+            $photo->move(public_path('images/profile'), $photo_filename);
         }
 
         User::create([
@@ -342,15 +346,15 @@ class UserController extends Controller
         }
 
         if ($request->hasFile('foto_profile')) {
-            if ($sdm->foto_profile && file_exists(public_path('images/' . $sdm->foto_profile))) {
-                unlink(public_path('images/' . $sdm->foto_profile));
+            if ($sdm->foto_profile && file_exists(public_path($sdm->foto_profile))) {
+                unlink(public_path($sdm->foto_profile));
             }
 
             $photo = $request->file('foto_profile');
             $filename = time() . '.' . $photo->getClientOriginalExtension();
-            $photo->move(public_path('images'), $filename);
+            $photo->move(public_path('images/profile'), $filename);
 
-            $sdm->foto_profile = $filename;
+            $sdm->foto_profile = 'images/profile/'. $filename;
         }
 
         $sdm->save();
@@ -362,8 +366,8 @@ class UserController extends Controller
     {
         $sdm = User::findOrFail($id);
 
-        if ($sdm->foto_profile && file_exists(public_path('images/' . $sdm->foto_profile))) {
-            unlink(public_path('images/' . $sdm->foto_profile));
+        if ($sdm->foto_profile && file_exists(public_path($sdm->foto_profile))) {
+            unlink(public_path($sdm->foto_profile));
         }
 
         $sdm->delete();

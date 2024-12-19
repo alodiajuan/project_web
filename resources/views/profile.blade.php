@@ -11,7 +11,7 @@
                 @method('PUT')
 
                 <div class="text-center mb-4">
-                    <img src="{{ asset('images/' . $user->foto_profile) }}" alt="Foto Profil" class="img-thumbnail"
+                    <img src="{{ asset($user->foto_profile) }}" alt="Foto Profil" class="img-thumbnail"
                         style="max-width: 150px;">
                     <div class="form-group mt-3">
                         <label for="foto_profile">Ganti Foto Profil</label>

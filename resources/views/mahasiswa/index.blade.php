@@ -84,7 +84,7 @@
                             <td>{{ $item->username }}</td>
                             <td>
                                 @if ($item->foto_profile)
-                                    <img src="{{ asset('images/' . $item->foto_profile) }}" alt="Foto Profile"
+                                    <img src="{{ asset($item->foto_profile) }}" alt="Foto Profile"
                                         class="img-thumbnail" width="50">
                                 @else
                                     No Image

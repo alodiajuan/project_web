@@ -9,8 +9,8 @@ class TypeTaskSeeder extends Seeder
 {
     public function run(): void
     {
-        TypeTask::create(['nama' => 'Tugas Harian']);
-        TypeTask::create(['nama' => 'Tugas Ujian']);
-        TypeTask::create(['nama' => 'Praktikum']);
+        TypeTask::create(['nama' => 'Pengabdian']);
+        TypeTask::create(['nama' => 'Penelitian']);
+        TypeTask::create(['nama' => 'Teknis']);
     }
 }

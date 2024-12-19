@@ -61,6 +61,7 @@ class AuthController extends Controller
             Excel::import(new UsersImport, $request->file('file'));
             return redirect()->back()->with('success', 'Data berhasil diimport!');
         } catch (Exception $e) {
+            dd($e);
             return redirect()->back()->with('error', 'Terjadi kesalahan saat mengimpor data. Silakan coba lagi.');
         }
     }
@@ -71,9 +72,13 @@ class AuthController extends Controller
             $role = $request->get('role', 'mahasiswa');
 
             if ($role == 'mahasiswa') {
-                $users = User::where('role', 'mahasiswa')->with(['competence', 'prodi'])->get();
+                $users = User::with(['competence', 'prodi'])
+                    ->where('role', 'mahasiswa')
+                    ->get();
             } else {
-                $users = User::whereIn('role', ['admin', 'dosen', 'tendik'])->with(['competence', 'prodi'])->get();
+                $users = User::with(['competence', 'prodi'])
+                    ->whereIn('role', ['admin', 'dosen', 'tendik'])
+                    ->get();
             }
 
             return Excel::download(new UsersExport($users), 'users.xlsx');

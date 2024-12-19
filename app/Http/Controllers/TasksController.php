@@ -22,25 +22,92 @@ class TasksController extends Controller
             'title' => 'Daftar Tugas yang terdaftar dalam sistem'
         ];
 
-        $activeMenu = 'tasks';
+        $activeMenu = 'request';
 
         $tasks = Task::whereDoesntHave('compensations')
             ->orWhereHas('compensations')
             ->get();
 
-        $tasks = $tasks->map(function ($task) {
-            $task->isRequested = $task->taskRequests()
+        $tasks = $tasks->filter(function ($task) {
+            $taskRequest = $task->taskRequests()
                 ->where('id_mahasiswa', Auth::id())
+                ->where('status', 'terima')
                 ->first();
 
-            if ($task->isRequested) {
-                $task->requestStatus = $task->isRequested->status;
+            if ($taskRequest) {
+                $task->isRequested = $taskRequest;
+                return $task;
             }
 
-            return $task;
+            return null;
         });
 
         return view('tasks.index', compact('tasks', 'breadcrumb', 'page', 'activeMenu'));
+    }
+
+    public function tugas()
+    {
+        $breadcrumb = (object) [
+            'title' => 'Daftar Tugas',
+            'list' => ['Home', 'Tugas']
+        ];
+
+        $page = (object) [
+            'title' => 'Daftar Tugas yang terdaftar dalam sistem'
+        ];
+
+        $activeMenu = 'tasks';
+
+        $tasks = Task::whereDoesntHave('compensations')
+            ->get();
+
+        $tasks = $tasks->map(function ($task) {
+            $taskRequest = $task->taskRequests()
+                ->where('id_mahasiswa', Auth::id())
+                ->where(function ($query) {
+                    $query->where('status', 'tolak')
+                        ->orWhereNull('status');
+                })
+                ->first();
+            if (!$task->taskRequests->where('id_mahasiswa', Auth::id())->count() || $taskRequest) {
+                $task->isRequested = $taskRequest;
+                return $task;
+            }
+
+            return null;
+        })->filter();
+
+        return view('tasks.tugas', compact('tasks', 'breadcrumb', 'page', 'activeMenu'));
+    }
+
+    public function detail($id)
+    {
+        $breadcrumb = (object) [
+            'title' => 'Daftar Tugas',
+            'list' => ['Home', 'Tugas']
+        ];
+
+        $page = (object) [
+            'title' => 'Daftar Tugas yang terdaftar dalam sistem'
+        ];
+
+        $activeMenu = 'tasks';
+
+        $task = Task::with('dosen', 'periode')->findOrFail($id);
+
+        $request = $task->taskRequests()
+            ->where('id_mahasiswa', Auth::id())
+            ->first();
+
+        if ($request) {
+            $task->isRequested = true;
+            $task->requestStatus = $request->status;
+        } else {
+            $task->isRequested = false;
+            $task->requestStatus = null;
+        }
+
+        return view('tasks.detail', compact('task', 'breadcrumb', 'page', 'activeMenu'));
     }
 
     public function show($id)
@@ -54,7 +121,7 @@ class TasksController extends Controller
             'title' => 'Daftar Tugas yang terdaftar dalam sistem'
         ];
 
-        $activeMenu = 'tasks';
+        $activeMenu = 'request';
 
         $task = Task::with('dosen', 'periode')->findOrFail($id);
         $submissions = TaskSubmission::where('id_task', $task->id)
@@ -115,7 +182,7 @@ class TasksController extends Controller
 
         TaskSubmission::create($data);
 
-        return redirect("/tasks")->with('success', 'Tugas berhasil disubmit!');
+        return redirect()->back()->with('success', 'Tugas berhasil disubmit!');
     }
 
     public function request($id)

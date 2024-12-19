@@ -42,15 +42,13 @@ class AuthController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Login successful',
-                'data' => [
-                    'user' => [
+                'token' => $token,
+                'user' => [
                         'id' => $user->id,
                         'username' => $user->username,
                         'nama' => $user->nama,
                         'role' => $user->role,
                     ],
-                    'token' => $token,
-                ],
             ]);
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json([
@@ -111,12 +109,14 @@ class AuthController extends Controller
     {
         $user = $request->user();
 
+        $baseUrl = url('storage/');
+
         return response()->json([
             'success' => true,
             'data' => [
                 'id' => $user->id,
                 'username' => $user->username,
-                'foto_profile' => $user->foto_profile,
+                'foto_profile' => $user->foto_profile ? $baseUrl . '/' . $user->foto_profile : null,
                 'nama' => $user->nama,
                 'semester' => $user->semester,
                 'kompetensi' => $user->competence->nama,

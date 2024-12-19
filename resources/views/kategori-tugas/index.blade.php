@@ -21,8 +21,10 @@
                             <td>{{ $loop->iteration }}</td>
                             <td>{{ $item->nama }}</td>
                             <td>
-                                <a href="{{ url('/kategori-tugas/edit/' . $item->id) }}" class="btn btn-warning btn-sm">Edit</a>
-                                <form action="{{ url('/kategori-tugas/delete/' . $item->id) }}" method="POST" style="display:inline;">
+                                <a href="{{ url('/kategori-tugas/edit/' . $item->id) }}"
+                                    class="btn btn-warning btn-sm">Edit</a>
+                                <form action="{{ url('/kategori-tugas/delete/' . $item->id) }}" method="POST"
+                                    style="display:inline;">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn btn-danger btn-sm">Hapus</button>

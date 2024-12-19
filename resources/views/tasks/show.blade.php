@@ -7,6 +7,12 @@
         </div>
 
         <div class="card-body">
+            @if (session('success'))
+                <div class="alert alert-success">{{ session('success') }}</div>
+            @endif
+            @if (session('error'))
+                <div class="alert alert-danger">{{ session('error') }}</div>
+            @endif
             <table class="table table-bordered">
                 <tr>
                     <th>Pemberi Tugas</th>
@@ -52,7 +58,8 @@
                                 <td>{{ ucfirst($task->tipe) }}</td>
                                 <td>
                                     @if ($task->tipe === 'file' && $submission->file)
-                                        <a href="{{ asset('submissions/' . $submission->file) }}" target="_blank">Lihat File</a>
+                                        <a href="{{ asset('submissions/' . $submission->file) }}" target="_blank">Lihat
+                                            File</a>
                                     @elseif ($task->tipe === 'url' && $submission->url)
                                         <a href="{{ $submission->url }}" target="_blank">Lihat URL</a>
                                     @else
@@ -75,30 +82,27 @@
             @endif
 
             @if ($available)
-                @if (!Auth::user()->hasRequestedTask($task))
-                    <a href="{{ url('/tasks/request/' . $task->id) }}" class="btn btn-sm btn-primary mt-3">Request</a>
-                @else
-                    <div class="mt-3">
-                        @if ($task->isRequested && $task->requestStatus === 'terima')
-                            <form action="{{ url('/tasks') }}" method="POST" enctype="multipart/form-data" class="mt-4">
-                                @csrf
-                                <input type="text" value="{{ $task->id }}" name="id_task" style="display: none">
-                                @if ($task->tipe === 'file')
-                                    <label for="file">Upload File</label>
-                                    <input type="file" name="file" id="file" class="form-control">
-                                @elseif ($task->tipe === 'url')
-                                    <label for="url">Submit URL</label>
-                                    <input type="url" name="url" id="url" class="form-control" placeholder="Masukkan URL">
-                                @endif
-                                <button type="submit" class="btn btn-primary mt-3">Submit Tugas</button>
-                            </form>
-                        @elseif ($task->isRequested && $task->requestStatus === 'tolak')
-                            <div class="alert alert-danger">Request Anda ditolak.</div>
-                        @else
-                            <div class="alert alert-info">Tunggu keputusan permintaan tugas Anda.</div>
-                        @endif
-                    </div>
-                @endif
+                <div class="mt-3">
+                    @if ($task->isRequested && $task->requestStatus === 'terima')
+                        <form action="{{ url('/requests') }}" method="POST" enctype="multipart/form-data" class="mt-4">
+                            @csrf
+                            <input type="text" value="{{ $task->id }}" name="id_task" style="display: none">
+                            @if ($task->tipe === 'file')
+                                <label for="file">Upload File</label>
+                                <input type="file" name="file" id="file" class="form-control">
+                            @elseif ($task->tipe === 'url')
+                                <label for="url">Submit URL</label>
+                                <input type="url" name="url" id="url" class="form-control"
+                                    placeholder="Masukkan URL">
+                            @endif
+                            <button type="submit" class="btn btn-primary mt-3">Submit Tugas</button>
+                        </form>
+                    @elseif ($task->isRequested && $task->requestStatus === 'tolak')
+                        <div class="alert alert-danger">Request Anda ditolak.</div>
+                    @else
+                        <div class="alert alert-info">Tunggu keputusan permintaan tugas Anda.</div>
+                    @endif
+                </div>
             @else
                 <div class="alert alert-danger">Anda tidak bisa mengirimkan tugas karena progress sudah mencapai 100%.</div>
             @endif

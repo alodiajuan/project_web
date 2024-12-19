@@ -5,8 +5,9 @@ namespace App\Imports;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Maatwebsite\Excel\Concerns\ToModel;
+use Maatwebsite\Excel\Concerns\WithHeadingRow;
 
-class UsersImport implements ToModel
+class UsersImport implements ToModel, WithHeadingRow
 {
     /**
      * @param array $row
@@ -15,19 +16,21 @@ class UsersImport implements ToModel
      */
     public function model(array $row)
     {
-        if ($row[0] == 'Username' || empty($row[0])) {
+        if (empty($row['username'])) {
             return null;
         }
 
         return new User([
-            'username'      => $row[0],
-            'password'      => Hash::make($row[1]),
-            'nama'          => $row[2],
-            'semester'      => $row[3],
-            'id_kompetensi' => $row[4],
-            'id_prodi'      => $row[5],
-            'role'          => $row[6],
-            'foto_profile'  => $row[7],
+            'username'      => $row['username'] ?? null,
+            'password'      => isset($row['password']) ? Hash::make($row['password']) : null,
+            'nama'          => $row['nama'] ?? null,
+            'semester'      => $row['semester'] ?? null,
+            'id_kompetensi' => $row['id_kompetensi'] ?? null,
+            'id_prodi'      => $row['id_prodi'] ?? null,
+            'role'          => $row['role'] ?? 'mahasiswa',
+            'foto_profile'  => $row['foto_profile'] ?? null,
+            'alfa'          => $row['alfa'] ?? null,
+            'compensation'  => $row['kompensasi'] ?? null,
         ]);
     }
 }

@@ -42,6 +42,8 @@ class UserSeeder extends Seeder
             'semester' => 5,
             'id_kompetensi' => 3,
             'id_prodi' => 1,
+            'alfa' => 10,
+            'compensation' => 100,
             'role' => 'mahasiswa',
         ]);
     }

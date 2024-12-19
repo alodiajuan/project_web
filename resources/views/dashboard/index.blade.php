@@ -72,7 +72,7 @@
                                     @endif
                                 </td>
                                 <td>
-                                    <a href="{{ url('/tasks/' . $task->id) }}" class="btn btn-sm btn-primary">Kerjakan
+                                    <a href="{{ url('requests/' . $task->id) }}" class="btn btn-sm btn-primary">Kerjakan
                                         Sekarang</a>
                                 </td>
                             </tr>

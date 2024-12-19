@@ -50,10 +50,13 @@ Route::middleware('auth')->group(function () {
     });
 
     Route::middleware('role:mahasiswa')->group(function () {
-        Route::get('/tasks', [TasksController::class, 'index']);
-        Route::get('/tasks/{id}', [TasksController::class, 'show']);
+        Route::get('/requests', [TasksController::class, 'index']);
+        Route::get('/requests/{id}', [TasksController::class, 'show']);
+        Route::post('/requests', [TasksController::class, 'store']);
+
+        Route::get('/tasks', [TasksController::class, 'tugas']);
+        Route::get('/tasks/{id}', [TasksController::class, 'detail']);
         Route::get('/tasks/request/{id}', [TasksController::class, 'request']);
-        Route::post('/tasks', [TasksController::class, 'store']);
 
         Route::get('/kompensasi', [CompensationController::class, 'index']);
         Route::get('/kompensasi/{id}', [CompensationController::class, 'show']);

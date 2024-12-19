@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\Compensation;
 use App\Models\TaskSubmission;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -75,6 +76,12 @@ class PengajuanController extends Controller
                     'id_mahasiswa' => $taskSubmission->id_mahasiswa,
                     'bobot' => $taskSubmission->task->bobot,
                     'semester' => $taskSubmission->mahasiswa->semester,
+                ]);
+
+                $user = User::findOrFail(Auth::id());
+                $user->update([
+                    'alfa' => $user->alfa - $taskSubmission->task->bobot,
+                    'compensation' => $user->compensation + $taskSubmission->task->bobot
                 ]);
             }
 

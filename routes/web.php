@@ -22,6 +22,10 @@ Route::get('/', function () {
 Route::get('/verification-compensation/{id}', [RiwayatController::class, 'verification']);
 
 Route::middleware('auth')->group(function () {
+    Route::middleware('role:mahasiswa,admin')->group(function () {
+        Route::get('/compensations/download/{id}', [RiwayatController::class, 'download']);
+    });
+
     Route::middleware('role:admin,dosen,tendik,mahasiswa')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index']);
         Route::get('/profile', [UserController::class, 'me']);
@@ -45,9 +49,6 @@ Route::middleware('auth')->group(function () {
         Route::post('/pengajuan/{id}/tolak', [PengajuanController::class, 'decline']);
     });
 
-    Route::middleware('role:mahasiswa,admin')->group(function () {
-        Route::get('/compensations/download/{id}', [RiwayatController::class, 'download']);
-    });
 
     Route::middleware('role:mahasiswa')->group(function () {
         Route::get('/requests', [TasksController::class, 'index']);

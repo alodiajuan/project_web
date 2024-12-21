@@ -15,7 +15,8 @@ class Compensation extends Model
         'id_submission',
         'id_dosen',
         'id_mahasiswa',
-        'semester'
+        'semester',
+        'bobot'
     ];
 
     public function task()

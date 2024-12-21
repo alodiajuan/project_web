@@ -67,22 +67,18 @@ class DashboardController extends Controller
             ];
 
             $tasks = Task::with(['dosen', 'taskSubmissions' => function ($query) {
-                $query->where('id_mahasiswa', Auth::id())
-                    ->where('progress', '<', 100);
+                $query->where('id_mahasiswa', Auth::id());
             }])
                 ->whereHas('taskSubmissions', function ($query) {
-                    $query->where('id_mahasiswa', Auth::id())
-                        ->where('progress', '<', 100);
+                    $query->where('id_mahasiswa', Auth::id());
                 })
-                ->get()->map(function ($task) {
-                    $taskHasCompletedSubmission = $task->taskSubmissions->contains(function ($submission) {
+                ->get()
+                ->filter(function ($task) {
+                    return !$task->taskSubmissions->contains(function ($submission) {
                         return $submission->progress === 100;
                     });
-
-                    if ($taskHasCompletedSubmission) {
-                        return null;
-                    }
-
+                })
+                ->map(function ($task) {
                     $highestProgressSubmission = $task->taskSubmissions->sortByDesc('progress')->first();
 
                     return tap($task, function ($task) use ($highestProgressSubmission) {
@@ -90,7 +86,7 @@ class DashboardController extends Controller
                             $task->highestProgressSubmission = $highestProgressSubmission;
                         }
                     });
-                })->filter();
+                });
 
             return view('dashboard.index', [
                 'breadcrumb' => $breadcrumb,

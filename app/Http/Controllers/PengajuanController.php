@@ -78,7 +78,7 @@ class PengajuanController extends Controller
                     'semester' => $taskSubmission->mahasiswa->semester,
                 ]);
 
-                $user = User::findOrFail(Auth::id());
+                $user = User::findOrFail($taskSubmission->id_mahasiswa);
                 $user->update([
                     'alfa' => $user->alfa - $taskSubmission->task->bobot,
                     'compensation' => $user->compensation + $taskSubmission->task->bobot

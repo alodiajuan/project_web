@@ -22,7 +22,7 @@ class UserSeeder extends Seeder
             'username' => '2345678901',
             'password' => Hash::make('password123'),
             'foto_profile' => 'profile.jpg',
-            'nama' => 'Dosen User',
+            'nama' => 'Dosen User', 
             'role' => 'dosen',
         ]);
 

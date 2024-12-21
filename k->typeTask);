@@ -1,0 +1,23 @@
+[90m= [39m[34;4mApp\Models\Task[39;24m {#5367
+    [34mid[39m: [35m1[39m,
+    [34mid_dosen[39m: [35m1[39m,
+    [34mjudul[39m: "[32mTugas Pemrograman[39m",
+    [34mdeskripsi[39m: "[32mMengerjakan tugas pemrograman web dengan Laravel.[39m",
+    [34mbobot[39m: [35m100[39m,
+    [34msemester[39m: [35m5[39m,
+    [34mkuota[39m: [35m30[39m,
+    [34mfile[39m: "[32mtugas_pemrograman.zip[39m",
+    [34murl[39m: [36mnull[39m,
+    [34mid_jenis[39m: [35m1[39m,
+    [34mtipe[39m: "[32mfile[39m",
+    [34mdeadline[39m: "[32m2024-12-31 23:59:59[39m",
+    [34mcreated_at[39m: "[32m2024-12-20 01:34:58[39m",
+    [34mupdated_at[39m: "[32m2024-12-20 01:34:58[39m",
+    [34mtypeTask[39m: [34;4mApp\Models\TypeTask[39;24m {#5374
+      [34mid[39m: [35m1[39m,
+      [34mnama[39m: "[32mTugas Harian[39m",
+      [34mcreated_at[39m: "[32m2024-12-20 01:34:57[39m",
+      [34mupdated_at[39m: "[32m2024-12-20 01:34:57[39m",
+    },
+  }
+

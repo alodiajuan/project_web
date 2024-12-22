@@ -7,7 +7,7 @@ use App\Http\Controllers\Api\TaskRequestController;
 use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\CompensationController;
 use App\Http\Controllers\Api\ProdiController;
-use App\Http\Controllers\Api\TypeTaskController;
+use App\Http\Controllers\Api\TypeTaskController;    
 use App\Http\Controllers\Api\CompetenceController;
 use Illuminate\Support\Facades\Route;
 

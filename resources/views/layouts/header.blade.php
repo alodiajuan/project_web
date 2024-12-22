@@ -47,14 +47,14 @@
         <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
                 data-toggle="dropdown">
-                <img src="{{ $user->foto_profile ? asset('images/' . $user->foto_profile) : asset('img/default-avatar.png') }}"
+                <img src="{{ $user->foto_profile ? asset($user->foto_profile) : asset('img/default-avatar.png') }}"
                     class="avatar img-fluid rounded-circle" alt="Profile Image" />
                 <span class="text-dark">{{ $user->nama }}</span>
             </a>
             <div class="dropdown-menu dropdown-menu-end shadow">
                 <div class="px-4 py-3">
                     <div class="d-flex align-items-center">
-                        <img src="{{ $user->foto_profile ? asset('images/' . $user->foto_profile) : asset('img/default-avatar.png') }}"
+                        <img src="{{ $user->foto_profile ? asset($user->foto_profile) : asset('img/default-avatar.png') }}"
                             class="avatar rounded-circle me-3" alt="Profile Image">
                         <div>
                             <h6 class="mb-0">{{ $user->nama }}</h6>

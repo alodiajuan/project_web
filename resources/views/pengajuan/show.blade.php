@@ -17,8 +17,8 @@
             <hr>
 
             @if ($taskSubmission->task->tipe == 'file' && $taskSubmission->file)
-                <p><strong>File yang Dikirim:</strong> <a href="{{ asset('submissions/' . $taskSubmission->file) }}"
-                        target="_blank">Lihat File</a></p>
+                <p><strong>File yang Dikirim:</strong> <a href="{{ asset($taskSubmission->file) }}" target="_blank">Lihat
+                        File</a></p>
             @elseif ($taskSubmission->task->tipe == 'url' && $taskSubmission->url)
                 <p><strong>URL yang Dikirim:</strong> <a href="{{ $taskSubmission->url }}" target="_blank">Lihat URL</a></p>
             @else

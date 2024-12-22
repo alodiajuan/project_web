@@ -83,8 +83,8 @@ class TugasController extends Controller
         if ($request->hasFile('file')) {
             $file = $request->file('file');
             $fileName = time() . '_' . $file->getClientOriginalName();
-            $file->move(public_path('tugas'), $fileName);
-            $data['file'] = 'tugas/' . $fileName;
+            $file->move(public_path('file'), $fileName);
+            $data['file'] = 'file/' . $fileName;
         }
 
         Task::create($data);
@@ -147,8 +147,8 @@ class TugasController extends Controller
         if ($request->hasFile('file')) {
             $file = $request->file('file');
             $fileName = time() . '_' . $file->getClientOriginalName();
-            $file->move(public_path('tugas'), $fileName);
-            $data['file'] = 'tugas/' . $fileName;
+            $file->move(public_path('file'), $fileName);
+            $data['file'] = 'file/' . $fileName;
         }
 
         $task->update($data);

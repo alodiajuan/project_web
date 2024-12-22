@@ -40,6 +40,20 @@
                 </tr>
             </table>
 
+            <hr>
+
+            @if ($task->file)
+                <p><strong>File Pendukung:</strong>
+                    <a href="{{ asset($task->file) }}" download>Download File</a>
+                </p>
+            @elseif($task->url)
+                <p><strong>URL Pendukung:</strong>
+                    <a href="{{ $task->url }}" target="_blank">{{ $task->url }}</a>
+                </p>
+            @endif
+
+            <hr>
+
             @if ($submissions->isNotEmpty())
                 <h4>Data Pengumpulan Tugas:</h4>
                 <table class="table table-bordered">
@@ -58,7 +72,7 @@
                                 <td>{{ ucfirst($task->tipe) }}</td>
                                 <td>
                                     @if ($task->tipe === 'file' && $submission->file)
-                                        <a href="{{ asset('submissions/' . $submission->file) }}" target="_blank">Lihat
+                                        <a href="{{ asset($submission->file) }}" target="_blank" download>Lihat
                                             File</a>
                                     @elseif ($task->tipe === 'url' && $submission->url)
                                         <a href="{{ $submission->url }}" target="_blank">Lihat URL</a>

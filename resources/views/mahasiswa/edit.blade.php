@@ -55,7 +55,7 @@
                     <div class="col-sm-10">
                         <input type="file" class="form-control-file" id="foto_profile" name="foto_profile">
                         @if ($mahasiswa->foto_profile)
-                            <img src="{{ asset('images/' . $mahasiswa->foto_profile) }}" alt="Foto Profile"
+                            <img src="{{ asset($mahasiswa->foto_profile) }}" alt="Foto Profile"
                                 class="img-thumbnail mt-2" width="100">
                         @else
                             <p>No Image</p>

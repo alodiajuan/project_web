@@ -17,6 +17,7 @@ return new class extends Migration
             $table->unsignedBigInteger('id_submission');
             $table->unsignedBigInteger('id_dosen');
             $table->unsignedBigInteger('id_mahasiswa');
+            $table->integer('bobot');
             $table->integer('semester');
             $table->timestamps();
 

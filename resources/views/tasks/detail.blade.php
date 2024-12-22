@@ -34,6 +34,20 @@
                 </tr>
             </table>
 
+            <hr>
+
+            @if ($task->file)
+                <p><strong>File Pendukung:</strong>
+                    <a href="{{ asset($task->file) }}" download>Download File</a>
+                </p>
+            @elseif($task->url)
+                <p><strong>URL Pendukung:</strong>
+                    <a href="{{ $task->url }}" target="_blank">{{ $task->url }}</a>
+                </p>
+            @endif
+
+            <hr>
+
             <div class="mt-3">
                 @if (!$task->isRequested)
                     <a href="{{ url('/tasks/request/' . $task->id) }}" class="btn btn-sm btn-primary">Request</a>

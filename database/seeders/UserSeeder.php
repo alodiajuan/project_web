@@ -13,7 +13,7 @@ class UserSeeder extends Seeder
         User::create([
             'username' => '1234567890',
             'password' => Hash::make('password123'),
-            'foto_profile' => 'profile.jpg',
+            'foto_profile' => 'images/profile/1734623448_business.png',
             'nama' => 'Admin User',
             'role' => 'admin',
         ]);
@@ -22,14 +22,14 @@ class UserSeeder extends Seeder
             'username' => '2345678901',
             'password' => Hash::make('password123'),
             'foto_profile' => 'profile.jpg',
-            'nama' => 'Dosen User', 
+            'nama' => 'Dosen User',
             'role' => 'dosen',
         ]);
 
         User::create([
             'username' => '3456789012',
             'password' => Hash::make('password123'),
-            'foto_profile' => 'profile.jpg',
+            'foto_profile' => 'images/profile/1734623448_business.png',
             'nama' => 'Tendik User',
             'role' => 'tendik',
         ]);
@@ -37,7 +37,7 @@ class UserSeeder extends Seeder
         User::create([
             'username' => '4567890123',
             'password' => Hash::make('password123'),
-            'foto_profile' => 'profile.jpg',
+            'foto_profile' => 'images/profile/1734623448_business.png',
             'nama' => 'Mahasiswa User',
             'semester' => 5,
             'id_kompetensi' => 3,

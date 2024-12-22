@@ -1,3 +1,127 @@
+<style>
+    .sidebar {
+        min-height: 100vh;
+        width: 250px;
+        background: linear-gradient(180deg, #1e3a8a 0%, #172554 100%);
+        color: #f3f4f6;
+        box-shadow: 4px 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .sidebar .form-inline {
+        padding: 1rem;
+        border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+    }
+
+    .form-control-sidebar {
+        width: 100%;
+        padding: 0.5rem 1rem 0.5rem 2.5rem;
+        background-color: rgba(30, 58, 138, 0.3);
+        border: none;
+        border-radius: 0.5rem;
+        color: #f3f4f6;
+    }
+
+    .form-control-sidebar::placeholder {
+        color: #9ca3af;
+    }
+
+    .form-control-sidebar:focus {
+        outline: none;
+        box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+    }
+
+    .btn-sidebar {
+        position: absolute;
+        left: 0.75rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #9ca3af;
+        background: none;
+        border: none;
+    }
+
+    .nav-header {
+        padding: 1rem 1.25rem 0.5rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #60a5fa;
+        margin-top: 1.5rem;
+        border-top: 1px solid rgba(59, 130, 246, 0.1);
+    }
+
+    .nav-sidebar {
+        padding: 0.5rem;
+    }
+
+    .nav-item {
+        margin-bottom: 0.25rem;
+    }
+
+    .nav-link {
+        display: flex;
+        align-items: center;
+        padding: 0.75rem 1rem;
+        border-radius: 0.5rem;
+        color: #e5e7eb;
+        transition: all 0.2s ease;
+        text-decoration: none;
+    }
+
+    .nav-link:hover {
+        background-color: rgba(30, 58, 138, 0.5);
+        color: #ffffff;
+        transform: translateX(4px);
+    }
+
+    .nav-link.active {
+        background-color: #1d4ed8;
+        color: #ffffff;
+        position: relative;
+    }
+
+    .nav-link.active::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        width: 4px;
+        height: 100%;
+        background-color: #60a5fa;
+        border-radius: 0 4px 4px 0;
+    }
+
+    .nav-icon {
+        margin-right: 0.75rem;
+        font-size: 1.25rem;
+        width: 1.25rem;
+        text-align: center;
+        opacity: 0.8;
+    }
+
+    .nav-link:hover .nav-icon {
+        opacity: 1;
+    }
+
+    .text-truncate {
+        margin-left: 0.5rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    /* Responsive Adjustments */
+    @media (max-width: 768px) {
+        .sidebar {
+            width: 200px;
+        }
+
+        .text-truncate {
+            font-size: 0.875rem;
+        }
+    }
+</style>
+
 <div class="sidebar">
     <!-- SidebarSearch Form -->
     <div class="form-inline mt-2">
@@ -95,7 +219,6 @@
                     </a>
                 </li>
             @endif
-
 
             <!-- Kompensasi Section -->
             <li class="nav-header">Kompensasi</li>

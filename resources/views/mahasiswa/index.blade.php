@@ -1,10 +1,11 @@
 @extends('layouts.template')
+
 @section('content')
     <div class="card card-outline card-primary">
         <div class="card-header">
             <h3 class="card-title">Daftar mahasiswa yang terdapat dalam sistem</h3>
             <div class="card-tools">
-                <form action="{{ url('/users/import') }}" method="POST" enctype="multipart/form-data">
+                <form action="{{ url('/users/import') }}" method="POST" enctype="multipart/form-data" class="d-inline-block">
                     @csrf
                     <button type="button" class="btn btn-sm btn-info mt-1"
                         onclick="document.getElementById('fileInput').click()">
@@ -13,6 +14,10 @@
                     <input type="file" id="fileInput" name="file" style="display: none;"
                         onchange="this.form.submit()">
                 </form>
+
+                <a href="{{ asset('ImportDataMahasiswaTesting.xlsx') }}" class="btn btn-sm btn-primary mt-1" download>
+                    Download Template
+                </a>
 
                 <a href="{{ url('/users/export?role=mahasiswa') }}" class="btn btn-sm btn-primary mt-1">
                     <i class="fa fa-file-excel"></i> Export mahasiswa (Excel)
@@ -28,6 +33,7 @@
                     {{ session('success') }}
                 </div>
             @endif
+
             @if (session('error'))
                 <div class="alert alert-danger">
                     {{ session('error') }}
@@ -78,7 +84,7 @@
                             <td>{{ $item->username }}</td>
                             <td>
                                 @if ($item->foto_profile)
-                                    <img src="{{ asset('images/' . $item->foto_profile) }}" alt="Foto Profile"
+                                    <img src="{{ asset($item->foto_profile) }}" alt="Foto Profile"
                                         class="img-thumbnail" width="50">
                                 @else
                                     No Image
@@ -88,15 +94,18 @@
                             <td>{{ $item->semester }}</td>
                             <td>{{ $item->prodi ? $item->prodi->nama : 'N/A' }}</td>
                             <td>
-                                <a href="{{ url('/mahasiswa/edit/' . $item->id) }}" class="btn btn-sm btn-warning">Edit</a>
+                                <div class="d-flex gap-2">
+                                    <a href="{{ url('/mahasiswa/edit/' . $item->id) }}"
+                                        class="btn btn-sm btn-warning">Edit</a>
 
-                                <form action="{{ url('/mahasiswa/delete/' . $item->id) }}" method="POST" class="d-inline">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-danger mt-3"
-                                        onclick="return confirm('Apakah Anda yakin ingin menghapus data mahasiswa ini?')">Delete</button>
-                                </form>
-
+                                    <form action="{{ url('/mahasiswa/delete/' . $item->id) }}" method="POST"
+                                        class="d-inline">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-sm btn-danger"
+                                            onclick="return confirm('Apakah Anda yakin ingin menghapus data mahasiswa ini?')">Delete</button>
+                                    </form>
+                                </div>
                             </td>
                         </tr>
                     @endforeach

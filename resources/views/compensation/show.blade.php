@@ -36,7 +36,7 @@
                     <th>File</th>
                     <td>
                         @if ($taskSubmission->file)
-                            <a href="{{ asset('submissions/' . $taskSubmission->file) }}" target="_blank">Lihat File</a>
+                            <a href="{{ asset($taskSubmission->file) }}" target="_blank">Lihat File</a>
                         @else
                             Tidak Ada File
                         @endif

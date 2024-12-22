@@ -5,7 +5,7 @@
         <div class="card-header">
             <h3 class="card-title">Daftar SDM yang terdapat dalam sistem</h3>
             <div class="card-tools">
-                <form action="{{ url('/users/import') }}" method="POST" enctype="multipart/form-data">
+                <form action="{{ url('/users/import') }}" method="POST" enctype="multipart/form-data" class="d-inline-block">
                     @csrf
                     <button type="button" class="btn btn-sm btn-info mt-1"
                         onclick="document.getElementById('fileInput').click()">
@@ -15,10 +15,17 @@
                         onchange="this.form.submit()">
                 </form>
 
+                <a href="{{ asset('ImportDataAdminTesting.xlsx') }}" class="btn btn-sm btn-primary mt-1" download>
+                    Download Template
+                </a>
+
                 <a href="{{ url('/users/export?role=sdm') }}" class="btn btn-sm btn-primary mt-1">
                     <i class="fa fa-file-excel"></i> Export Data (Excel)
                 </a>
-                <a href="{{ url('/sdm/create') }}" class="btn btn-sm btn-success mt-1">Tambah Data</a>
+
+                <a href="{{ url('/sdm/create') }}" class="btn btn-sm btn-success mt-1">
+                    Tambah Data
+                </a>
             </div>
         </div>
 
@@ -34,7 +41,28 @@
                 </div>
             @endif
 
-            <table class="table table-bordered table-striped table-hover table-sm" id="table_mahasiswa">
+            <div class="row">
+                <div class="col-md-12">
+                    <form action="{{ url('/sdm') }}" class="form-group row align-items-center" method="GET">
+                        <div class="col-auto">
+                            <label class="control-label col-form-label">Filter:</label>
+                        </div>
+                        <div class="col-auto">
+                            <select class="form-control" id="role" name="role">
+                                <option value="">- Semua -</option>
+                                <option value="admin" {{ request('role') == 'admin' ? 'selected' : '' }}>Admin</option>
+                                <option value="dosen" {{ request('role') == 'dosen' ? 'selected' : '' }}>Dosen</option>
+                                <option value="tendik" {{ request('role') == 'tendik' ? 'selected' : '' }}>Tendik</option>
+                            </select>
+                        </div>
+                        <div class="col-auto">
+                            <button type="submit" class="btn btn-sm btn-primary">Filter</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <table class="table table-bordered table-striped table-hover table-sm" id="table_sdm">
                 <thead>
                     <tr>
                         <th>No</th>
@@ -61,15 +89,17 @@
                             </td>
                             <td>{{ $item->role }}</td>
                             <td>
-                                <a href="{{ url('/sdm/edit/' . $item->id) }}" class="btn btn-sm btn-warning">Edit</a>
-
-                                <form action="{{ url('/sdm/delete/' . $item->id) }}" method="POST" class="d-inline">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-danger mt-3"
-                                        onclick="return confirm('Apakah Anda yakin ingin menghapus data mahasiswa ini?')">Delete</button>
-                                </form>
-
+                                <div class="d-flex gap-2">
+                                    <a href="{{ url('/sdm/edit/' . $item->id) }}" class="btn btn-sm btn-warning">Edit</a>
+                                    <form action="{{ url('/sdm/delete/' . $item->id) }}" method="POST" class="d-inline">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-sm btn-danger"
+                                            onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
+                                            Delete
+                                        </button>
+                                    </form>
+                                </div>
                             </td>
                         </tr>
                     @endforeach

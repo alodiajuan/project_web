@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\TypeTask;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 
 class TaskController extends Controller
@@ -51,16 +52,28 @@ class TaskController extends Controller
         }
 
         try {
-            $filePath = $request->file('file') ? $request->file('file')->storeAs('submissions', $request->file('file')->getClientOriginalName(), 'public') : null;
+            $filePath = null;
+            if ($request->hasFile('file')) {
 
+                $originalFileName = $request->file('file')->getClientOriginalName();
+                $fileName = $user->id . '-' . time() . '-' . str_replace(' ', '-', $originalFileName);
+
+                // Store file in the 'public' disk
+                $filePath = $request->file('file')->storeAs('task', $fileName, 'public');
+            }
+
+            // Construct the full URL for the file
+            $fileUrl = $filePath ? url(Storage::url($filePath)) : null;
+
+            // Create the task
             $task = Task::create([
-                'id_dosen' => $user->id, // Menggunakan ID dosen yang login
+                'id_dosen' => $user->id,
                 'judul' => $request->input('judul'),
                 'deskripsi' => $request->input('deskripsi'),
                 'bobot' => $request->input('bobot'),
                 'semester' => $request->input('semester'),
                 'kuota' => $request->input('kuota'),
-                'file' => $filePath,
+                'file' => $fileUrl,
                 'url' => $request->input('url'),
                 'id_jenis' => $request->input('id_jenis'),
                 'tipe' => $request->input('tipe'),
@@ -77,7 +90,7 @@ class TaskController extends Controller
                     'bobot' => $task->bobot,
                     'semester' => $task->semester,
                     'kuota' => $task->kuota,
-                    'file' => url('storage/' . $filePath),
+                    'file' => $task->file,
                     'url' => $task->url,
                     'id_jenis' => $task->id_jenis,
                     'tipe' => $task->tipe,
@@ -123,7 +136,7 @@ class TaskController extends Controller
                         'periode' => '2023/2024',
                         'jenis' => $task->TypeTask->nama ?? 'Unknown',
                         'status' => 'belum',
-                        'file' => $task->file ? url('storage/' . $task->file) : null,
+                        'file' => $task->file,
                         'url' => $task->url,
                         'tipe' => $task->tipe,
                         'deadline' => '07:30 12 Desember 2024'
@@ -174,7 +187,7 @@ class TaskController extends Controller
                         'periode' => '2023/2024',
                         'jenis' => $task->typeTask->nama ?? 'Unknown',
                         'status' => 'terima',
-                        'file' => $task->file ? url('storage/' . $task->file) : null,
+                        'file' => $task->file,
                         'url' => $task->url,
                         'tipe' => $task->tipe,
                         'deadline' => Carbon::parse($task->deadline)->format('H:i d F Y')
@@ -212,13 +225,13 @@ class TaskController extends Controller
         }
 
         $validator = Validator::make($request->all(), [
-            'id_task' => 'required|exists:task,id',
+            'id_task' => 'sometimes|required|exists:task,id',
             'judul' => 'sometimes|required|string|max:255',
             'deskripsi' => 'sometimes|required|string',
             'bobot' => 'sometimes|required|numeric|min:0|max:100',
             'semester' => 'sometimes|required|integer|min:1|max:8',
             'kuota' => 'sometimes|required|integer|min:1',
-            'file' => 'nullable|file',
+            'file' => 'sometimes|nullable|file',
             'url' => 'sometimes|required|url',
             'id_jenis' => 'sometimes|required|exists:type_task,id',
             'tipe' => 'sometimes|required|in:file,text,link'
@@ -239,7 +252,12 @@ class TaskController extends Controller
             if ($request->has('bobot')) $task->bobot = $request->input('bobot');
             if ($request->has('semester')) $task->semester = $request->input('semester');
             if ($request->has('kuota')) $task->kuota = $request->input('kuota');
-            if ($request->hasFile('file')) $task->file = $request->file('file')->store('files');
+            if ($request->hasFile('file')) {
+                $originalFileName = $request->file('file')->getClientOriginalName();
+                $fileName = $user->id . '-' . time() . '-' . str_replace(' ', '-', $originalFileName);
+                $filePath = $request->file('file')->storeAs('task', $fileName, 'public');
+                $task->file = url(Storage::url($filePath));
+            }
             if ($request->has('url')) $task->url = $request->input('url');
             if ($request->has('id_jenis')) $task->id_jenis = $request->input('id_jenis');
             if ($request->has('tipe')) $task->tipe = $request->input('tipe');
@@ -311,7 +329,7 @@ class TaskController extends Controller
                 'jenis' => $task->typeTask->nama ?? 'Unknown',
                 'id_jenis' => $task->id_jenis,
                 'status' => $status,
-                'file' => $task->file ? url($task->file) : null,
+                'file' => $task->file,
                 'url' => $task->url,
                 'tipe' => $task->tipe,
                 'deadline' => Carbon::parse($task->deadline)->translatedFormat('H:i d F Y'),

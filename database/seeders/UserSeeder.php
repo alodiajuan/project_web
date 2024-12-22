@@ -21,7 +21,7 @@ class UserSeeder extends Seeder
         User::create([
             'username' => '2345678901',
             'password' => Hash::make('password123'),
-            'foto_profile' => 'images/profile/1734623448_business.png',
+            'foto_profile' => 'profile.jpg',
             'nama' => 'Dosen User',
             'role' => 'dosen',
         ]);

@@ -10,5 +10,5 @@ class TypeTask extends Model
     use HasFactory;
 
     protected $table = 'type_task';
-    protected $fillable = ['nama'];
+        protected $fillable = ['nama'];
 }

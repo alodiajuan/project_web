@@ -16,7 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('id_task');
             $table->unsignedBigInteger('id_mahasiswa');
             $table->enum('status', ['terima', 'tolak'])->nullable();
-            $table->timestamps();
+            $table->timestamps();       
 
             $table->foreign('id_task')->references('id')->on('task');
             $table->foreign('id_mahasiswa')->references('id')->on('users');

@@ -22,20 +22,6 @@ Route::prefix('v1')->group(function () {
         // Dashboard Routes
         Route::get('/dashboard-students', [DashboardController::class, 'StudentDashboard'])
             ->middleware('role:mahasiswa');
-        // download file otomatis
-        Route::middleware(['role:mahasiswa'])->get('/download/{filename}', function ($filename) {
-            $filePath = storage_path('app/public/task/' . $filename);
-
-            if (file_exists($filePath)) {
-                return response()->download($filePath);
-            }
-
-            return response()->json([
-                'status' => false,
-                'message' => 'File tidak ditemukan'
-            ], 404);
-        })->name('download.task');
-
         Route::get('/dashboard-sdm', [DashboardController::class, 'SdmDashboard'])
             ->middleware('role:admin,dosen,tendik');
 
@@ -50,24 +36,20 @@ Route::prefix('v1')->group(function () {
         Route::get('/tasks/{id}', [TaskController::class, 'getTaskById'])->middleware('role:mahasiswa,admin,dosen,tendik');
 
         // Task Request Routes
-        Route::prefix('task-requests')->middleware('role:admin,dosen,tendik')->group(function () {
-            Route::post('/', [TaskRequestController::class, 'submitTaskRequest']);
-            Route::get('/', [TaskRequestController::class, 'getAllTaskRequests']);
-        });
+        Route::post('/task-requests', [TaskRequestController::class, 'submitTaskRequest'])->middleware('role:mahasiswa'); // meminta request tugas dari daftar tugas
+        Route::get('/AllTaskRequests', [TaskRequestController::class, 'getAllTaskRequests'])->middleware('role:mahasiswa,admin,dosen,tendik'); // menampilkan semua request tugas
 
         // Task Submission Routes
-        Route::get('/task/{id}', [TaskSubmissionController::class, 'getSubmissionsByTaskId'])
-            ->middleware('role:mahasiswa');
-        Route::get('/sdm', [TaskSubmissionController::class, 'getSubmissionsForSdm'])
+        Route::get('/task/{id}/submissions', [TaskSubmissionController::class, 'getSubmissionsByTaskId'])
+            ->middleware('role:mahasiswa,admin,tendik,dosen');
+        Route::get('/submissions-sdm', [TaskSubmissionController::class, 'getSubmissionsForSdm'])
             ->middleware('role:admin,dosen,tendik');
         Route::post('/submissions', [TaskSubmissionController::class, 'store'])
             ->middleware('role:mahasiswa');
-        Route::post('/{id}', [TaskSubmissionController::class, 'reviewSubmission'])
+        Route::post('/submissions/{id}', [TaskSubmissionController::class, 'reviewSubmission'])
             ->middleware('role:admin,dosen,tendik');
-        Route::get('/{id}', [TaskSubmissionController::class, 'getSubmissionById'])
+        Route::get('/submission/{id}', [TaskSubmissionController::class, 'getSubmissionById'])
             ->middleware('role:admin,dosen,tendik,mahasiswa');
-        Route::get('/task-request/{id}', [TaskSubmissionController::class, 'requestTask'])
-            ->middleware('role:admin,dosen,tendik');
 
         // Compensation Routes
         Route::prefix('compensations')->middleware('role:admin,dosen,tendik')->group(function () {

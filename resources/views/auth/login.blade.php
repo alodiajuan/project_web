@@ -97,6 +97,7 @@
 
                 <form action="/login" method="POST" id="form-login">
                     @csrf
+                    @method('post')
                     <div class="input-group mb-3">
                         <input type="text" id="username" name="username" required class="form-control"
                             placeholder="NIP/NIM">

@@ -12,10 +12,17 @@ use Illuminate\Support\Facades\Validator;
 class TaskRequestController extends Controller
 {
     /**
-     * terima atau tolak request tugas
+     * meminta request tugas dari daftar tugas yang ada
      */
     public function submitTaskRequest(Request $request)
     {
+        $user = Auth::user();
+        $allowedRoles = ['mahasiswa'];
+
+        if (!$user || !in_array($user->role, $allowedRoles)) {
+            return response()->json(['status' => false, 'message' => 'Unauthorized'], 403);
+        }
+
         $validator = Validator::make($request->all(), [
             'id_task' => 'required|exists:task,id',
             'id_mahasiswa' => 'required|exists:users,id',
@@ -64,33 +71,34 @@ class TaskRequestController extends Controller
     }
 
     /**
-     * Get all task requests (for admin, dosen, tendik)
+     * Get all data task requests
      */
     public function getAllTaskRequests()
     {
-        // Ensure only admin, dosen, or tendik can access
+
         $user = Auth::user();
-        if (!in_array($user->role, ['admin', 'dosen', 'tendik'])) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Unauthorized access'
-            ], 403);
+        $allowedRoles = ['mahasiswa', 'dosen', 'admin', 'tendik'];
+
+        if (!$user || !in_array($user->role, $allowedRoles)) {
+            return response()->json(['status' => false, 'message' => 'Unauthorized'], 403);
         }
 
         try {
-            $taskRequests = TaskRequest::with(['task', 'mahasiswa'])
-                ->latest()
-                ->paginate(10);
+            // relasi dosen, jenis tugas, dan taskRequests
+            $tasks = Task::with(['dosen', 'typeTask', 'taskRequests' => function ($query) {
+                $query->where('status', 'terima');
+            }])
+                ->get();
 
             return response()->json([
                 'success' => true,
-                'message' => 'Task requests retrieved successfully',
-                'data' => $taskRequests
+                'message' => 'Tasks retrieved successfully',
+                'data' => $tasks
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to retrieve task requests',
+                'message' => 'Failed to retrieve tasks',
                 'error' => $e->getMessage()
             ], 500);
         }

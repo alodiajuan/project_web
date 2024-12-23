@@ -149,6 +149,7 @@ class TugasController extends Controller
             $fileName = time() . '_' . $file->getClientOriginalName();
             $file->move(public_path('file'), $fileName);
             $data['file'] = 'file/' . $fileName;
+            unlink($task->file);
         }
 
         $task->update($data);

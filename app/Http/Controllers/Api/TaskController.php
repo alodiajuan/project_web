@@ -36,7 +36,7 @@ class TaskController extends Controller
             'bobot' => 'required|numeric|min:0|max:100',
             'semester' => 'required|integer|min:1|max:8',
             'kuota' => 'required|integer|min:1',
-            'file' => 'nullable|file|max:5024',
+            'file' => 'required|file|max:5024',
             'url' => 'required|url',
             'id_jenis' => 'required|exists:type_task,id',
             'tipe' => 'required|in:file,text,link',
@@ -53,18 +53,18 @@ class TaskController extends Controller
 
         try {
             $filePath = null;
+
+            // Handle file upload
             if ($request->hasFile('file')) {
+                $file = $request->file('file');
+                $fileName = time() . str_replace(' ', '-', $file->getClientOriginalName());
 
-                $originalFileName = $request->file('file')->getClientOriginalName();
-                $fileName = $user->id . '-' . time() . '-' . str_replace(' ', '-', $originalFileName);
+                if (!$file->move(public_path('file'), $fileName)) {
+                    throw new \Exception('File upload failed.');
+                }
 
-                // Store file in the 'public' disk
-                $filePath = $request->file('file')->storeAs('task', $fileName, 'public');
+                $filePath = 'file/' . $fileName;
             }
-
-            // Construct the full URL for the file
-            $fileUrl = $filePath ? url(Storage::url($filePath)) : null;
-
             // Create the task
             $task = Task::create([
                 'id_dosen' => $user->id,
@@ -73,7 +73,7 @@ class TaskController extends Controller
                 'bobot' => $request->input('bobot'),
                 'semester' => $request->input('semester'),
                 'kuota' => $request->input('kuota'),
-                'file' => $fileUrl,
+                'file' => $filePath,
                 'url' => $request->input('url'),
                 'id_jenis' => $request->input('id_jenis'),
                 'tipe' => $request->input('tipe'),
@@ -90,7 +90,7 @@ class TaskController extends Controller
                     'bobot' => $task->bobot,
                     'semester' => $task->semester,
                     'kuota' => $task->kuota,
-                    'file' => $task->file,
+                    'file' => $task->file ? url($task->file) : null,
                     'url' => $task->url,
                     'id_jenis' => $task->id_jenis,
                     'tipe' => $task->tipe,
@@ -253,11 +253,18 @@ class TaskController extends Controller
             if ($request->has('semester')) $task->semester = $request->input('semester');
             if ($request->has('kuota')) $task->kuota = $request->input('kuota');
             if ($request->hasFile('file')) {
-                $originalFileName = $request->file('file')->getClientOriginalName();
-                $fileName = $user->id . '-' . time() . '-' . str_replace(' ', '-', $originalFileName);
-                $filePath = $request->file('file')->storeAs('task', $fileName, 'public');
-                $task->file = url(Storage::url($filePath));
+                $file = $request->file('file');
+
+                // Periksa file
+                if ($task->file && file_exists(public_path($task->file))) {
+                    unlink(public_path($task->file));
+                }
+
+                $fileName = time() . '_' . str_replace(' ', '-', $file->getClientOriginalName());
+                $file->move(public_path('file'), $fileName);
+                $task->file = 'file/' . $fileName;
             }
+
             if ($request->has('url')) $task->url = $request->input('url');
             if ($request->has('id_jenis')) $task->id_jenis = $request->input('id_jenis');
             if ($request->has('tipe')) $task->tipe = $request->input('tipe');

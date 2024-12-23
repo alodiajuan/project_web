@@ -28,7 +28,9 @@ class TaskSubmissionController extends Controller
             return response()->json(['status' => false, 'message' => 'Task not found'], 404);
         }
 
-        $submissions = TaskSubmission::where('id_task', $id)->get();
+        $submissions = TaskSubmission::with('dosen') // relasi
+            ->where('id_task', $id)
+            ->get();
 
         return response()->json([
             'status' => true,
@@ -81,59 +83,90 @@ class TaskSubmissionController extends Controller
         ]);
     }
 
-    // Submission Task
+    //   ngumpulin tugas
     public function store(Request $request)
     {
+        // Ambil pengguna yang sedang login
         $user = Auth::user();
         $allowedRoles = ['mahasiswa'];
 
+        // Cek apakah pengguna terautentikasi dan memiliki peran yang sesuai
         if (!$user || !in_array($user->role, $allowedRoles)) {
-            return response()->json(['status' => false, 'message' => 'Unauthorized'], 403);
+            return response()->json([
+                'status' => false,
+                'message' => 'Unauthorized'
+            ], 403);
         }
 
+        // Validasi input
         $validator = Validator::make($request->all(), [
-            'id_task' => 'required|exists:task,id',
-            'submission' => 'required|string',
+            'id_task' => 'required|exists:task,id',  // Pastikan id_task valid
+            'id_mahasiswa' => 'required|exists:mahasiswa,id',  // Pastikan mahasiswa valid
+            'submission' => 'required|in:file,url',  // Pastikan submission adalah 'file' atau 'url'
+            'file' => 'required_if:submission,file|file',  // Validasi file jika submission adalah 'file'
+            'url' => 'required_if:submission,url|url',  // Validasi url jika submission adalah 'url'
         ]);
 
+        // Jika validasi gagal, kirimkan error dengan pesan yang sesuai
         if ($validator->fails()) {
-            return response()->json(['status' => false, 'message' => 'Validation error', 'errors' => $validator->errors()], 400);
+            return response()->json([
+                'status' => false,
+                'message' => 'Validation error',
+                'errors' => $validator->errors()
+            ], 400);
         }
 
-        try {
-            $filePath = null;
-            if ($request->hasFile('file')) {
+        // Inisialisasi variabel untuk menyimpan path file
+        $filePath = null;
 
-                $originalFileName = $request->file('file')->getClientOriginalName();
-                $fileName = $user->id . '-' . time() . '-' . str_replace(' ', '-', $originalFileName);
+        // Proses file jika submission adalah 'file'
+        if ($request->submission === 'file' && $request->hasFile('file')) {
+            $file = $request->file('file');
+            $fileName = time() . '_' . str_replace(' ', '-', $file->getClientOriginalName());
 
-                // Store file in the 'public' disk
-                $filePath = $request->file('file')->storeAs('TaskSubmission', $fileName, 'public');
+            // Pindahkan file ke folder public/file
+            if ($file->move(public_path('file'), $fileName)) {
+                $filePath = 'file/' . $fileName;  // Simpan path file
+            } else {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Failed to upload file'
+                ], 500);
             }
+        }
 
-            // Construct the full URL for the file
-            $fileUrl = $filePath ? url(Storage::url($filePath)) : null;
-
+        // Simpan data submission tugas
+        try {
             TaskSubmission::create([
                 'id_task' => $request->id_task,
                 'id_mahasiswa' => $user->id,
-                'id_dosen' => null,
-                'acc_dosen' => null,
-                'file' => $fileUrl,
-                'url' => $request->submission,
+                'id_dosen' => null,  // Asumsikan dosen belum ada pada saat submit
+                'acc_dosen' => null,  // Status acc_dosen masih null
+                'progress' => 0,  // Progress di-set 0 pada saat tugas baru di-submit
+                'file' => $filePath,  // Simpan path file, jika ada
+                'url' => $request->submission === 'url' ? $request->url : null,  // Simpan URL, jika submission adalah 'url'
             ]);
 
-            return response()->json(['status' => true, 'message' => 'Berhasil mengumpulkan tugas'], 201);
+            return response()->json([
+                'status' => true,
+                'message' => 'Tugas berhasil dikumpulkan'
+            ], 201);
         } catch (\Exception $e) {
-            return response()->json(['status' => false, 'message' => 'Failed to create task submission', 'error' => $e->getMessage()], 500);
+            // Tangani jika ada error dalam penyimpanan data
+            return response()->json([
+                'status' => false,
+                'message' => 'Failed to create task submission',
+                'error' => $e->getMessage()
+            ], 500);
         }
     }
+
 
     // Review Submission
     public function reviewSubmission(Request $request, $id)
     {
         $user = Auth::user();
-        $allowedRoles = ['admin', 'dosen'];
+        $allowedRoles = ['admin', 'dosen', 'tendik'];
 
         if (!$user || !in_array($user->role, $allowedRoles)) {
             return response()->json(['status' => false, 'message' => 'Unauthorized'], 403);
@@ -184,24 +217,5 @@ class TaskSubmissionController extends Controller
                 'url' => $submission->url,
             ],
         ]);
-    }
-
-    // Request Task
-    public function requestTask($id)
-    {
-        $user = Auth::user();
-        $allowedRoles = ['admin', 'dosen', 'tendik', 'mahasiswa'];
-
-        if (!$user || !in_array($user->role, $allowedRoles)) {
-            return response()->json(['status' => false, 'message' => 'Unauthorized'], 403);
-        }
-
-        $task = Task::find($id);
-
-        if (!$task) {
-            return response()->json(['status' => false, 'message' => 'Task not found'], 404);
-        }
-
-        return response()->json(['status' => true, 'message' => 'Berhasil mengajukan pengerjaan tugas'], 200);
     }
 }

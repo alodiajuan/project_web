@@ -35,6 +35,8 @@ class AuthController extends Controller
             return redirect('/dashboard');
         }
 
+        // dd(csrf_token());
+        // dd($request->all());
 
         return redirect()->back()->withErrors(['error' => 'Invalid Email or Password.']);;
     }

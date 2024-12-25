@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use App\Models\TaskSubmission;
 use App\Models\Task;
+use Illuminate\Support\Facades\Storage;
 
 class TaskSubmissionController extends Controller
 {
@@ -84,7 +85,7 @@ class TaskSubmissionController extends Controller
     public function store(Request $request)
     {
         $user = Auth::user();
-        $allowedRoles = ['admin', 'dosen', 'tendik', 'mahasiswa'];
+        $allowedRoles = ['mahasiswa'];
 
         if (!$user || !in_array($user->role, $allowedRoles)) {
             return response()->json(['status' => false, 'message' => 'Unauthorized'], 403);
@@ -100,12 +101,25 @@ class TaskSubmissionController extends Controller
         }
 
         try {
+            $filePath = null;
+            if ($request->hasFile('file')) {
+
+                $originalFileName = $request->file('file')->getClientOriginalName();
+                $fileName = $user->id . '-' . time() . '-' . str_replace(' ', '-', $originalFileName);
+
+                // Store file in the 'public' disk
+                $filePath = $request->file('file')->storeAs('TaskSubmission', $fileName, 'public');
+            }
+
+            // Construct the full URL for the file
+            $fileUrl = $filePath ? url(Storage::url($filePath)) : null;
+
             TaskSubmission::create([
                 'id_task' => $request->id_task,
                 'id_mahasiswa' => $user->id,
                 'id_dosen' => null,
                 'acc_dosen' => null,
-                'file' => null,
+                'file' => $fileUrl,
                 'url' => $request->submission,
             ]);
 

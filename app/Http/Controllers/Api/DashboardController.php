@@ -8,13 +8,23 @@ use Illuminate\Support\Facades\Log;
 use App\Models\Task;
 use App\Models\TaskRequest;
 use App\Models\TaskSubmission;
+use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
     public function StudentDashboard(Request $request)
     {
         try {
-            $user = auth()->user();
+            $user = Auth::user();
+            $allowedRoles = ['mahasiswa'];
+
+            // Validasi otorisasi
+            if (!$user || !in_array($user->role, $allowedRoles)) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Gagal otorisasi'
+                ], 403);
+            }
 
             $totalTasks = Task::count();
             $totalRequests = TaskRequest::where('id_mahasiswa', $user->id)->count();
@@ -35,7 +45,7 @@ class DashboardController extends Controller
                         'status' => $submission ? $submission->acc_dosen : null,
                         'progress' => $submission ? $submission->progress : null,
                         'tipe' => $task->tipe,
-                        'file' => $task->file ? url('public/submissions/' . $task->file) : null,
+                        'file' => $task->file ? route('download.task', ['filename' => urlencode($task->file)]) : null,
                         'url' => $task->url
                     ];
                 });

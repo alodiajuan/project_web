@@ -17,7 +17,9 @@ Route::prefix('v1')->group(function () {
 
     Route::middleware(['authentication:sanctum'])->group(function () {
         Route::post('/logout', [AuthController::class, 'logout']);
+        Route::put('/update-profile', [AuthController::class, 'update']);
         Route::get('/profile', [AuthController::class, 'userProfile']);
+        Route::get('/me', [AuthController::class, 'me']);
 
         // Dashboard Routes
         Route::get('/dashboard-students', [DashboardController::class, 'StudentDashboard'])
@@ -27,14 +29,19 @@ Route::prefix('v1')->group(function () {
 
         // Task Routes
         Route::prefix('tasks')->group(function () {
+            Route::middleware('role:mahasiswa')->group(function () {
+                Route::get('/student', [TaskController::class, 'getTasksForStudent']);
+                Route::get('/student/{id}', [TaskController::class, 'getTaskStudentById']);
+                Route::get('/student/{id}/submissions', [TaskController::class, 'getTaskSubmissions']);
+            });
+
             Route::middleware('role:admin,dosen,tendik')->group(function () {
                 Route::post('/store', [TaskController::class, 'store']);
                 Route::post('/update', [TaskController::class, 'update']);
                 Route::get('/sdm', [TaskController::class, 'getTasksForSdm']);
                 Route::get('/{id}', [TaskController::class, 'getTaskById']);
             });
-            Route::get('/student', [TaskController::class, 'getTasksForStudent'])
-                ->middleware('role:mahasiswa');
+
         });
 
         // Task Request Routes
@@ -60,21 +67,18 @@ Route::prefix('v1')->group(function () {
         });
 
         // Compensation Routes
-        Route::prefix('compensations')->middleware('role:admin,dosen,tendik')->group(function () {
+        Route::prefix('compensations')->middleware('role:mahasiswa')->group(function () {
             Route::get('/', [CompensationController::class, 'index']);
             Route::get('/{id}', [CompensationController::class, 'show']);
         });
 
         // Competence Routes
-        Route::get('/competences', [CompetenceController::class, 'index'])
-            ->middleware('role:admin,dosen,tendik');
+        Route::get('/competences', [CompetenceController::class, 'index']);
 
         // Prodi Routes
-        Route::get('/prodi', [ProdiController::class, 'index'])
-            ->middleware('role:admin,dosen,tendik');
+        Route::get('/prodi', [ProdiController::class, 'index']);
 
         // Type Task Routes
-        Route::get('/type-tasks', [TypeTaskController::class, 'index'])
-            ->middleware('role:admin,dosen,tendik');
+        Route::get('/type-tasks', [TypeTaskController::class, 'index']);
     });
 });

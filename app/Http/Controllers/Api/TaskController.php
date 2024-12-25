@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Task;
+use App\Models\TaskSubmission;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
@@ -100,16 +101,8 @@ class TaskController extends Controller
      */
     public function getTasksForStudent()
     {
-        $user = Auth::user();
-        if (!$user) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Unauthorized. Mohon login terlebih dahulu.'
-            ], 401);
-        }
-
         try {
-            // Ambil semua tugas berdasarkan semester mahasiswa
+            $user = Auth::user();
             $tasks = Task::with(['dosen', 'TypeTask'])
                 ->where('semester', $user->semester)
                 ->get()
@@ -123,7 +116,7 @@ class TaskController extends Controller
                         'periode' => '2023/2024',
                         'jenis' => $task->TypeTask->nama ?? 'Unknown',
                         'status' => 'belum',
-                        'file' => $task->file ? url('storage/' . $task->file) : null,
+                        'file' => $task->file ? url($task->file) : null,
                         'url' => $task->url,
                         'tipe' => $task->tipe,
                         'deadline' => '07:30 12 Desember 2024'
@@ -138,10 +131,61 @@ class TaskController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'status' => false,
-                ' message' => 'Gagal mendapatkan tugas',
+                'message' => 'Gagal mendapatkan tugas',
                 'error' => $e->getMessage()
             ], 500);
         }
+    }
+
+    public function getTaskStudentById($id)
+    {
+        $task = Task::with('dosen', 'periode')->findOrFail($id);
+        $submissions = TaskSubmission::where('id_task', $task->id)
+            ->where('id_mahasiswa', Auth::id())
+            ->get();
+
+        $available = true;
+
+        foreach ($submissions as $submission) {
+            if ($submission->progress === 100) {
+                $available = false;
+                break;
+            }
+        }
+
+        $request = $task->taskRequests()
+            ->where('id_mahasiswa', Auth::id())
+            ->first();
+
+        if ($request) {
+            $task->isRequested = true;
+            $task->requestStatus = $request->status;
+        } else {
+            $task->isRequested = false;
+            $task->requestStatus = null;
+        }
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Berhasil mendapatkan tugas berdasarkan id',
+            'data' => [
+                'id' => $task->id,
+                'dosen' => $task->dosen->nama ?? 'Unknown',
+                'judul' => $task->judul,
+                'deskripsi' => $task->deskripsi,
+                'bobot' => $task->bobot,
+                'semester' => $task->semester,
+                'jenis' => $task->TypeTask->nama ?? 'Unknown',
+                'status' => 'belum',
+                'file' => $task->file ? url($task->file) : null,
+                'url' => $task->url,
+                'tipe' => $task->tipe,
+                'deadline' => '07:30 12 Desember 2024',
+                'isRequested' => $task->isRequested,
+                'requestStatus' => $task->requestStatus,
+                'available' => $available
+            ]
+        ], 200);
     }
 
     /**

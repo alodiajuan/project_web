@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
@@ -130,6 +131,85 @@ class AuthController extends Controller
                 'message' => 'Logout failed',
             ], 500);
         }
+    }
+
+    public function me(Request $request)
+{
+    try {
+        $user = Auth::user();
+
+        if ($user) {
+            return response()->json([
+                'status' => true,
+                'message' => 'User data retrieved successfully',
+                'data' => $user,
+            ], 200);
+        } else {
+            return response()->json([
+                'status' => false,
+                'message' => 'User not authenticated',
+            ], 401);
+        }
+    } catch (\Throwable $th) {
+        return response()->json([
+            'status' => false,
+            'message' => 'An error occurred while fetching user data',
+            'error' => $th->getMessage(),
+        ], 500);
+    }
+}
+
+public function update(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'nama' => 'nullable|string|max:255',
+            'username' => 'nullable|max:16|unique:users,username,' . Auth::id(),
+            'prodi_id' => 'nullable|exists:prodi,id',
+            'kompetensi' => 'nullable|string|max:255',
+            'semester' => 'nullable|integer|min:1|max:8',
+            'foto_profile' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'alfa' => 'nullable|integer',
+            'compensation' => 'nullable|integer',
+            'password' => 'nullable|min:6|confirmed',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        $user = Auth::user();
+
+        $user->nama = $request->input('nama');
+        $user->username = $request->input('username');
+        $user->id_prodi = $request->input('prodi_id');
+        $user->id_kompetensi = $request->input('kompetensi');
+        $user->semester = $request->input('semester');
+        $user->alfa = $request->input('alfa');
+        $user->compensation = $request->input('compensation');
+
+        if ($request->filled('password')) {
+            $user->password = Hash::make($request->input('password'));
+        }
+
+        if ($request->hasFile('foto_profile')) {
+            if ($user->foto_profile && file_exists(public_path($user->foto_profile))) {
+                unlink(public_path($user->foto_profile));
+            }
+
+            $photo = $request->file('foto_profile');
+            $filename = time() . '.' . $photo->getClientOriginalExtension();
+            $photo->move(public_path('images/profile'), $filename);
+
+            $user->foto_profile = 'images/profile/' . $filename;
+        }
+
+        $user->save();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Profile updated successfully',
+            'data' => $user
+        ]);
     }
 
     // User Profile

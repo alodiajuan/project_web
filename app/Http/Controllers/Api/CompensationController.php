@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Compensation;
+use App\Models\Periode;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -29,14 +30,15 @@ class CompensationController extends Controller
             'status' => true,
             'message' => 'Berhasil mendapatkan data kompensasi',
             'data' => $compensations->map(function ($compensation) {
+                $periode = Periode::where('id', $compensation->semester)->first();
                 return [
                     'id' => $compensation->id,
                     'dosen' => $compensation->dosen->nama,
                     'mahasiswa' => $compensation->mahasiswa->nama,
                     'judul_tugas' => $compensation->task->judul,
                     'bobot' => $compensation->bobot,
-                    'periode' => $compensation->semester,
-                    'file' => url("compensations/{$compensation->id}"),
+                    'periode' => $periode->nama,
+                    'file' => url("/compensations/download/{$compensation->id}"),
                 ];
             }),
         ]);
@@ -62,6 +64,8 @@ class CompensationController extends Controller
             return response()->json(['status' => false, 'message' => 'Compensation not found'], 404);
         }
 
+        $periode = Periode::where('id', $compensation->semester)->first();
+
         return response()->json([
             'status' => true,
             'message' => 'Berhasil mendapatkan data kompensasi berdasarkan id',
@@ -71,8 +75,8 @@ class CompensationController extends Controller
                 'mahasiswa' => $compensation->mahasiswa->nama,
                 'judul_tugas' => $compensation->task->judul,
                 'bobot' => $compensation->bobot,
-                'periode' => $compensation->periode,
-                'file' => url("compensations/{$compensation->id}"),
+                'periode' => $periode->nama,
+                'file' => url("/compensations/download/{$compensation->id}"),
             ],
         ]);
     }

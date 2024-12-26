@@ -134,38 +134,38 @@ class AuthController extends Controller
     }
 
     public function me(Request $request)
-{
-    try {
-        $user = Auth::user();
+    {
+        try {
+            $user = User::find(Auth::id());
 
-        if ($user) {
-            return response()->json([
-                'status' => true,
-                'message' => 'User data retrieved successfully',
-                'data' => $user,
-            ], 200);
-        } else {
+            if ($user) {
+                return response()->json([
+                    'status' => true,
+                    'message' => 'User data retrieved successfully',
+                    'data' => $user,
+                ], 200);
+            } else {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'User not authenticated',
+                ], 401);
+            }
+        } catch (\Throwable $th) {
             return response()->json([
                 'status' => false,
-                'message' => 'User not authenticated',
-            ], 401);
+                'message' => 'An error occurred while fetching user data',
+                'error' => $th->getMessage(),
+            ], 500);
         }
-    } catch (\Throwable $th) {
-        return response()->json([
-            'status' => false,
-            'message' => 'An error occurred while fetching user data',
-            'error' => $th->getMessage(),
-        ], 500);
     }
-}
 
-public function update(Request $request)
+    public function update(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'nama' => 'nullable|string|max:255',
             'username' => 'nullable|max:16|unique:users,username,' . Auth::id(),
             'prodi_id' => 'nullable|exists:prodi,id',
-            'kompetensi' => 'nullable|string|max:255',
+            'kompetensi' => 'nullable|integer|max:255',
             'semester' => 'nullable|integer|min:1|max:8',
             'foto_profile' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'alfa' => 'nullable|integer',
@@ -179,16 +179,25 @@ public function update(Request $request)
 
         $user = Auth::user();
 
-        $user->nama = $request->input('nama');
-        $user->username = $request->input('username');
-        $user->id_prodi = $request->input('prodi_id');
-        $user->id_kompetensi = $request->input('kompetensi');
-        $user->semester = $request->input('semester');
-        $user->alfa = $request->input('alfa');
-        $user->compensation = $request->input('compensation');
+        if (!$user) {
+            return response()->json([
+                'status' => false,
+                'message' => 'User not authenticated',
+            ], 401);
+        }
+
+        $userData = [
+            'nama' => $request->input('nama') ?? $user->nama,
+            'username' => $request->input('username') ?? $user->username,
+            'id_prodi' => $request->input('prodi_id') ?? $user->id_prodi,
+            'id_kompetensi' => $request->input('kompetensi') ?? $user->id_kompetensi,
+            'semester' => $request->input('semester') ?? $user->semester,
+            'alfa' => $request->input('alfa') ?? $user->alfa,
+            'compensation' => $request->input('compensation') ?? $user->compensation,
+        ];
 
         if ($request->filled('password')) {
-            $user->password = Hash::make($request->input('password'));
+            $userData['password'] = Hash::make($request->input('password'));
         }
 
         if ($request->hasFile('foto_profile')) {
@@ -200,17 +209,27 @@ public function update(Request $request)
             $filename = time() . '.' . $photo->getClientOriginalExtension();
             $photo->move(public_path('images/profile'), $filename);
 
-            $user->foto_profile = 'images/profile/' . $filename;
+            $userData['foto_profile'] = 'images/profile/' . $filename;
         }
 
-        $user->save();
+        try {
+            $user->update($userData);
+            $user->foto_profile = url($user->foto_profile);
 
-        return response()->json([
-            'status' => true,
-            'message' => 'Profile updated successfully',
-            'data' => $user
-        ]);
+            return response()->json([
+                'status' => true,
+                'message' => 'Profile updated successfully',
+                'data' => $user
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Failed to update profile',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
     }
+
 
     // User Profile
     public function userProfile(Request $request)

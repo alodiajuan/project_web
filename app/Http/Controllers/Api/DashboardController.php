@@ -26,27 +26,40 @@ class DashboardController extends Controller
                 ], 403);
             }
 
-            $totalTasks = Task::count();
-            $totalRequests = TaskRequest::where('id_mahasiswa', $user->id)->count();
-            $totalCompensations = TaskSubmission::where('id_mahasiswa', $user->id)->count();
-
-            // Mengambil progress tugas mahasiswa
-            $progress = Task::with(['taskSubmissions' => function ($query) use ($user) {
+            $totalTasks = Task::whereDoesntHave('taskSubmissions', function ($query) use ($user) {
                 $query->where('id_mahasiswa', $user->id);
-            }, 'dosen'])
+            })->count();
+
+            $totalRequests = TaskRequest::where('id_mahasiswa', $user->id)
+                ->whereNull('status')
+                ->count();
+
+            $totalCompensations = $user->compensation - $user->alfa;
+
+            $progress = Task::with(['dosen', 'taskSubmissions' => function ($query) use ($user) {
+                $query->where('id_mahasiswa', $user->id);
+            }])
+                ->whereHas('taskSubmissions', function ($query) use ($user) {
+                    $query->where('id_mahasiswa', $user->id);
+                })
                 ->get()
+                ->filter(function ($task) {
+                    return !$task->taskSubmissions->contains(function ($submission) {
+                        return $submission->progress === 100;
+                    });
+                })
                 ->map(function ($task) {
-                    $submission = $task->taskSubmissions->first();
+                    $highestProgressSubmission = $task->taskSubmissions->sortByDesc('progress')->first();
 
                     return [
                         'id' => $task->id,
                         'judul' => $task->judul,
-                        'dosen' => $task->dosen->nama,
-                        'status' => $submission ? $submission->acc_dosen : null,
-                        'progress' => $submission ? $submission->progress : null,
+                        'dosen' => $task->dosen->nama ?? null,
+                        'status' => $highestProgressSubmission->acc_dosen ?? null,
+                        'progress' => $highestProgressSubmission->progress ?? null,
                         'tipe' => $task->tipe,
-                        'file' => $task->file ? route('download.task', ['filename' => urlencode($task->file)]) : null,
-                        'url' => $task->url
+                        'file' => $task->file ? url($task->file) : null,
+                        'url' => $task->url ? url($task->url) : null,
                     ];
                 });
 
@@ -73,6 +86,7 @@ class DashboardController extends Controller
             ], 500);
         }
     }
+
 
     public function SdmDashboard(Request $request)
     {

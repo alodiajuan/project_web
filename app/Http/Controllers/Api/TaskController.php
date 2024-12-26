@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Periode;
 use App\Models\Task;
+use App\Models\TaskRequest;
 use App\Models\TaskSubmission;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -116,25 +118,35 @@ class TaskController extends Controller
     {
         try {
             $user = Auth::user();
-            $tasks = Task::with(['dosen', 'TypeTask'])
-                ->where('semester', $user->semester)
-                ->get()
-                ->map(function ($task) {
-                    return [
-                        'id' => $task->id,
-                        'dosen' => $task->dosen->nama ?? 'Unknown',
-                        'judul' => $task->judul,
-                        'deskripsi' => $task->deskripsi,
-                        'bobot' => $task->bobot,
-                        'periode' => '2023/2024',
-                        'jenis' => $task->TypeTask->nama ?? 'Unknown',
-                        'status' => 'belum',
-                        'file' => $task->file ? url($task->file) : null,
-                        'url' => $task->url,
-                        'tipe' => $task->tipe,
-                        'deadline' => '07:30 12 Desember 2024'
-                    ];
-                });
+
+            $tasks = Task::with(['compensations', 'taskRequests', 'dosen', 'typeTask'])->get();
+
+            $tasks = $tasks->map(function ($task) {
+                $taskHighestProgress = $task->taskSubmissions->max('progress');
+
+                if ($taskHighestProgress) return null;
+
+                $taskRequest = $task->taskRequests()
+                    ->where('id_mahasiswa', Auth::id())
+                    ->first();
+
+                $periode = Periode::find($task->semester);
+                $status = $taskRequest->status ?? null;
+                return [
+                    'id' => $task->id,
+                    'dosen' => $task->dosen->nama ?? 'Tidak diketahui',
+                    'judul' => $task->judul,
+                    'deskripsi' => $task->deskripsi,
+                    'bobot' => $task->bobot,
+                    'periode' => $periode->nama,
+                    'jenis' => $task->typeTask->nama ?? 'Tidak diketahui',
+                    'status' => $status,
+                    'file' => $task->file ? url($task->file) : null,
+                    'url' => $task->url ?? null,
+                    'tipe' => $task->tipe,
+                    'deadline' => $task->deadline ? \Carbon\Carbon::parse($task->deadline)->format('H:i d F Y') : null,
+                ];
+            })->filter()->values();
 
             return response()->json([
                 'status' => true,
@@ -152,52 +164,99 @@ class TaskController extends Controller
 
     public function getTaskStudentById($id)
     {
-        $task = Task::with('dosen', 'periode')->findOrFail($id);
-        $submissions = TaskSubmission::where('id_task', $task->id)
-            ->where('id_mahasiswa', Auth::id())
-            ->get();
-
-        $available = true;
-
-        foreach ($submissions as $submission) {
-            if ($submission->progress === 100) {
-                $available = false;
-                break;
-            }
-        }
+        $task = Task::with('dosen', 'periode', 'typeTask')->findOrFail($id);
 
         $request = $task->taskRequests()
             ->where('id_mahasiswa', Auth::id())
             ->first();
 
-        if ($request) {
-            $task->isRequested = true;
-            $task->requestStatus = $request->status;
-        } else {
-            $task->isRequested = false;
-            $task->requestStatus = null;
+        $progress = TaskSubmission::where('id_task', $id)
+            ->where('id_mahasiswa', Auth::id())
+            ->max('progress');
+
+        $deadline = $task->deadline ? Carbon::parse($task->deadline) : null;
+
+        $taskData = [
+            "id" => $task->id,
+            "dosen" => $task->dosen ? $task->dosen->nama : null,
+            "judul" => $task->judul,
+            "deskripsi" => $task->deskripsi,
+            "bobot" => $task->bobot,
+            "periode" => $task->periode ? $task->periode->nama : null,
+            "semester" => $task->semester,
+            "progress" => $progress ?? 0,
+            "jenis" => $task->typeTask->nama ?? null,
+            "status" => $request->status ?? null,
+            "file" => $task->file ? url("file/{$task->file}") : null,
+            "url" => $task->url ?? null,
+            "tipe" => $task->tipe,
+            "deadline" => $deadline ? $deadline->format('H:i d F Y') : null
+        ];
+
+        return response()->json([
+            "status" => true,
+            "message" => "Berhasil mendapatkan tugas berdasarkan id",
+            "data" => $taskData
+        ], 200);
+    }
+
+    public function requestTask($id)
+    {
+        $task = Task::findOrFail($id);
+
+        $existingRequest = TaskRequest::where('id_task', $task->id)
+            ->where('id_mahasiswa', Auth::id())
+            ->first();
+
+        if ($existingRequest) {
+            return redirect()->back()->with('error', 'Anda sudah mengajukan permintaan untuk tugas ini.');
         }
+
+        TaskRequest::create([
+            'id_task' => $task->id,
+            'id_mahasiswa' => Auth::id(),
+            'status' => null,
+        ]);
 
         return response()->json([
             'status' => true,
-            'message' => 'Berhasil mendapatkan tugas berdasarkan id',
-            'data' => [
-                'id' => $task->id,
-                'dosen' => $task->dosen->nama ?? 'Unknown',
-                'judul' => $task->judul,
-                'deskripsi' => $task->deskripsi,
-                'bobot' => $task->bobot,
-                'semester' => $task->semester,
-                'jenis' => $task->TypeTask->nama ?? 'Unknown',
-                'status' => 'belum',
-                'file' => $task->file ? url($task->file) : null,
-                'url' => $task->url,
-                'tipe' => $task->tipe,
-                'deadline' => '07:30 12 Desember 2024',
-                'isRequested' => $task->isRequested,
-                'requestStatus' => $task->requestStatus,
-                'available' => $available
-            ]
+            'message' => 'Berhasil mengajukan permintaan tugas'
+        ], 200);
+    }
+
+    public function submitTask(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'id_task' => 'required|exists:task,id',
+            'file' => 'nullable|file',
+            'url' => 'nullable|url',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        $task = Task::findOrFail($request->id_task);
+
+        $data = [
+            'id_task' => $request->id_task,
+            'id_mahasiswa' => Auth::id(),
+        ];
+
+        if ($task->tipe == 'file' && $request->hasFile('file')) {
+            $file = $request->file('file');
+            $fileName = time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path('submissions'), $fileName);
+            $data['file'] = 'submissions/' . $fileName;
+        } elseif ($task->tipe == 'url' && $request->url) {
+            $data['url'] = $request->url;
+        }
+
+        TaskSubmission::create($data);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Tugas berhasil disubmit!'
         ], 200);
     }
 

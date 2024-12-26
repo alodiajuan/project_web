@@ -17,26 +17,30 @@ Route::prefix('v1')->group(function () {
 
     Route::middleware(['authentication:sanctum'])->group(function () {
         Route::post('/logout', [AuthController::class, 'logout']);
-        Route::put('/update-profile', [AuthController::class, 'update']);
+        Route::post('/update-profile', [AuthController::class, 'update']);
         Route::get('/profile', [AuthController::class, 'userProfile']);
         Route::get('/me', [AuthController::class, 'me']);
+
+        // Compensation Routes
+        Route::middleware('role:mahasiswa')->group(function () {
+            Route::get('/compensations', [CompensationController::class, 'index']);
+            Route::get('/compensations/{id}', [CompensationController::class, 'show']);
+        });
+
+        // Competence Routes
+        Route::get('/competences', [CompetenceController::class, 'index']);
+
+        // Prodi Routes
+        Route::get('/prodi', [ProdiController::class, 'index']);
+
+        // Type Task Routes
+        Route::get('/type-tasks', [TypeTaskController::class, 'index']);
 
         // Dashboard Routes
         Route::get('/dashboard-students', [DashboardController::class, 'StudentDashboard'])
             ->middleware('role:mahasiswa');
         // download file otomatis
-        Route::middleware(['role:mahasiswa'])->get('/download/{filename}', function ($filename) {
-            $filePath = storage_path('app/public/task/' . $filename);
-
-            if (file_exists($filePath)) {
-                return response()->download($filePath);
-            }
-
-            return response()->json([
-                'status' => false,
-                'message' => 'File tidak ditemukan'
-            ], 404);
-        })->name('download.task');
+        Route::middleware(['role:mahasiswa'])->get('/compensations/download/{id}', [CompensationController::class, 'download']);
 
         Route::get('/dashboard-sdm', [DashboardController::class, 'SdmDashboard'])
             ->middleware('role:admin,dosen,tendik');
@@ -46,7 +50,9 @@ Route::prefix('v1')->group(function () {
             Route::middleware('role:mahasiswa')->group(function () {
                 Route::get('/student', [TaskController::class, 'getTasksForStudent']);
                 Route::get('/student/{id}', [TaskController::class, 'getTaskStudentById']);
+                Route::get('/request/{id}', [TaskController::class, 'requestTask']);
                 Route::get('/student/{id}/submissions', [TaskController::class, 'getTaskSubmissions']);
+                Route::post('/submit', [TaskController::class, 'submitTask']);
             });
 
             Route::middleware('role:admin,dosen,tendik')->group(function () {
@@ -55,7 +61,6 @@ Route::prefix('v1')->group(function () {
                 Route::get('/sdm', [TaskController::class, 'getTasksForSdm']);
                 Route::get('/{id}', [TaskController::class, 'getTaskById']);
             });
-
         });
         Route::get('/tasks-student', [TaskController::class, 'getTasksForStudent'])
             ->middleware('role:mahasiswa');
@@ -80,20 +85,5 @@ Route::prefix('v1')->group(function () {
             ->middleware('role:admin,dosen,tendik,mahasiswa');
         Route::get('/task-request/{id}', [TaskSubmissionController::class, 'requestTask'])
             ->middleware('role:admin,dosen,tendik');
-
-        // Compensation Routes
-        Route::prefix('compensations')->middleware('role:mahasiswa')->group(function () {
-            Route::get('/', [CompensationController::class, 'index']);
-            Route::get('/{id}', [CompensationController::class, 'show']);
-        });
-
-        // Competence Routes
-        Route::get('/competences', [CompetenceController::class, 'index']);
-
-        // Prodi Routes
-        Route::get('/prodi', [ProdiController::class, 'index']);
-
-        // Type Task Routes
-        Route::get('/type-tasks', [TypeTaskController::class, 'index']);
     });
 });

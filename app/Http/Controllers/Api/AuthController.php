@@ -67,7 +67,7 @@ class AuthController extends Controller
                         'username' => $user->username,
                         'nama' => $user->nama,
                         'role' => $user->role,
-                        'foto_profile' => $user->foto_profile ? url('images/profile/1729775674.png') : null,
+                        'foto_profile' => $user->foto_profile ? url($user->foto_profile) : null,
                         'semester' => $user->semester,
                         'id_kompetensi' => $user->id_kompetensi,
                         'id_prodi' => $user->id_prodi,
@@ -137,6 +137,8 @@ class AuthController extends Controller
     {
         try {
             $user = User::find(Auth::id());
+
+            $user->foto_profile = url($user->foto_profile);
 
             if ($user) {
                 return response()->json([

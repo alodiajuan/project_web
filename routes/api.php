@@ -27,6 +27,27 @@ Route::prefix('v1')->group(function () {
             Route::get('/compensations/{id}', [CompensationController::class, 'show']);
         });
 
+        Route::middleware('role:mahasiswa')->group(function () {
+            Route::get('/tasks/student', [TaskController::class, 'getTasksForStudent']);
+            Route::get('/tasks/student/{id}', [TaskController::class, 'getTaskStudentById']);
+            Route::get('/tasks/request/{id}', [TaskController::class, 'requestTask']);
+            Route::get('/tasks/student/{id}/submissions', [TaskController::class, 'getTaskSubmissions']);
+            Route::post('/tasks/submit', [TaskController::class, 'submitTask']);
+        });
+
+
+        Route::middleware('role:admin,dosen,tendik')->group(function () {
+            Route::get('/task-submissions', [TaskSubmissionController::class, 'taskSubmissions']);
+            Route::put('/task-submissions/{id}/approve', [TaskSubmissionController::class, 'approveSubmission']);
+            Route::put('/task-submissions/{id}/decline', [TaskSubmissionController::class, 'declineSubmission']);
+            Route::get('/tasks', [TaskController::class, 'index']);
+            Route::post('/tasks/store', [TaskController::class, 'store']);
+            Route::post('/tasks/{id}/update', [TaskController::class, 'update']);
+            Route::delete('/tasks/{id}', [TaskController::class, 'delete']);
+            Route::get('/tasks/sdm', [TaskController::class, 'getTasksForSdm']);
+            Route::get('/tasks/sdm/{id}', [TaskController::class, 'getTaskById']);
+        });
+
         // Competence Routes
         Route::get('/competences', [CompetenceController::class, 'index']);
 
@@ -45,32 +66,15 @@ Route::prefix('v1')->group(function () {
         Route::get('/dashboard-sdm', [DashboardController::class, 'SdmDashboard'])
             ->middleware('role:admin,dosen,tendik');
 
-        // Task Routes
-        Route::prefix('tasks')->group(function () {
-            Route::middleware('role:mahasiswa')->group(function () {
-                Route::get('/student', [TaskController::class, 'getTasksForStudent']);
-                Route::get('/student/{id}', [TaskController::class, 'getTaskStudentById']);
-                Route::get('/request/{id}', [TaskController::class, 'requestTask']);
-                Route::get('/student/{id}/submissions', [TaskController::class, 'getTaskSubmissions']);
-                Route::post('/submit', [TaskController::class, 'submitTask']);
-            });
-
-            Route::middleware('role:admin,dosen,tendik')->group(function () {
-                Route::post('/store', [TaskController::class, 'store']);
-                Route::post('/update', [TaskController::class, 'update']);
-                Route::get('/sdm', [TaskController::class, 'getTasksForSdm']);
-                Route::get('/{id}', [TaskController::class, 'getTaskById']);
-            });
-        });
         Route::get('/tasks-student', [TaskController::class, 'getTasksForStudent'])
             ->middleware('role:mahasiswa');
         Route::get('/tasks/{id}', [TaskController::class, 'getTaskById'])->middleware('role:mahasiswa,admin,dosen,tendik');
 
-        // Task Request Routes
-        Route::prefix('task-requests')->middleware('role:admin,dosen,tendik')->group(function () {
-            Route::post('/', [TaskRequestController::class, 'submitTaskRequest']);
-            Route::get('/', [TaskRequestController::class, 'getAllTaskRequests']);
-        });
+        // // Task Request Routes
+        // Route::prefix('task-requests')->middleware('role:admin,dosen,tendik')->group(function () {
+        //     Route::post('/', [TaskRequestController::class, 'submitTaskRequest']);
+        //     Route::get('/', [TaskRequestController::class, 'getAllTaskRequests']);
+        // });
 
         // Task Submission Routes
         Route::get('/task/{id}', [TaskSubmissionController::class, 'getSubmissionsByTaskId'])
@@ -83,7 +87,12 @@ Route::prefix('v1')->group(function () {
             ->middleware('role:admin,dosen,tendik');
         Route::get('/{id}', [TaskSubmissionController::class, 'getSubmissionById'])
             ->middleware('role:admin,dosen,tendik,mahasiswa');
+
         Route::get('/task-request/{id}', [TaskSubmissionController::class, 'requestTask'])
+            ->middleware('role:admin,dosen,tendik');
+        Route::get('/task-request/{id}/approve', [TaskSubmissionController::class, 'approveRequest'])
+            ->middleware('role:admin,dosen,tendik');
+        Route::get('/task-request/{id}/decline', [TaskSubmissionController::class, 'declineRequest'])
             ->middleware('role:admin,dosen,tendik');
     });
 });

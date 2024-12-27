@@ -8,10 +8,98 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use App\Models\TaskSubmission;
 use App\Models\Task;
+use App\Models\TaskRequest;
 use Illuminate\Support\Facades\Storage;
 
 class TaskSubmissionController extends Controller
 {
+    public function taskSubmissions()
+    {
+        $user = Auth::user();
+        $allowedRoles = ['admin', 'dosen', 'tendik', 'mahasiswa'];
+
+        if (!$user || !in_array($user->role, $allowedRoles)) {
+            return response()->json(['status' => false, 'message' => 'Unauthorized'], 403);
+        }
+
+        $submissions = TaskSubmission::with('task.dosen', 'mahasiswa')
+            ->whereNull('acc_dosen')->orWhereNull('id_dosen')
+            ->whereHas('task', function ($query) {
+                $query->where('id_dosen', Auth::id());
+            })->get();
+        // dd($submissions);
+        return response()->json([
+            'status' => true,
+            'message' => 'Berhasil mendapatkan data pengumpulan tugas',
+            'data' => $submissions->map(function ($submission) {
+                return [
+                    'id' => $submission->id,
+                    'judul' => $submission->task->judul,
+                    'deskripsi' => $submission->task->deskripsi,
+                    'mahasiswa' => $submission->mahasiswa->nama,
+                    'tipe' => $submission->task->tipe,
+                    'file' => url(rawurlencode($submission->file)),
+                    'url' => $submission->url,
+                ];
+            }),
+        ]);
+    }
+
+    public function approveSubmission(Request $request, $id)
+    {
+        $user = Auth::user();
+        $allowedRoles = ['admin', 'dosen', 'tendik'];
+
+        if (!$user || !in_array($user->role, $allowedRoles)) {
+            return response()->json(['status' => false, 'message' => 'Unauthorized'], 403);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'nilai' => 'required|numeric',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['status' => false, 'message' => 'Validation error', 'errors' => $validator->errors()], 400);
+        }
+
+        $submission = TaskSubmission::find($id);
+
+        if (!$submission) {
+            return response()->json(['status' => false, 'message' => 'Submission not found'], 404);
+        }
+
+        $submission->update([
+            'id_dosen' => $user->id,
+            'acc_dosen' => "terima",
+            'progress' => $request->nilai,
+        ]);
+
+        return response()->json(['status' => true, 'message' => 'Berhasil menyetujui pengumpulan tugas'], 200);
+    }
+
+    public function declineSubmission(Request $request, $id)
+    {
+        $user = Auth::user();
+        $allowedRoles = ['admin', 'dosen', 'tendik'];
+
+        if (!$user || !in_array($user->role, $allowedRoles)) {
+            return response()->json(['status' => false, 'message' => 'Unauthorized'], 403);
+        }
+
+        $submission = TaskSubmission::find($id);
+
+        if (!$submission) {
+            return response()->json(['status' => false, 'message' => 'Submission not found'], 404);
+        }
+
+        $submission->update([
+            'id_dosen' => $user->id,
+            'acc_dosen' => "tolak",
+        ]);
+
+        return response()->json(['status' => true, 'message' => 'Berhasil menolak pengumpulan tugas'], 200);
+    }
+
     // Mendapatkan semua data pengumpulan tugas berdasarkan id tugas
     public function getSubmissionsByTaskId($id)
     {
@@ -196,12 +284,67 @@ class TaskSubmissionController extends Controller
             return response()->json(['status' => false, 'message' => 'Unauthorized'], 403);
         }
 
-        $task = Task::find($id);
+        $tasks = TaskRequest::where('id_task', $id)->whereNull('status')
+            ->with(['user', 'user.prodi', 'user.competence'])
+            ->get();
+
+        // Menyiapkan data response dalam bentuk collection
+        $responseData = [
+            'status' => true,
+            'message' => 'Berhasil mendapatkan data pengajuan pengerjaan tugas',
+            'data' => $tasks->map(function ($task) {
+                return [
+                    'id' => $task->id,
+                    'nama' => $task->user->nama,
+                    'nama_kompetensi' => $task->user->competence->nama
+                ];
+            })
+        ];
+
+        return response()->json($responseData, 200);
+    }
+
+    public function approveRequest($id)
+    {
+        $user = Auth::user();
+        $allowedRoles = ['admin', 'dosen', 'tendik'];
+
+        if (!$user || !in_array($user->role, $allowedRoles)) {
+            return response()->json(['status' => false, 'message' => 'Unauthorized'], 403);
+        }
+
+        $task = TaskRequest::find($id);
 
         if (!$task) {
             return response()->json(['status' => false, 'message' => 'Task not found'], 404);
         }
 
-        return response()->json(['status' => true, 'message' => 'Berhasil mengajukan pengerjaan tugas'], 200);
+        $task->update([
+            'status' => 'terima'
+        ]);
+
+        return response()->json(['status' => true, 'message' => 'Berhasil menyetujui pengajuan pengerjaan tugas'], 200);
+    }
+
+    public function declineRequest($id)
+    {
+        $user = Auth::user();
+        $allowedRoles = ['admin', 'dosen', 'tendik'];
+
+        if (!$user || !in_array($user->role, $allowedRoles)) {
+            return response()->json(['status' => false, 'message' => 'Unauthorized'], 403);
+        }
+
+        $task = TaskRequest::find($id);
+
+        if (!$task) {
+            return response()->json(['status' => false, 'message' => 'Task not found'], 404);
+        }
+
+        $task->update([
+            'status' => 'tolak'
+        ]);
+
+        return response()->json(['status' => true, 'message' => 'Berhasil menolak pengajuan pengerjaan tugas'], 200);
     }
 }

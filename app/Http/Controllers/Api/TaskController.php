@@ -18,98 +18,138 @@ use Illuminate\Support\Facades\Storage;
 
 class TaskController extends Controller
 {
+    public function index()
+    {
+        $tasks = Task::where('id_dosen', Auth::id())->get();
+        return response()->json([
+            'status' => true,
+            'message' => 'Berhasil mendapatkan semua tugas',
+            'data' => $tasks
+        ], 200);
+    }
     /**
      * Create a new task.
      */
     public function store(Request $request)
     {
-        $user = Auth::user();
-        $allowedRoles = ['admin', 'dosen', 'tendik'];
-
-        if (!$user || !in_array($user->role, $allowedRoles)) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Unauthorized. Only Admin, Dosen, and Tendik can create tasks.'
-            ], 403);
-        }
-
         $validator = Validator::make($request->all(), [
             'judul' => 'required|string|max:255',
             'deskripsi' => 'required|string',
-            'bobot' => 'required|numeric|min:0|max:100',
-            'semester' => 'required|integer|min:1|max:8',
+            'bobot' => 'required|integer|min:1',
             'kuota' => 'required|integer|min:1',
-            'file' => 'nullable|file|max:5024',
-            'url' => 'required|url',
-            'id_jenis' => 'required|exists:type_task,id',
-            'tipe' => 'required|in:file,text,link',
-            'deadline' => 'required|date'
+            'semester' => 'required|integer|min:1|max:8',
+            'id_jenis_tugas' => 'required|exists:type_task,id',
+            'tipe_input' => 'required|in:file,url',
+            'deadline' => 'required|date|after:today',
+            'file' => 'nullable|file|mimes:pdf,jpeg,png,docx',
+            'url' => 'nullable|url',
         ]);
 
         if ($validator->fails()) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Validation errors',
-                'errors' => $validator->errors()
-            ], 400);
+            return response()->json(['error' => $validator->errors()], 422);
         }
 
-        try {
-            $filePath = null;
-            if ($request->hasFile('file')) {
+        $data = [
+            'id_dosen' => Auth::id(),
+            'judul' => $request->judul,
+            'deskripsi' => $request->deskripsi,
+            'bobot' => $request->bobot,
+            'kuota' => $request->kuota,
+            'semester' => $request->semester,
+            'id_jenis' => $request->id_jenis_tugas,
+            'tipe' => $request->tipe_input,
+            'deadline' => $request->deadline,
+        ];
 
-                $originalFileName = $request->file('file')->getClientOriginalName();
-                $fileName = $user->id . '-' . time() . '-' . str_replace(' ', '-', $originalFileName);
-
-                // Store file in the 'public' disk
-                $filePath = $request->file('file')->storeAs('task', $fileName, 'public');
-            }
-
-            // Construct the full URL for the file
-            $fileUrl = $filePath ? url(Storage::url($filePath)) : null;
-
-            // Create the task
-            $task = Task::create([
-                'id_dosen' => $user->id,
-                'judul' => $request->input('judul'),
-                'deskripsi' => $request->input('deskripsi'),
-                'bobot' => $request->input('bobot'),
-                'semester' => $request->input('semester'),
-                'kuota' => $request->input('kuota'),
-                'file' => $fileUrl,
-                'url' => $request->input('url'),
-                'id_jenis' => $request->input('id_jenis'),
-                'tipe' => $request->input('tipe'),
-                'deadline' => $request->input('deadline')
-            ]);
-
-            return response()->json([
-                'status' => true,
-                'message' => 'Berhasil membuat tugas baru',
-                'data' => [
-                    'id' => $task->id,
-                    'judul' => $task->judul,
-                    'deskripsi' => $task->deskripsi,
-                    'bobot' => $task->bobot,
-                    'semester' => $task->semester,
-                    'kuota' => $task->kuota,
-                    'file' => $task->file,
-                    'url' => $task->url,
-                    'id_jenis' => $task->id_jenis,
-                    'tipe' => $task->tipe,
-                    'deadline' => $task->deadline,
-                    'created_at' => $task->created_at,
-                    'updated_at' => $task->updated_at,
-                ]
-            ], 201);
-        } catch (\Exception $e) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Gagal membuat tugas',
-                'error' => $e->getMessage()
-            ], 500);
+        if ($request->hasFile('file')) {
+            $file = $request->file('file');
+            $fileName = time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path('file'), $fileName);
+            $data['file'] = 'file/' . $fileName;
         }
+
+        if ($request->has('url')) {
+            $data['url'] = $request->url;
+        }
+
+        Task::create($data);
+
+        return response()->json([
+            'message' => 'Tugas berhasil ditambahkan.',
+            'data' => $data
+        ], 201);
     }
+
+    public function update(Request $request, $id)
+    {
+        $validator = Validator::make($request->all(), [
+            'judul' => 'required|string|max:255',
+            'deskripsi' => 'required|string',
+            'bobot' => 'required|integer|min:1',
+            'kuota' => 'required|integer|min:1',
+            'semester' => 'required|integer|min:1|max:8',
+            'id_jenis_tugas' => 'required|exists:type_task,id',
+            'tipe_input' => 'required|in:file,url',
+            'deadline' => 'required|date|after:today',
+            'file' => 'nullable|file|mimes:pdf,jpeg,png,docx',
+            'url' => 'nullable|url',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 422);
+        }
+
+        $task = Task::findOrFail($id);
+
+        $data = [
+            'id_dosen' => Auth::id(),
+            'judul' => $request->judul,
+            'deskripsi' => $request->deskripsi,
+            'bobot' => $request->bobot,
+            'kuota' => $request->kuota,
+            'semester' => $request->semester,
+            'id_jenis' => $request->id_jenis_tugas,
+            'tipe' => $request->tipe_input,
+            'deadline' => $request->deadline,
+        ];
+
+        if ($request->hasFile('file')) {
+            if ($task->file != null) {
+                unlink(public_path($task->file));
+            }
+            $file = $request->file('file');
+            $fileName = time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path('file'), $fileName);
+            $data['file'] = 'file/' . $fileName;
+        }
+
+        if ($request->has('url')) {
+            $data['url'] = $request->url;
+        }
+
+        $task->update($data);
+
+        return response()->json([
+            'message' => 'Tugas berhasil diperbarui.',
+            'data' => $data
+        ], 200);
+    }
+
+    public function delete($id)
+    {
+        $task = Task::findOrFail($id);
+
+        if ($task->file && file_exists(public_path($task->file))) {
+            unlink(public_path($task->file));
+        }
+
+        $task->delete();
+
+        return response()->json([
+            'message' => 'Tugas berhasil dihapus.'
+        ], 200);
+    }
+
 
     /**
      * Get all tasks for students.
@@ -281,15 +321,18 @@ class TaskController extends Controller
                 ->where('id_dosen', $user->id)
                 ->get()
                 ->map(function ($task) {
+                    $periode = Periode::where('semester', $task->semester)->first();
                     return [
                         'id' => $task->id,
                         'dosen' => $task->dosen->nama ?? 'Unknown',
                         'judul' => $task->judul,
                         'deskripsi' => $task->deskripsi,
                         'bobot' => $task->bobot,
-                        'periode' => '2023/2024',
+                        'periode' => $periode->nama ?? 'Unknown',
                         'jenis' => $task->typeTask->nama ?? 'Unknown',
-                        'status' => 'terima',
+                        'kuota' => $task->kuota,
+                        'semester' => $task->semester,
+                        'id_jenis' => $task->id_jenis,
                         'file' => $task->file,
                         'url' => $task->url,
                         'tipe' => $task->tipe,
@@ -314,7 +357,7 @@ class TaskController extends Controller
     /**
      * Update a task.
      */
-    public function update(Request $request)
+    public function update1(Request $request)
     {
         $user = Auth::user();
         $allowedRoles = ['admin', 'dosen', 'tendik'];
@@ -400,7 +443,9 @@ class TaskController extends Controller
             Log::info('Mencari task dengan ID: ' . $id);
 
             // Mengambil task berdasarkan ID
-            $task = Task::with(['dosen', 'typeTask'])->find($id);
+            $task = Task::where('id', $id)
+                ->where('id_dosen', Auth::id())
+                ->firstOrFail();
 
             // Cek apakah task ditemukan
             if (!$task) {
@@ -420,6 +465,8 @@ class TaskController extends Controller
                 $status = null;
             }
 
+            $periode = Periode::where('semester', $task->semester)->first();
+
             // Data untuk respons
             $responseData = [
                 'id' => $task->id,
@@ -427,12 +474,13 @@ class TaskController extends Controller
                 'judul' => $task->judul,
                 'deskripsi' => $task->deskripsi,
                 'bobot' => $task->bobot,
-                'periode' => '2023/2024',
+                'periode' => $periode->nama,
                 'semester' => $task->semester,
+                'kuota' => $task->kuota,
                 'jenis' => $task->typeTask->nama ?? 'Unknown',
                 'id_jenis' => $task->id_jenis,
                 'status' => $status,
-                'file' => $task->file,
+                'file' => url($task->file),
                 'url' => $task->url,
                 'tipe' => $task->tipe,
                 'deadline' => Carbon::parse($task->deadline)->translatedFormat('H:i d F Y'),
@@ -441,7 +489,7 @@ class TaskController extends Controller
             return response()->json([
                 'status' => true,
                 'message' => 'Berhasil mendapatkan tugas berdasarkan id',
-                'data' => [$responseData]
+                'data' => $responseData
             ], 200);
         } catch (\Exception $e) {
             Log::error('Gagal mendapatkan tugas: ' . $e->getMessage());
